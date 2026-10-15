@@ -25,6 +25,8 @@ cd ../backend && cargo run                 # app en http://localhost:3000
   (almacén), `paco` (jefe).
 - Pieza demo: `PF-123 Pastillas freno`, 25,00 €, stock 4. (`BJ-7 Bujía`, stock 0, solo está para el
   pedido demo pendiente de la orden en espera de piezas.)
+- Presupuesto demo emitido (token ficticio, solo para demostración; constitución, principio V):
+  `/presupuesto/demo-presupuesto-emitido`.
 - Proveedores demo (precargados): «Recambios Sur» y «Autopartes Norte». En producción, los
   proveedores reales los inserta el equipo con `psql` (la app no los gestiona).
 
