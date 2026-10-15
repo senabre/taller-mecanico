@@ -142,7 +142,12 @@ editando este archivo y la spec afectada.
 
 - **Decisión**: todas las transiciones de la orden pasan por una única función
   `backend/src/estados.rs::cambiar_estado(tx, orden_id, desde: &[Estado], hacia: Estado)`. Esta
-  función hace `UPDATE orden SET estado = hacia WHERE id = $1 AND estado = ANY(desde)`, falla con
-  409 si no se actualiza ninguna fila y publica el evento del tablero.
+  función hace `UPDATE orden SET estado = hacia WHERE id = $1 AND estado = ANY(desde)` y falla con
+  409 si no se actualiza ninguna fila. **No publica el evento**: devuelve un `CambioEstado`
+  (`#[must_use]`) y quien la llama ejecuta `cambio.publicar(&eventos)` **después del `commit`**.
 - **Motivo**: cuatro specs de dos personas cambian estados. Un único punto evita incoherencias y
-  garantiza que el tablero se entere siempre.
+  garantiza que el tablero se entere siempre. Se publica tras el `commit` porque, si se publicara
+  dentro de la transacción, el tablero podría volver a pedir `GET /api/tablero` antes de que el
+  cambio esté guardado y seguir viendo el estado antiguo; si la transacción falla, no se publica
+  nada. `#[must_use]` hace que el compilador avise si alguien olvida publicar.
+- **Alternativas descartadas**: publicar dentro de `cambiar_estado`, por la carrera descrita.

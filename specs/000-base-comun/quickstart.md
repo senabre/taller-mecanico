@@ -12,6 +12,8 @@ cp .env.example .env                       # ajustar valores; ningún secreto en
 docker compose up -d                       # PostgreSQL + Mailpit (correo de pruebas)
 cd backend && cargo sqlx migrate run       # crea todas las tablas
 psql "$DATABASE_URL" -f seed/demo.sql      # usuarios y piezas de ejemplo
+# …o, sin psql instalado, con el psql del contenedor (en lugar de la línea anterior):
+# docker compose exec -T postgres sh -c 'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < seed/demo.sql
 cd ../frontend && npm ci && npm run build  # compila la SPA
 cd ../backend && cargo run                 # app en http://localhost:3000
 ```

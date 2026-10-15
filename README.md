@@ -41,3 +41,22 @@ git switch spec-003
 echo '{ "feature_directory": "specs/003-diagnostico-presupuesto" }' > .specify/feature.json
 # después: /speckit-tasks → /speckit-implement
 ```
+
+## Cargar los datos demo
+
+Con las tablas ya creadas (`cd backend && cargo sqlx migrate run`), los datos demo se cargan desde
+la raíz del repositorio. Si tienes `psql` instalado:
+
+```bash
+psql "$DATABASE_URL" -f backend/seed/demo.sql
+```
+
+Si no lo tienes, usa el `psql` que trae el contenedor de Postgres de `docker-compose.yml`:
+
+```bash
+docker compose exec -T postgres sh -c 'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < backend/seed/demo.sql
+```
+
+Los datos demo se cargan sobre una base recién migrada. Para volver a cargarlos, vacía antes la
+base con `cd backend && cargo sqlx database reset`. Usuarios y contraseña demo: ver el
+[quickstart](specs/000-base-comun/quickstart.md).
