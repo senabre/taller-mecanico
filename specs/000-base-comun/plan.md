@@ -92,12 +92,14 @@ backend/
 │   ├── config.rs                     # lee variables de entorno (R7)
 │   ├── error.rs                      # ErrorApi → {"error": …} + código HTTP
 │   ├── auth.rs                       # sesión, extractor Usuario, exigir_rol (R8)
-│   ├── estados.rs                    # cambiar_estado + publicar evento (R14)
-│   ├── eventos.rs                    # broadcast + GET /api/eventos (R11)
+│   ├── estados.rs                    # cambiar_estado → CambioEstado (R14)
+│   ├── eventos.rs                    # broadcast, CambioEstado::publicar + GET /api/eventos (R11)
 │   ├── correo.rs                     # envío SMTP (R10)
 │   ├── dinero.rs                     # importe de línea, totales con IVA (R4)
 │   ├── contador.rs                   # siguiente número sin huecos (R5)
 │   ├── fechas.rs                     # hoy() en Europe/Madrid (R12)
+│   ├── matricula.rs                  # normalizar_matricula (la usan 001 y 007)
+│   ├── formato.rs                    # numero(): 85.000 en los mensajes de error
 │   └── rutas/
 │       ├── sesion.rs                 # 000
 │       ├── citas.rs                  # 001  (Persona A)

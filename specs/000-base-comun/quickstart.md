@@ -21,7 +21,7 @@ cd ../backend && cargo run                 # app en http://localhost:3000
 - Pruebas automáticas de reglas de negocio: `cd backend && cargo test`.
 - Correos enviados: **http://localhost:8025** (Mailpit).
 - Configuración demo (`.env.example`): cupo diario **2**, precio hora **40,00 €**, IVA **21 %**.
-- Usuarios demo (contraseña `demo1234`): `ana` (recepción), `luis` y `marta` (mecánicos), `pepe`
+- Usuarios demo (contraseña `demo1234`, ficticia y solo para demostración; constitución, principio V): `ana` (recepción), `luis` y `marta` (mecánicos), `pepe`
   (almacén), `paco` (jefe).
 - Pieza demo: `PF-123 Pastillas freno`, 25,00 €, stock 4.
 - Proveedores demo (precargados): «Recambios Sur» y «Autopartes Norte». En producción, los

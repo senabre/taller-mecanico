@@ -100,8 +100,8 @@ y que ya no se pueden editar sus líneas.
   total, en euros con formato español.
 - **FR-007**: Al emitirse, el presupuesto MUST fijar su fecha de caducidad en 15 días naturales
   desde su emisión y MUST quedar bloqueado para cambios.
-- **FR-008**: Una orden MUST tener como máximo un presupuesto emitido pendiente de respuesta a
-  la vez.
+- **FR-008**: Una orden MUST tener como máximo un presupuesto abierto a la vez: en borrador o
+  emitido sin caducar. Un presupuesto caducado no cuenta, y el mecánico puede preparar otro.
 
 ### Key Entities
 

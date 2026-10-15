@@ -37,14 +37,15 @@ Igual que el plan maestro. Configuración usada: `TALLER_CUPO_DIARIO`.
 ## Project Structure
 
 ```text
-backend/src/rutas/citas.rs        # 4 endpoints + normalizar_matricula() (la usan 007 y otras)
+backend/src/rutas/citas.rs        # 4 endpoints (usa matricula::normalizar_matricula, base común)
 backend/tests/spec001_citas.rs    # normalización, alta nueva, vehículo existente, cupo, concurrencia
 frontend/src/routes/cita/+page.svelte
 frontend/src/routes/citas/+page.svelte
 ```
 
 **Reglas clave a implementar**:
-- `normalizar_matricula`: en mayúsculas y sin espacios ni guiones. Va en `citas.rs` como `pub fn`.
+- `normalizar_matricula`: en mayúsculas y sin espacios ni guiones. Está en la base común
+  (`backend/src/matricula.rs`); esta spec solo la usa.
 - `POST /api/publico/citas`, todo en una transacción:
   1. Validar que la fecha está dentro del rango y es laborable.
   2. `pg_advisory_xact_lock(fecha)`.

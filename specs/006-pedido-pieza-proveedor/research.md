@@ -72,6 +72,7 @@ está en [000-base-comun/research.md](../000-base-comun/research.md). Fecha: 202
 
 ## D8. Sin aviso al mecánico
 
-- **Decisión**: al volver a `en_reparacion`, `cambiar_estado` publica el evento normal del tablero
-  (R11) y no se hace nada más: ni correo ni notificación.
+- **Decisión**: al volver a `en_reparacion` se publica el evento normal del tablero
+  (`CambioEstado::publicar` después del `commit`, R11 y R14) y no se hace nada más: ni correo ni
+  notificación.
 - **Motivo**: es la aclaración de la spec (Assumptions). El mecánico ve el estado en su lista.
