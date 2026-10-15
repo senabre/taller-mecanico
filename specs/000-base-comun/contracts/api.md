@@ -1,0 +1,141 @@
+# Contrato de la API HTTP · Talleres Rueda
+
+Este es el contrato **único y compartido**. Si una spec necesita un endpoint nuevo o un cambio, se
+añade aquí y lo revisan las dos personas antes de implementarlo.
+
+## Convenciones
+
+- Base: `/api`. JSON en UTF-8. Los campos van en `snake_case` y en español.
+- **Autenticación**: cookie `sesion` (research R8). `🔓` = público; si no, se indican los roles
+  permitidos (`jefe` siempre puede).
+- **Importes**: string decimal con 2 decimales y punto (`"133.10"`), para que JS no lo pase a
+  float. El frontend le da formato `133,10 €`.
+- **Fechas**: `"2026-10-20"` (DATE). **Instantes**: ISO 8601 con zona (`"2026-10-16T10:32:00+02:00"`).
+- **Matrícula**: el servidor la normaliza siempre (research, data-model `vehiculo`).
+- **Errores**: `{"error": "Mensaje en español para el usuario", "detalle": {…opcional}}`.
+  | Código | Cuándo |
+  |---|---|
+  | 400 | JSON mal formado |
+  | 401 | sin sesión |
+  | 403 | rol no permitido o la orden no es del mecánico |
+  | 404 | no existe |
+  | 409 | conflicto de estado (p. ej., facturar una orden no terminada, cupo completo, respuesta ya dada) |
+  | 422 | validación (km menor, cantidad ≤ 0, stock insuficiente…) |
+
+### Objetos comunes
+
+```jsonc
+// OrdenResumen (tablero, listas)
+{ "id": 7, "numero": 42, "matricula": "1234BCD", "estado": "en_reparacion",
+  "mecanico": { "id": 3, "nombre": "Luis" }, "fecha_entrega_prometida": "2026-10-20",
+  "retrasada": false }
+
+// Linea (presupuesto, imputación, factura)
+{ "id": 1, "tipo": "mano_obra" | "pieza", "concepto": "Cambio de pastillas",
+  "pieza_id": null, "cantidad": "1.50", "precio_unitario": "40.00", "importe": "60.00" }
+
+// Totales
+{ "base": "110.00", "iva_porcentaje": "21.00", "iva": "23.10", "total": "133.10" }
+```
+
+---
+
+## Base común (spec-000)
+
+| Método y ruta | Acceso | Entrada | Salida |
+|---|---|---|---|
+| `POST /api/sesion` | 🔓 | `{login, contrasena}` | 204 + cookie · 401 «Usuario o contraseña incorrectos» |
+| `DELETE /api/sesion` | todos | — | 204 |
+| `GET /api/yo` | todos | — | `{id, nombre, rol}` |
+| `GET /api/mecanicos` | todos | — | `[{id, nombre}]` (activos con rol mecánico) |
+| `GET /api/eventos` | todos | — | `text/event-stream`; eventos `orden` con `{id, estado}` (research R11) |
+
+## spec-001 · Citas
+
+| Método y ruta | Acceso | Entrada | Salida |
+|---|---|---|---|
+| `GET /api/publico/vehiculos/{matricula}` | 🔓 | — | `{matricula, marca, modelo}` · 404 si no existe. **Nunca** devuelve datos del cliente. |
+| `GET /api/publico/dias-disponibles` | 🔓 | — | `["2026-10-16", …]` (de lunes a viernes, desde mañana hasta dentro de 30 días, con plazas) |
+| `POST /api/publico/citas` | 🔓 | `{matricula, fecha, motivo, vehiculo?: {marca, modelo}, cliente?: {nombre, telefono, email}}` (`vehiculo` y `cliente` son obligatorios si la matrícula es nueva) | 201 `{fecha, motivo, matricula}` · 409 «Ese día ya está completo» · 422 |
+| `GET /api/citas?fecha=YYYY-MM-DD` | recepcion | — | `[{id, matricula, marca, modelo, motivo, orden_id|null}]` |
+
+## spec-002 · Orden de reparación
+
+| Método y ruta | Acceso | Entrada | Salida |
+|---|---|---|---|
+| `POST /api/ordenes` | recepcion | `{cita_id, km, danos, mecanico_id, fecha_entrega_prometida}` | 201 `Orden` · 422 `{"error":"El kilometraje no puede ser menor que el de la visita anterior (85.000 km)","detalle":{"km_anterior":85000}}` · 409 si la cita ya tiene orden |
+| `GET /api/ordenes?mias=true` | recepcion, mecanico | — | `[OrdenResumen]` (con `mias` solo las del mecánico que ha entrado) |
+| `GET /api/ordenes/{id}` | todos | — | `Orden` = OrdenResumen + `{cita:{fecha,motivo}, vehiculo:{marca,modelo}, km, danos, diagnostico, total_presupuestado, coste_acumulado, presupuestos:[PresupuestoResumen], imputaciones:[Linea], pedidos:[Pedido], factura_id}` |
+
+## spec-003 · Diagnóstico y presupuesto (y ampliaciones de spec-005)
+
+| Método y ruta | Acceso | Entrada | Salida |
+|---|---|---|---|
+| `PUT /api/ordenes/{id}/diagnostico` | mecanico asignado | `{diagnostico}` | 200 `Orden` (`recibida → en_diagnostico`) |
+| `POST /api/ordenes/{id}/presupuestos` | mecanico asignado | — | 201 `Presupuesto` en borrador. El tipo se deduce del estado: `en_diagnostico` → inicial; `pendiente_conformidad` → ampliación. 409 si ya hay uno borrador o emitido |
+| `GET /api/presupuestos/{id}` | todos | — | `Presupuesto` = `{id, orden_id, tipo, estado, caducado, lineas:[Linea], …Totales, emitido_en, caduca_el, respondido_en, enlace}` |
+| `POST /api/presupuestos/{id}/lineas` | mecanico asignado | `{tipo:"mano_obra", concepto, cantidad}` o `{tipo:"pieza", pieza_id, cantidad}` | 201 `Presupuesto` · 409 si no está en borrador |
+| `DELETE /api/presupuestos/{id}/lineas/{linea_id}` | mecanico asignado | — | 200 `Presupuesto` |
+| `POST /api/presupuestos/{id}/emitir` | mecanico asignado | — | 200 `Presupuesto` (fija totales, `caduca_el` y token, y envía el correo con el enlace) · 422 si no tiene líneas |
+| `GET /api/piezas?q=texto` | todos | — | `[{id, referencia, descripcion, precio_venta, stock}]` (búsqueda por referencia o descripción) |
+
+## spec-004 · Respuesta del cliente
+
+| Método y ruta | Acceso | Entrada | Salida |
+|---|---|---|---|
+| `GET /api/publico/presupuestos/{token}` | 🔓 | — | `{taller:{nombre}, matricula, marca, modelo, diagnostico, tipo, lineas, …Totales, caduca_el, caducado, decision: null|"aceptado"|"rechazado", respondido_en}` · 404 si el token no existe |
+| `POST /api/publico/presupuestos/{token}/respuesta` | 🔓 | `{decision: "aceptar"|"rechazar"}` | 200 (igual que el GET) · 409 «Este presupuesto ya fue respondido» · 409 «Este presupuesto caducó el dd/mm/aaaa» |
+
+Efectos (en transacción): ver la máquina de estados en [data-model.md](../data-model.md).
+
+## spec-005 · Imputaciones
+
+| Método y ruta | Acceso | Entrada | Salida |
+|---|---|---|---|
+| `POST /api/ordenes/{id}/imputaciones` | mecanico asignado | `{tipo:"mano_obra", concepto, cantidad}` (múltiplo de 0,25) o `{tipo:"pieza", pieza_id, cantidad}` | 201 `Orden` (con `coste_acumulado` y, si se pasa del 10 %, `estado: "pendiente_conformidad"`) · 409 si la orden no está en reparación · 422 «Solo hay N unidades en stock» |
+| `POST /api/ordenes/{id}/terminar` | mecanico asignado | — | 200 `Orden` (`en_reparacion → terminada`) |
+
+Las ampliaciones usan los endpoints de spec-003 (`POST /api/ordenes/{id}/presupuestos` con la
+orden en `pendiente_conformidad`).
+
+## spec-006 · Almacén y pedidos
+
+| Método y ruta | Acceso | Entrada | Salida |
+|---|---|---|---|
+| `POST /api/piezas` | almacen | `{referencia, descripcion, precio_venta, stock}` | 201 · 409 «Ya existe la referencia» |
+| `GET /api/proveedores` | almacen | — | `[{id, nombre}]` |
+| `POST /api/proveedores` | almacen | `{nombre}` | 201 · 409 si ya existe |
+| `GET /api/pedidos?estado=pendiente` | almacen | — | `[Pedido]` = `{id, proveedor:{id,nombre}, pieza:{id,referencia,descripcion}, cantidad, orden:{id,numero}, estado, pedido_en, recibido_en}` |
+| `POST /api/pedidos` | almacen | `{proveedor_id, pieza_id, cantidad, orden_id}` | 201 `Pedido` (la orden pasa a `en_espera_piezas`) · 409 si la orden no está en reparación ni en espera |
+| `POST /api/pedidos/{id}/recibir` | almacen | — | 200 `Pedido` (suma el stock; si es el último pendiente de la orden, esta vuelve a `en_reparacion`) · 409 si ya estaba recibido |
+
+## spec-007 · Factura e historial
+
+| Método y ruta | Acceso | Entrada | Salida |
+|---|---|---|---|
+| `POST /api/ordenes/{id}/factura` | recepcion | — | 201 `Factura` (la orden pasa a `facturada` y se envía el aviso) · 409 si no está terminada o ya tiene factura · 422 si no tiene imputaciones |
+| `GET /api/facturas/{id}` | recepcion | — | `Factura` = `{id, numero, fecha, taller:{nombre,nif,direccion}, cliente_nombre, matricula, lineas, …Totales, aviso_enviado}` |
+| `GET /api/vehiculos/{matricula}/historial` | todos | — | `{matricula, marca, modelo, reparaciones:[{orden_numero, fecha, km, diagnostico, factura_numero, lineas, total}]}` (de la más reciente a la más antigua) |
+
+## spec-008 · Tablero
+
+| Método y ruta | Acceso | Entrada | Salida |
+|---|---|---|---|
+| `GET /api/tablero` | jefe | — | `{columnas: [{estado, ordenes:[OrdenResumen]}] /* los 6 estados abiertos, en orden, aunque estén vacíos */, carga_mecanicos: [{id, nombre, ordenes_abiertas}] /* incluye los que tienen 0 */}` |
+
+Se actualiza con `GET /api/eventos` (base común).
+
+---
+
+## Rutas de pantalla (frontend)
+
+| Ruta | Acceso | Spec |
+|---|---|---|
+| `/cita` | 🔓 | 001 |
+| `/presupuesto/[token]` | 🔓 | 004 |
+| `/entrar` | 🔓 | 000 |
+| `/citas` | recepcion | 001/002 |
+| `/ordenes`, `/ordenes/[id]` | recepcion, mecanico | 002, 003, 005, 007 |
+| `/almacen`, `/pedidos` | almacen | 006 |
+| `/historial` | todos | 007 |
+| `/tablero` | jefe | 008 |

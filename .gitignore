@@ -1,0 +1,22 @@
+# Puntero local de Spec Kit: cada persona apunta a la spec en la que trabaja
+.specify/feature.json
+
+# Configuración local de Claude Code
+.claude/settings.local.json
+
+# Secretos y entorno (principio V)
+.env
+.env.*
+!.env.example
+
+# Backend (Rust)
+backend/target/
+
+# Frontend (SvelteKit)
+frontend/node_modules/
+frontend/.svelte-kit/
+frontend/build/
+
+# Sistema
+.DS_Store
+Thumbs.db
