@@ -22,6 +22,8 @@ cd ../backend && cargo run                 # app en http://localhost:3000
 - Usuarios demo (contraseña `demo1234`): `ana` (recepción), `luis` y `marta` (mecánicos), `pepe`
   (almacén), `paco` (jefe).
 - Pieza demo: `PF-123 Pastillas freno`, 25,00 €, stock 4.
+- Proveedores demo (precargados): «Recambios Sur» y «Autopartes Norte». En producción, los
+  proveedores reales los inserta el equipo con `psql` (la app no los gestiona).
 
 ## §0 Base común
 1. Ir a `/entrar` y entrar como `luis` → ve «Mis órdenes» y no ve Facturación ni Almacén.
@@ -71,13 +73,20 @@ cd ../backend && cargo run                 # app en http://localhost:3000
 5. Marcar como terminada → «Terminada».
 
 ## §6 spec-006 · Almacén y pedidos
-1. Como `pepe`, dar de alta la referencia `FA-9 Filtro aceite`, 12,00 €, stock 0 y el proveedor
-   «Recambios Sur».
-2. Con una orden «En reparación», registrar el pedido Recambios Sur, FA-9, 1 ud → la orden pasa a
-   «En espera de piezas».
-3. Marcar el pedido como recibido → el stock de FA-9 es 1 y la orden vuelve sola a «En
-   reparación».
-4. Intentar dar de alta otra vez `FA-9` → «Ya existe la referencia».
+1. Como `pepe`, en `/almacen` dar de alta `FA-9 Filtro aceite`, 12,00 €, **sin** indicar stock →
+   aparece con stock 0. Intentar darla de alta otra vez → «Ya existe la referencia FA-9».
+2. En `/pedidos`, el desplegable de proveedores ya trae «Recambios Sur» (precargado; no hay
+   opción de crear proveedores).
+3. Con una orden «En reparación» (nº **R**), registrar el pedido Recambios Sur, FA-9, 1 ud, orden R
+   → el pedido sale «Pendiente» con la fecha de hoy y la orden R pasa a «En espera de piezas».
+4. Registrar otra vez FA-9 para la orden R → «Ya hay un pedido pendiente de FA-9 para la orden R».
+5. Registrar PF-123, 1 ud, para la orden R → se admite y la orden sigue en espera.
+6. Registrar un pedido para una orden «En diagnóstico» → se rechaza explicando el motivo.
+7. Como `luis`, abrir la orden R → ve los dos pedidos pendientes y **no** puede imputar ni terminar.
+8. Como `pepe`, marcar recibido el pedido de FA-9 → stock de FA-9 = 1 y la orden R **sigue** en
+   espera. El botón «Marcar recibido» ya no aparece en ese pedido.
+9. Marcar recibido el de PF-123 → la orden R vuelve sola a «En reparación» (también en el tablero
+   de `paco`), sin que nadie la cambie.
 
 ## §7 spec-007 · Factura e historial
 1. Como `ana`, en una orden «En reparación» → **no** aparece «Facturar».

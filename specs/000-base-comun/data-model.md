@@ -126,10 +126,10 @@ Solo se puede editar mientras el presupuesto está en `borrador`.
 ### pieza *(alta en spec-006; la usan 003 y 005)*
 | Campo | Tipo | Reglas |
 |---|---|---|
-| referencia | TEXT | **única** (ej. `PF-123`) |
+| referencia | TEXT | **única** tal cual se escribe, sin espacios al principio ni al final (ej. `PF-123`) |
 | descripcion | TEXT | obligatoria |
 | precio_venta | NUMERIC(12,2) | ≥ 0 |
-| stock | INTEGER | `CHECK (stock >= 0)` |
+| stock | INTEGER | `DEFAULT 0`, `CHECK (stock >= 0)`; al darla de alta es opcional (0 si no se indica) |
 
 ### imputacion *(spec-005)*
 `orden_id` FK, `tipo` tipo_linea, `concepto` TEXT, `pieza_id` FK NULL, `cantidad` NUMERIC(10,2)
@@ -138,11 +138,14 @@ Solo se admite si la orden está `en_reparacion`. Una imputación de pieza descu
 misma transacción: `UPDATE pieza SET stock = stock - $n WHERE id = $1 AND stock >= $n`.
 
 ### proveedor *(spec-006)*
-`nombre` TEXT único.
+`nombre` TEXT único. Vienen **precargados** (los de demo en `seed/demo.sql`); la app no los crea,
+edita ni borra (spec-006 FR-010).
 
 ### pedido *(spec-006)*
-`proveedor_id` FK, `pieza_id` FK, `cantidad` INTEGER > 0, `orden_id` FK, `estado` estado_pedido,
-`pedido_en`, `recibido_en` NULL.
+`proveedor_id` FK, `pieza_id` FK, `cantidad` INTEGER > 0, `orden_id` FK, `estado` estado_pedido
+(inicial `pendiente`), `pedido_en` TIMESTAMPTZ `DEFAULT now()`, `recibido_en` TIMESTAMPTZ NULL.
+Índice único parcial `(orden_id, pieza_id) WHERE estado = 'pendiente'`: como mucho un pedido
+pendiente por orden y referencia (spec-006 FR-004a).
 
 ### factura *(spec-007)*
 | Campo | Tipo | Reglas |
@@ -178,6 +181,9 @@ Todas las transiciones pasan por `estados::cambiar_estado` (research R14).
 Reglas transversales:
 - Solo se imputa en `en_reparacion`, así que sin presupuesto aceptado no se trabaja (spec-004
   FR-007).
+- No hay ningún cambio de estado manual. En concreto, una orden `en_espera_piezas` solo sale de
+  ahí al recibir su último pedido pendiente (spec-006 FR-008a); nadie puede sacarla, tampoco el
+  jefe.
 - Las órdenes «abiertas» del tablero son todas las que no están en `facturada` (spec-008).
 - El historial del vehículo (spec-007) son sus órdenes `facturada` con su factura, de la más
   reciente a la más antigua.

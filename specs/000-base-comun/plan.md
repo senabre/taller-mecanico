@@ -75,7 +75,8 @@ specs/
 │   └── quickstart.md        # validación de todo el sistema
 └── 00X-*/                   # 001…008
     ├── spec.md
-    └── plan.md              # solo lo específico; remite a 000
+    ├── plan.md              # solo lo específico; remite a 000
+    └── research.md          # (opcional) decisiones propias de la spec
 ```
 
 ### Source Code (repository root)

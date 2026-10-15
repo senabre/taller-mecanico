@@ -102,12 +102,14 @@ orden en `pendiente_conformidad`).
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `POST /api/piezas` | almacen | `{referencia, descripcion, precio_venta, stock}` | 201 · 409 «Ya existe la referencia» |
-| `GET /api/proveedores` | almacen | — | `[{id, nombre}]` |
-| `POST /api/proveedores` | almacen | `{nombre}` | 201 · 409 si ya existe |
-| `GET /api/pedidos?estado=pendiente` | almacen | — | `[Pedido]` = `{id, proveedor:{id,nombre}, pieza:{id,referencia,descripcion}, cantidad, orden:{id,numero}, estado, pedido_en, recibido_en}` |
-| `POST /api/pedidos` | almacen | `{proveedor_id, pieza_id, cantidad, orden_id}` | 201 `Pedido` (la orden pasa a `en_espera_piezas`) · 409 si la orden no está en reparación ni en espera |
-| `POST /api/pedidos/{id}/recibir` | almacen | — | 200 `Pedido` (suma el stock; si es el último pendiente de la orden, esta vuelve a `en_reparacion`) · 409 si ya estaba recibido |
+| `POST /api/piezas` | almacen | `{referencia, descripcion, precio_venta, stock?}` (`stock` opcional, 0 por defecto) | 201 `{id, referencia, descripcion, precio_venta, stock}` · 409 «Ya existe la referencia PF-123» · 422 (referencia o descripción vacías, precio < 0, stock < 0 o no entero) |
+| `GET /api/proveedores` | almacen | — | `[{id, nombre}]` (precargados; no hay alta, edición ni baja) |
+| `GET /api/pedidos?estado=pendiente` | almacen | — | `[Pedido]` = `{id, proveedor:{id,nombre}, pieza:{id,referencia,descripcion}, cantidad, orden:{id,numero}, estado, pedido_en, recibido_en}` (sin `estado`, todos) |
+| `POST /api/pedidos` | almacen | `{proveedor_id, pieza_id, cantidad, orden_numero}` | 201 `Pedido` (si la orden estaba `en_reparacion`, pasa a `en_espera_piezas`) · 409 «La orden 50 está en diagnóstico; solo se puede pedir para órdenes en reparación o en espera de piezas» · 409 «Ya hay un pedido pendiente de PF-123 para la orden 42» · 422 (cantidad no entera o ≤ 0, proveedor o referencia inexistentes, «No existe la orden 99») |
+| `POST /api/pedidos/{id}/recibir` | almacen | — | 200 `Pedido` (suma el stock; si es el último pendiente de la orden, esta vuelve a `en_reparacion`) · 409 «Este pedido ya está recibido» · 404 |
+
+No hay ningún endpoint para cambiar a mano el estado de una orden: una orden en espera de piezas
+solo sale de ahí con `recibir` (spec-006 FR-008a).
 
 ## spec-007 · Factura e historial
 

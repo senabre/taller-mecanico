@@ -31,5 +31,5 @@
 
 ## Notes
 
-- Todos los puntos superados en la primera validación.
+- Revalidada el 2026-10-15 tras actualizar la spec con la descripción completa de HU-06 y dos aclaraciones (pedido también en «en espera de piezas»; stock inicial opcional). Todos los puntos superados.
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
