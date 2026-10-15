@@ -46,6 +46,8 @@ Motivo: lo que no está pedido no se puede verificar y solo añade mantenimiento
   y solo en `backend/seed/demo.sql` y en `quickstart.md`, más los valores de ejemplo de
   `.env.example`. Nunca se cargan ni se usan en producción: cada entorno pone los suyos en su
   `.env`, que no se versiona.
+- Los documentos de `specs/` pueden **citar** los valores demo que ya publica `quickstart.md`. El
+  código, incluidas las pruebas automáticas, nunca los contiene.
 
 ## Restricciones del producto
 
@@ -70,9 +72,12 @@ Motivo: lo que no está pedido no se puede verificar y solo añade mantenimiento
   - PATCH: aclaraciones y correcciones de redacción.
 - Cada spec, plan y revisión DEBE verificar que cumple estos principios.
 
-**Version**: 1.2.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-15
+**Version**: 1.2.1 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-15
 
 **Cambios**:
+- 1.2.1 (2026-10-15) · Principio V (aclaración): los documentos de `specs/` pueden citar los
+  valores demo publicados en `quickstart.md`; el código y las pruebas nunca los contienen. Motivo:
+  los análisis y las tareas tienen que poder nombrar esos datos (analyze-2, K2).
 - 1.2.0 (2026-10-15) · Principio V: se permiten credenciales y tokens ficticios de demostración,
   solo en `backend/seed/demo.sql`, `quickstart.md` y los valores de ejemplo de `.env.example`, y
   nunca en producción. Motivo: los datos

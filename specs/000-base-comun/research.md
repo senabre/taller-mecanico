@@ -111,7 +111,7 @@ editando este archivo y la spec afectada.
 
 - **Decisión**: se usa **Server-Sent Events** en `GET /api/eventos`. El backend tiene un
   `tokio::sync::broadcast` en el estado de la app, y cada cambio de estado de una orden publica
-  `{"tipo":"orden","id":…}`. El tablero escucha con `EventSource`, que se reconecta solo, y vuelve
+  un evento SSE `orden` con los datos `{id, estado}` (el mismo formato que el contrato). El tablero escucha con `EventSource`, que se reconecta solo, y vuelve
   a pedir `GET /api/tablero`.
 - **Motivo**: basta con comunicación del servidor al navegador. Es lo más simple que cumple
   «sin recargar» (spec-008).

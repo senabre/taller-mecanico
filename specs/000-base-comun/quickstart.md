@@ -23,14 +23,18 @@ cd ../backend && cargo run                 # app en http://localhost:3000
 - Configuración demo (`.env.example`): cupo diario **2**, precio hora **40,00 €**, IVA **21 %**.
 - Usuarios demo (contraseña `demo1234`, ficticia y solo para demostración; constitución, principio V): `ana` (recepción), `luis` y `marta` (mecánicos), `pepe`
   (almacén), `paco` (jefe).
-- Pieza demo: `PF-123 Pastillas freno`, 25,00 €, stock 4.
+- Pieza demo: `PF-123 Pastillas freno`, 25,00 €, stock 4. (`BJ-7 Bujía`, stock 0, solo está para el
+  pedido demo pendiente de la orden en espera de piezas.)
 - Proveedores demo (precargados): «Recambios Sur» y «Autopartes Norte». En producción, los
   proveedores reales los inserta el equipo con `psql` (la app no los gestiona).
 
 ## §0 Base común
-1. Ir a `/entrar` y entrar como `luis` → ve «Mis órdenes» y no ve Facturación ni Almacén.
+1. Ir a `/entrar` y entrar como `luis` → ve «Mis órdenes» e «Historial» y no ve Citas, Almacén,
+   Pedidos ni Tablero.
 2. Entrar con contraseña errónea → «Usuario o contraseña incorrectos».
 3. Entrar como `paco` → ve todo el menú, incluido el Tablero.
+4. Entrar como `ana` → ve Citas, Órdenes e Historial; como `pepe` → ve Almacén, Pedidos e
+   Historial. Ninguno de los dos ve el Tablero.
 
 ## §1 spec-001 · Pedir cita
 1. Sin entrar, abrir `/cita` y escribir `1234-bcd` → pide marca, modelo, nombre, teléfono y correo.
