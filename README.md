@@ -42,10 +42,29 @@ echo '{ "feature_directory": "specs/003-diagnostico-presupuesto" }' > .specify/f
 # después: /speckit-tasks → /speckit-implement
 ```
 
-## Cargar los datos demo
+## Arrancar en local
 
-Con las tablas ya creadas (`cd backend && cargo sqlx migrate run`), los datos demo se cargan desde
-la raíz del repositorio. Si tienes `psql` instalado:
+Los pasos completos, con los usuarios y datos demo, están en el
+[quickstart](specs/000-base-comun/quickstart.md) («Arrancar»). Requisitos: Docker, Rust estable y
+Node 22. Además necesitas `sqlx-cli`, que da la orden `cargo sqlx` para las migraciones:
+
+```bash
+cargo install sqlx-cli --no-default-features --features postgres,rustls
+```
+
+### Base de datos vacía
+
+Para borrar la base, volver a crearla y aplicar todas las migraciones (pide confirmación; `-y` la
+salta):
+
+```bash
+cd backend && cargo sqlx database reset -y
+```
+
+### Cargar los datos demo
+
+Los datos demo (`backend/seed/demo.sql`) se cargan sobre una base recién migrada, desde la raíz del
+repositorio. Si tienes `psql` instalado:
 
 ```bash
 psql "$DATABASE_URL" -f backend/seed/demo.sql
@@ -57,6 +76,18 @@ Si no lo tienes, usa el `psql` que trae el contenedor de Postgres de `docker-com
 docker compose exec -T postgres sh -c 'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < backend/seed/demo.sql
 ```
 
-Los datos demo se cargan sobre una base recién migrada. Para volver a cargarlos, vacía antes la
-base con `cd backend && cargo sqlx database reset`. Usuarios y contraseña demo: ver el
-[quickstart](specs/000-base-comun/quickstart.md).
+Para volver a cargarlos, vacía antes la base (`cargo sqlx database reset -y`). Usuarios y
+contraseña demo: ver el quickstart.
+
+### Usuarios del personal
+
+No hay pantalla de usuarios: se gestionan con una orden de administración, que lee
+`DATABASE_URL` del `.env` y la contraseña de la entrada estándar (nunca como argumento):
+
+```bash
+cd backend
+cargo run --bin crear-usuario -- --login luis --nombre "Luis" --rol mecanico  # alta o nueva contraseña
+cargo run --bin crear-usuario -- --login luis --desactivar                    # baja (cierra sus sesiones)
+```
+
+Los roles son `recepcion`, `mecanico`, `almacen` y `jefe`.
