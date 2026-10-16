@@ -1,5 +1,5 @@
 //! Utilidades de prueba para todas las specs (`mod comun;` en cada fichero de `tests/`).
-//! Parte 1 (fase 2): no necesitan `auth.rs`. `crear_usuario` y `entrar` llegan con US1.
+//! Parte 1 (fase 2): no necesitan `auth.rs`. Parte 2 (US1): `crear_usuario` y `entrar`.
 #![allow(dead_code)]
 
 use std::sync::Arc;
@@ -9,8 +9,9 @@ use axum::body::Body;
 use axum::http::{Request, StatusCode, header};
 use http_body_util::BodyExt;
 use rust_decimal_macros::dec;
-use serde_json::Value;
+use serde_json::{Value, json};
 use sqlx::PgPool;
+use taller::auth::{hash_contrasena, nuevo_token};
 use taller::config::Config;
 use taller::correo::Correo;
 use taller::estados::Estado;
@@ -130,4 +131,44 @@ pub async fn crear_orden(pool: &PgPool, numero: i64, estado: Estado, mecanico_id
     .fetch_one(pool)
     .await
     .unwrap()
+}
+
+/// Usuario que puede entrar: la contraseña es aleatoria y se devuelve junto al id. Las pruebas
+/// nunca contienen contraseñas escritas a mano (principio V, constitución v1.2.1).
+/// El nombre es el login con la inicial en mayúscula («luis» → «Luis»).
+pub async fn crear_usuario(pool: &PgPool, login: &str, rol: &str, activo: bool) -> (i64, String) {
+    let contrasena = nuevo_token();
+    let mut letras = login.chars();
+    let nombre: String = letras
+        .next()
+        .map(|c| c.to_uppercase().chain(letras).collect())
+        .unwrap_or_default();
+    let id = sqlx::query_scalar(
+        "INSERT INTO usuario (nombre, login, hash_contrasena, rol, activo)
+         VALUES ($1, $2, $3, $4::rol, $5) RETURNING id",
+    )
+    .bind(nombre)
+    .bind(login)
+    .bind(hash_contrasena(&contrasena))
+    .bind(rol)
+    .bind(activo)
+    .fetch_one(pool)
+    .await
+    .unwrap();
+    (id, contrasena)
+}
+
+/// Entra con `POST /api/sesion` y devuelve la cookie lista para la cabecera `Cookie`.
+pub async fn entrar(app: &Router, login: &str, contrasena: &str) -> String {
+    let (codigo, _, set_cookie) = peticion(
+        app,
+        "POST",
+        "/api/sesion",
+        None,
+        Some(json!({ "login": login, "contrasena": contrasena })),
+    )
+    .await;
+    assert_eq!(codigo, StatusCode::NO_CONTENT, "no se pudo entrar como {login}");
+    let set_cookie = set_cookie.expect("POST /api/sesion devuelve Set-Cookie");
+    set_cookie.split(';').next().unwrap().to_string()
 }

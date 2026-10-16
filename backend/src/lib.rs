@@ -1,6 +1,6 @@
 //! Talleres Rueda: módulos comunes del backend y montaje del router (plan maestro, research R2).
-//! El módulo `auth` se añade con la fase 3 (US1).
 
+pub mod auth;
 pub mod config;
 pub mod contador;
 pub mod correo;

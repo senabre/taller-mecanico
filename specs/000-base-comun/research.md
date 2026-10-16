@@ -87,7 +87,11 @@ editando este archivo y la spec afectada.
 
 - **Decisión**: la sesión se guarda en el servidor, en la tabla `sesion`. Se usa una cookie
   `sesion` `HttpOnly`, `SameSite=Lax` y `Secure` en producción, que contiene un token aleatorio de
-  32 bytes; en la base de datos se guarda su hash SHA-256. Las contraseñas se guardan con
+  32 bytes; en la base de datos se guarda su hash SHA-256. Es una **cookie de sesión del
+  navegador** (sin `Max-Age` ni `Expires`): se borra al cerrar el navegador. La caducidad de 12 h
+  sin actividad la controla el servidor con `sesion.expira_en`, que se renueva en cada petición
+  autenticada; una sesión caducada da 401 aunque el navegador aún tenga la cookie. Con un
+  `Max-Age` fijo, la cookie desaparecería 12 h después de entrar aunque hubiera actividad. Las contraseñas se guardan con
   argon2id. Un extractor de Axum (`Usuario`) exige sesión y una función `exigir_rol(&[Rol])`
   comprueba el rol; el rol `jefe` pasa siempre. Los usuarios se crean con el binario
   `cargo run --bin crear-usuario`.

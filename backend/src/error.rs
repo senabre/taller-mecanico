@@ -14,6 +14,9 @@ pub enum ErrorApi {
     PeticionMala(String),
     /// 401: sin sesión.
     SinSesion,
+    /// 401: al entrar, usuario inexistente o inactivo, o contraseña errónea (mismo texto en
+    /// los tres casos).
+    CredencialesIncorrectas,
     /// 403: rol no permitido o la orden no es del mecánico.
     Prohibido,
     /// 404: no existe.
@@ -35,6 +38,11 @@ impl IntoResponse for ErrorApi {
             ErrorApi::SinSesion => (
                 StatusCode::UNAUTHORIZED,
                 "Tienes que entrar con tu usuario".to_string(),
+                None,
+            ),
+            ErrorApi::CredencialesIncorrectas => (
+                StatusCode::UNAUTHORIZED,
+                "Usuario o contraseña incorrectos".to_string(),
                 None,
             ),
             ErrorApi::Prohibido => (

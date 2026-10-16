@@ -3,6 +3,8 @@ name = "taller"
 version = "0.1.0"
 edition = "2024"
 publish = false
+# Hay dos binarios (taller y crear-usuario): «cargo run» arranca el servidor.
+default-run = "taller"
 
 # Librería (src/lib.rs) para que las pruebas de tests/ usen el router, y binario por defecto
 # (src/main.rs) que arranca el servidor.
