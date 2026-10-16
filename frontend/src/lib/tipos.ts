@@ -1,0 +1,71 @@
+// Tipos comunes del contrato (specs/000-base-comun/contracts/api.md). Los tipos propios de cada
+// spec (Orden, Presupuesto, Pieza, Pedido, Factura…) los añade cada spec.
+
+/** Importe en euros como string decimal con punto: "133.10". */
+export type Importe = string;
+/** Fecha sin hora: "2026-10-20". */
+export type Fecha = string;
+/** Instante ISO 8601 con zona: "2026-10-16T10:32:00+02:00". */
+export type Instante = string;
+
+export type Rol = 'recepcion' | 'mecanico' | 'almacen' | 'jefe';
+
+export type EstadoOrden =
+	| 'recibida'
+	| 'en_diagnostico'
+	| 'en_reparacion'
+	| 'en_espera_piezas'
+	| 'pendiente_conformidad'
+	| 'terminada'
+	| 'facturada';
+
+export type TipoLinea = 'mano_obra' | 'pieza';
+
+export interface Yo {
+	id: number;
+	nombre: string;
+	rol: Rol;
+}
+
+export interface Mecanico {
+	id: number;
+	nombre: string;
+}
+
+export interface OrdenResumen {
+	id: number;
+	numero: number;
+	matricula: string;
+	estado: EstadoOrden;
+	mecanico: Mecanico;
+	fecha_entrega_prometida: Fecha;
+	retrasada: boolean;
+}
+
+export interface Linea {
+	id: number;
+	tipo: TipoLinea;
+	concepto: string;
+	pieza_id: number | null;
+	cantidad: string;
+	precio_unitario: Importe;
+	importe: Importe;
+}
+
+export interface Totales {
+	base: Importe;
+	iva_porcentaje: Importe;
+	iva: Importe;
+	total: Importe;
+}
+
+export interface RespuestaError {
+	error: string;
+	detalle?: Record<string, unknown>;
+}
+
+/** Evento `orden` de GET /api/eventos (SSE). */
+export interface EventoOrden {
+	id: number;
+	estado: EstadoOrden;
+}

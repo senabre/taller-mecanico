@@ -43,7 +43,7 @@ en menos de 1 s y el tablero se actualiza en menos de 5 s
 **Constraints**: todo en español de España, en € y con fechas dd/mm/aaaa; ningún secreto en el
 código; nada fuera de las specs
 
-**Scale/Scope**: unas 12 tablas, unos 30 endpoints, unas 10 pantallas y 9 specs (000–008)
+**Scale/Scope**: 15 tablas (las 15 entidades de data-model.md), unos 30 endpoints, unas 10 pantallas y 9 specs (000–008)
 
 ## Constitution Check
 
