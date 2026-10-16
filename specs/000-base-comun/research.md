@@ -27,11 +27,15 @@ editando este archivo y la spec afectada.
 
 ## R3. Pila y versiones
 
-- **Backend**: Rust estable (edición 2024), Axum 0.8, SQLx 0.8 (`postgres`, `runtime-tokio`,
-  `macros`, `migrate`, `chrono`, `rust_decimal`, `uuid`), tower-http (`fs`, `trace`), chrono +
-  chrono-tz, rust_decimal, argon2, lettre (SMTP), serde, tracing, tokio.
+- **Backend**: Rust estable (edición 2024), Axum 0.8 (`macros`), SQLx 0.8 (`postgres`,
+  `runtime-tokio`, `tls-rustls`, `macros`, `migrate`, `chrono`, `rust_decimal`), tower-http
+  (`fs`, `trace`), chrono + chrono-tz, rust_decimal (+ `rust_decimal_macros`), argon2, lettre
+  (SMTP con rustls), serde + serde_json, tracing + tracing-subscriber, tokio. Auxiliares: `sha2`
+  (hash del token de sesión), `rand` y `base64` (tokens aleatorios), `dotenvy` (`.env` en
+  desarrollo), `tokio-stream` y `futures-util` (SSE). Pruebas: `tower` y `http-body-util`.
+  Ningún id es UUID, así que no se usa la feature `uuid` de SQLx.
 - **Frontend**: Node 22 LTS, SvelteKit 2 con Svelte 5 (runes), Skeleton UI v3 sobre Tailwind CSS 4
-  y TypeScript.
+  y TypeScript 5 (SvelteKit 3 y TypeScript 7 ya existen, pero no se adoptan en la v1).
 - **Base de datos**: PostgreSQL 16 o posterior.
 - **Motivo**: es la pila propuesta en el enunciado. Las versiones son las estables actuales al
   empezar; se fijan en `Cargo.lock` y `package-lock.json`.
@@ -83,7 +87,11 @@ editando este archivo y la spec afectada.
 
 - **Decisión**: la sesión se guarda en el servidor, en la tabla `sesion`. Se usa una cookie
   `sesion` `HttpOnly`, `SameSite=Lax` y `Secure` en producción, que contiene un token aleatorio de
-  32 bytes; en la base de datos se guarda su hash SHA-256. Las contraseñas se guardan con
+  32 bytes; en la base de datos se guarda su hash SHA-256. Es una **cookie de sesión del
+  navegador** (sin `Max-Age` ni `Expires`): se borra al cerrar el navegador. La caducidad de 12 h
+  sin actividad la controla el servidor con `sesion.expira_en`, que se renueva en cada petición
+  autenticada; una sesión caducada da 401 aunque el navegador aún tenga la cookie. Con un
+  `Max-Age` fijo, la cookie desaparecería 12 h después de entrar aunque hubiera actividad. Las contraseñas se guardan con
   argon2id. Un extractor de Axum (`Usuario`) exige sesión y una función `exigir_rol(&[Rol])`
   comprueba el rol; el rol `jefe` pasa siempre. Los usuarios se crean con el binario
   `cargo run --bin crear-usuario`.
@@ -111,7 +119,7 @@ editando este archivo y la spec afectada.
 
 - **Decisión**: se usa **Server-Sent Events** en `GET /api/eventos`. El backend tiene un
   `tokio::sync::broadcast` en el estado de la app, y cada cambio de estado de una orden publica
-  `{"tipo":"orden","id":…}`. El tablero escucha con `EventSource`, que se reconecta solo, y vuelve
+  un evento SSE `orden` con los datos `{id, estado}` (el mismo formato que el contrato). El tablero escucha con `EventSource`, que se reconecta solo, y vuelve
   a pedir `GET /api/tablero`.
 - **Motivo**: basta con comunicación del servidor al navegador. Es lo más simple que cumple
   «sin recargar» (spec-008).
@@ -142,7 +150,12 @@ editando este archivo y la spec afectada.
 
 - **Decisión**: todas las transiciones de la orden pasan por una única función
   `backend/src/estados.rs::cambiar_estado(tx, orden_id, desde: &[Estado], hacia: Estado)`. Esta
-  función hace `UPDATE orden SET estado = hacia WHERE id = $1 AND estado = ANY(desde)`, falla con
-  409 si no se actualiza ninguna fila y publica el evento del tablero.
+  función hace `UPDATE orden SET estado = hacia WHERE id = $1 AND estado = ANY(desde)` y falla con
+  409 si no se actualiza ninguna fila. **No publica el evento**: devuelve un `CambioEstado`
+  (`#[must_use]`) y quien la llama ejecuta `cambio.publicar(&eventos)` **después del `commit`**.
 - **Motivo**: cuatro specs de dos personas cambian estados. Un único punto evita incoherencias y
-  garantiza que el tablero se entere siempre.
+  garantiza que el tablero se entere siempre. Se publica tras el `commit` porque, si se publicara
+  dentro de la transacción, el tablero podría volver a pedir `GET /api/tablero` antes de que el
+  cambio esté guardado y seguir viendo el estado antiguo; si la transacción falla, no se publica
+  nada. `#[must_use]` hace que el compilador avise si alguien olvida publicar.
+- **Alternativas descartadas**: publicar dentro de `cambiar_estado`, por la carrera descrita.

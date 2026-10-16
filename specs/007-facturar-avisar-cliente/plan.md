@@ -38,7 +38,7 @@ Igual que el plan maestro. Configuración usada: `TALLER_IVA_PORCENTAJE`, `TALLE
 ## Project Structure
 
 ```text
-backend/src/rutas/facturas.rs          # facturar, ver, historial (usa citas::normalizar_matricula)
+backend/src/rutas/facturas.rs          # facturar, ver, historial (usa matricula::normalizar_matricula, base común)
 backend/tests/spec007_facturas.rs      # solo terminada, sin imputaciones, una por orden, correlativo, totales = imputaciones, aviso fallido no deshace
 frontend/src/routes/ordenes/[id]/Factura.svelte
 frontend/src/routes/facturas/[id]/+page.svelte      # vista imprimible

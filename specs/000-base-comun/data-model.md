@@ -115,7 +115,11 @@ Valores calculados (con consultas, no se guardan):
 | caduca_el | DATE NULL | = fecha de emisión (Madrid) + 15 días |
 | respondido_en | TIMESTAMPTZ NULL | la hora exacta de la respuesta |
 
-Restricción: como mucho un presupuesto `borrador` o `emitido` por orden a la vez.
+Restricción: como mucho un presupuesto abierto por orden a la vez, es decir, en `borrador` o
+`emitido` sin caducar. La base de datos solo garantiza un `borrador` por orden (índice único
+parcial `WHERE estado = 'borrador'`). Que no haya un `emitido` vigente lo comprueba spec-003 en la
+misma transacción, porque «caducado» depende de hoy y no puede ir en un índice. Un presupuesto
+caducado no cuenta y la orden puede tener otro.
 
 ### linea_presupuesto *(spec-003)*
 `presupuesto_id` FK, `tipo` tipo_linea, `concepto` TEXT, `pieza_id` FK NULL (obligatorio si
@@ -163,7 +167,10 @@ no cambia aunque después cambie el catálogo.
 
 ## Máquina de estados de la orden
 
-Todas las transiciones pasan por `estados::cambiar_estado` (research R14).
+Todos los cambios de estado pasan por `estados::cambiar_estado`, que devuelve un `CambioEstado`.
+Quien la llama lo publica en el tablero con `CambioEstado::publicar` **después del `commit`**
+(research R14). Abrir una orden (`— → recibida`) es un `INSERT` de spec-002, no un cambio de
+estado, pero también publica su evento después del `commit`.
 
 | Desde | Hacia | Disparador | Spec |
 |---|---|---|---|

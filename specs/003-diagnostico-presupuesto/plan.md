@@ -49,7 +49,12 @@ frontend/src/lib/componentes/TablaLineas.svelte, Totales.svelte   # compartidos 
 **Reglas clave**:
 - Al crear un presupuesto, el tipo se deduce del estado de la orden: `en_diagnostico` → `inicial`;
   `pendiente_conformidad` → `ampliacion`. En cualquier otro estado, 409.
-- No puede haber dos presupuestos en `borrador`/`emitido` a la vez en la misma orden.
+- Como mucho un presupuesto abierto por orden (FR-008). La base de datos solo impide dos
+  `borrador` (índice parcial). Al crear un presupuesto, en la misma transacción y con la orden
+  bloqueada (`SELECT … FOR UPDATE`), devolver 409 si ya hay uno `emitido` con
+  `caduca_el >= fechas::hoy()`. Un caducado no bloquea.
+- Solo el mecánico asignado (o el jefe): `usuario.exigir_mecanico_de(orden.mecanico_id)` de
+  `auth.rs`.
 - `emitir`: se recalcula todo con `dinero.rs`, `caduca_el = fechas::hoy() + 15` y se genera el
   token (research R9). Se envía el correo **después** de confirmar (research R10).
 - Para probar sin spec-006: piezas de `seed/demo.sql`.

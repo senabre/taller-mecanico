@@ -1,0 +1,8 @@
+@import 'tailwindcss';
+@import '@skeletonlabs/skeleton';
+/* Clases preset-* (preset-filled-primary-500, preset-tonal…): en Skeleton v3 son opcionales */
+@import '@skeletonlabs/skeleton/optional/presets';
+@import '@skeletonlabs/skeleton/themes/cerberus';
+
+/* Clases que usan los componentes de Skeleton para Svelte */
+@source '../node_modules/@skeletonlabs/skeleton-svelte/dist';

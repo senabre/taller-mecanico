@@ -10,7 +10,8 @@
 
 `/tablero`, solo para el jefe, muestra 6 columnas con las órdenes no facturadas, la carga de
 órdenes por mecánico y las órdenes retrasadas destacadas. Se actualiza solo escuchando
-`GET /api/eventos` (SSE, research R11), al que publica `estados::cambiar_estado`.
+`GET /api/eventos` (SSE, research R11). Cada spec que cambia un estado publica el evento con
+`CambioEstado::publicar` después del `commit` (research R14).
 
 ## Technical Context
 

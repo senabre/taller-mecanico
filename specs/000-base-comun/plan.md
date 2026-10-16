@@ -43,7 +43,7 @@ en menos de 1 s y el tablero se actualiza en menos de 5 s
 **Constraints**: todo en español de España, en € y con fechas dd/mm/aaaa; ningún secreto en el
 código; nada fuera de las specs
 
-**Scale/Scope**: unas 12 tablas, unos 30 endpoints, unas 10 pantallas y 9 specs (000–008)
+**Scale/Scope**: 15 tablas (las 15 entidades de data-model.md), unos 30 endpoints, unas 10 pantallas y 9 specs (000–008)
 
 ## Constitution Check
 
@@ -92,12 +92,14 @@ backend/
 │   ├── config.rs                     # lee variables de entorno (R7)
 │   ├── error.rs                      # ErrorApi → {"error": …} + código HTTP
 │   ├── auth.rs                       # sesión, extractor Usuario, exigir_rol (R8)
-│   ├── estados.rs                    # cambiar_estado + publicar evento (R14)
-│   ├── eventos.rs                    # broadcast + GET /api/eventos (R11)
+│   ├── estados.rs                    # cambiar_estado → CambioEstado (R14)
+│   ├── eventos.rs                    # broadcast, CambioEstado::publicar + GET /api/eventos (R11)
 │   ├── correo.rs                     # envío SMTP (R10)
 │   ├── dinero.rs                     # importe de línea, totales con IVA (R4)
 │   ├── contador.rs                   # siguiente número sin huecos (R5)
 │   ├── fechas.rs                     # hoy() en Europe/Madrid (R12)
+│   ├── matricula.rs                  # normalizar_matricula (la usan 001 y 007)
+│   ├── formato.rs                    # numero(): 85.000 en los mensajes de error
 │   └── rutas/
 │       ├── sesion.rs                 # 000
 │       ├── citas.rs                  # 001  (Persona A)

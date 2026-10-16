@@ -23,13 +23,13 @@ públicas.
 **Why this priority**: Las specs necesitan saber quién es el mecánico asignado, quién imputa y
 quién puede facturar (decisión Q3-A).
 
-**Independent Test**: Entrar como «luis» (mecánico) y comprobar que no aparece la opción de
-facturar; entrar como «paco» (jefe) y comprobar que ve el tablero.
+**Independent Test**: Entrar como «luis» (mecánico) y comprobar que en el menú no aparecen Citas,
+Almacén, Pedidos ni Tablero; entrar como «paco» (jefe) y comprobar que ve el tablero.
 
 **Acceptance Scenarios**:
 
-1. **Given** el usuario «luis» con rol mecánico, **When** entra con su contraseña, **Then** ve sus
-   órdenes y no ve facturación ni almacén.
+1. **Given** el usuario «luis» con rol mecánico, **When** entra con su contraseña, **Then** ve en el
+   menú «Mis órdenes» e «Historial» y no ve Citas, Almacén, Pedidos ni Tablero.
 2. **Given** una contraseña incorrecta, **When** intenta entrar, **Then** ve «Usuario o contraseña
    incorrectos».
 3. **Given** nadie ha entrado, **When** se abre la página de pedir cita, **Then** se puede usar sin

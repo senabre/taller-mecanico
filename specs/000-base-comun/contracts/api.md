@@ -72,7 +72,7 @@ añade aquí y lo revisan las dos personas antes de implementarlo.
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
 | `PUT /api/ordenes/{id}/diagnostico` | mecanico asignado | `{diagnostico}` | 200 `Orden` (`recibida → en_diagnostico`) |
-| `POST /api/ordenes/{id}/presupuestos` | mecanico asignado | — | 201 `Presupuesto` en borrador. El tipo se deduce del estado: `en_diagnostico` → inicial; `pendiente_conformidad` → ampliación. 409 si ya hay uno borrador o emitido |
+| `POST /api/ordenes/{id}/presupuestos` | mecanico asignado | — | 201 `Presupuesto` en borrador. El tipo se deduce del estado: `en_diagnostico` → inicial; `pendiente_conformidad` → ampliación. 409 si ya hay uno en borrador o uno emitido sin caducar |
 | `GET /api/presupuestos/{id}` | todos | — | `Presupuesto` = `{id, orden_id, tipo, estado, caducado, lineas:[Linea], …Totales, emitido_en, caduca_el, respondido_en, enlace}` |
 | `POST /api/presupuestos/{id}/lineas` | mecanico asignado | `{tipo:"mano_obra", concepto, cantidad}` o `{tipo:"pieza", pieza_id, cantidad}` | 201 `Presupuesto` · 409 si no está en borrador |
 | `DELETE /api/presupuestos/{id}/lineas/{linea_id}` | mecanico asignado | — | 200 `Presupuesto` |

@@ -45,10 +45,14 @@ frontend/src/routes/ordenes/[id]/Datos.svelte
 
 **Reglas clave**:
 - Km anterior: `SELECT km FROM orden WHERE vehiculo_id = $1 ORDER BY abierta_en DESC LIMIT 1`. Si
-  el nuevo es menor, se devuelve 422 con `detalle.km_anterior`.
+  el nuevo es menor, se devuelve 422 con `detalle.km_anterior`. El km del mensaje se escribe con
+  `formato::numero` de la base común («85.000 km»).
 - Las validaciones se hacen **antes** de pedir el número, y todo en la misma transacción, así un
   fallo no consume número.
 - `mecanico_id` debe ser un usuario activo con rol `mecanico` (422 si no).
+- Abrir la orden no pasa por `cambiar_estado` (es un `INSERT`), pero **publica su evento** para
+  que el tablero (spec-008) la vea: después del `commit`,
+  `CambioEstado { id, estado: Estado::Recibida }.publicar(&estado_app.eventos)`.
 - `GET /api/ordenes/{id}` devuelve el objeto `Orden` completo del contrato. Los campos de otras
   specs (presupuestos, imputaciones, pedidos, factura) se devuelven vacíos hasta que existan.
 

@@ -44,7 +44,7 @@ frontend/src/routes/ordenes/[id]/Imputaciones.svelte
 
 **Reglas clave** (`POST imputaciones`, en una transacción):
 
-1. Comprobar que el usuario es el mecánico asignado (o jefe) y que la orden está `en_reparacion`
+1. Comprobar que el usuario es el mecánico asignado (o jefe) con `usuario.exigir_mecanico_de(…)` de `auth.rs` y que la orden está `en_reparacion`
    (`SELECT … FOR UPDATE`). Si no, 409.
 2. Si es pieza: `UPDATE pieza SET stock = stock - $n WHERE id = $1 AND stock >= $n`. Si no se
    actualiza ninguna fila, 422 «Solo hay N unidades en stock».
