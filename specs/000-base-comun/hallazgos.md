@@ -37,7 +37,7 @@ el frontend común y sus specs (003, 005, 006, 007).
 | I7 | spec-008 US2 frente a los usuarios demo | LOW | El ejemplo «Luis 3 · Ana 1» trata a Ana como mecánica; en los datos demo es de recepción | Asignado: spec-008 cambia «Ana» por «Marta» en su US2 cuando revise su spec | A | Asignado a spec-008 | — |
 | I8 | plan.md: alcance, estructura y ficheros compartidos | LOW | Dice «unas 12 tablas» (hay 14); faltan `lib.rs`, `rutas/mod.rs`, `tests/comun/mod.rs` y varios ficheros compartidos | Justificado: la lista vigente de ficheros compartidos es la de tasks.md («Después de la fase 0»), y el plan da cifras orientativas («unas 12 tablas»). Para `correo.rs`, ver G7 | A | Cerrado (justificado) | T017 → T019, T021 → T023 |
 | I9 | Contrato, «Rutas de pantalla» | LOW | Faltan `/` (000) y `/facturas/[id]` (plan de 007) | Asignado: spec-007, al crear `/facturas/[id]`, la añade a las rutas de pantalla del contrato junto con `/` (base común) | B | Asignado a spec-007 | T032 → T036 |
-| I10 | research R3 frente a la tarea de `Cargo.toml` | LOW | La tarea añade crates que R3 no recoge; la feature `uuid` de SQLx no se usa | Asignado: al hacer T001 se quita la feature `uuid` (no se usa) y R3 se completa con los crates que queden en `Cargo.toml` | A | Asignado a spec-000 (T001) | T001 (sin cambio) |
+| I10 | research R3 frente a la tarea de `Cargo.toml` | LOW | La tarea añade crates que R3 no recoge; la feature `uuid` de SQLx no se usa | Corregido al implementar T001: `Cargo.toml` sin la feature `uuid`; R3 recoge todos los crates de `Cargo.toml` (incluidos los auxiliares y los de pruebas) y las versiones elegidas del frontend | A | Cerrado (resuelto en T001) | T001 (sin cambio) |
 | D1 | research R9 frente al plan de 004 | LOW | Dos versiones del `UPDATE` de «solo cuenta la primera respuesta» | Asignado: al implementar la respuesta, spec-004 deja una sola versión del `UPDATE` en R9 y su plan remite a ella | A | Asignado a spec-004 | — |
 | A1 | spec US1, escenario 1; quickstart §0.1 | MEDIUM | «No ve Facturación»: no existe ninguna entrada de menú «Facturación», así que la comprobación no comprueba nada | Corregido: la prueba independiente y el escenario 1 de la spec, el quickstart §0.1 y la prueba de la fase 3 de tasks comprueban el menú real («Mis órdenes» e «Historial»; sin Citas, Almacén, Pedidos ni Tablero) | A | Cerrado (verificado en analyze-3) | — |
 | A2 | quickstart §0 frente a SC-002 y al plan (fase 0) | MEDIUM | El quickstart solo comprueba `luis` y `paco`; faltan `ana` y `pepe` (la verificación final sí los incluye) | Corregido: quickstart §0 paso 4 con el menú esperado de `ana` y de `pepe`; la prueba de la fase 3 de tasks también lo menciona | A | Cerrado (verificado en analyze-3) | T039 → T043 |
@@ -78,8 +78,8 @@ el frontend común y sus specs (003, 005, 006, 007).
   - analyze-3 (6): K2, I3, A1, A2, A3, G9
   - verificación puntual tras analyze-3, sin análisis completo (1): K3
 - **Cerrados como justificados**: 6 (I6, I8, G7, G8, I12, D3)
-- **Asignados a una spec**: 8
-  - spec-000 (T001): I10
+- **Resueltos en su tarea**: 1 (I10, en T001)
+- **Asignados a una spec**: 7
   - spec-001 (clarify): I11
   - spec-002: G6
   - spec-004: I5, D1

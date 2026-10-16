@@ -27,11 +27,15 @@ editando este archivo y la spec afectada.
 
 ## R3. Pila y versiones
 
-- **Backend**: Rust estable (edición 2024), Axum 0.8, SQLx 0.8 (`postgres`, `runtime-tokio`,
-  `macros`, `migrate`, `chrono`, `rust_decimal`, `uuid`), tower-http (`fs`, `trace`), chrono +
-  chrono-tz, rust_decimal, argon2, lettre (SMTP), serde, tracing, tokio.
+- **Backend**: Rust estable (edición 2024), Axum 0.8 (`macros`), SQLx 0.8 (`postgres`,
+  `runtime-tokio`, `tls-rustls`, `macros`, `migrate`, `chrono`, `rust_decimal`), tower-http
+  (`fs`, `trace`), chrono + chrono-tz, rust_decimal (+ `rust_decimal_macros`), argon2, lettre
+  (SMTP con rustls), serde + serde_json, tracing + tracing-subscriber, tokio. Auxiliares: `sha2`
+  (hash del token de sesión), `rand` y `base64` (tokens aleatorios), `dotenvy` (`.env` en
+  desarrollo), `tokio-stream` y `futures-util` (SSE). Pruebas: `tower` y `http-body-util`.
+  Ningún id es UUID, así que no se usa la feature `uuid` de SQLx.
 - **Frontend**: Node 22 LTS, SvelteKit 2 con Svelte 5 (runes), Skeleton UI v3 sobre Tailwind CSS 4
-  y TypeScript.
+  y TypeScript 5 (SvelteKit 3 y TypeScript 7 ya existen, pero no se adoptan en la v1).
 - **Base de datos**: PostgreSQL 16 o posterior.
 - **Motivo**: es la pila propuesta en el enunciado. Las versiones son las estables actuales al
   empezar; se fijan en `Cargo.lock` y `package-lock.json`.

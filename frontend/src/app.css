@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+@import '@skeletonlabs/skeleton';
+@import '@skeletonlabs/skeleton/themes/cerberus';
+
+/* Clases que usan los componentes de Skeleton para Svelte */
+@source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
