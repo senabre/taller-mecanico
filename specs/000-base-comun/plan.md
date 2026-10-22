@@ -138,8 +138,9 @@ docker-compose.yml                    # postgres + mailpit (solo desarrollo)
 **Structure Decision**: aplicación web en dos carpetas, `backend/` y `frontend/`, pero un único
 despliegue (R2). Cada spec tiene **su propio módulo de rutas y su fichero de pruebas**, así que
 las dos personas apenas tocan los mismos ficheros. Los ficheros compartidos son la migración,
-`estados.rs`, `dinero.rs`, `tipos.ts`, `formato.ts`, `componentes/` y `ordenes/[id]`, y se cambian
-solo con revisión de los dos.
+`estados.rs`, `dinero.rs`, `matricula.rs` (la usan 001 y 007), `rutas/mod.rs` (cada spec registra
+su módulo), `tipos.ts`, `formato.ts`, `componentes/` y `ordenes/[id]`, y se cambian solo con
+revisión de los dos.
 
 ## Reparto y orden de trabajo
 

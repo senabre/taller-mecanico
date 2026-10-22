@@ -63,8 +63,8 @@ inicial crea las dos filas (ver research R5).
 | Campo | Tipo | Reglas |
 |---|---|---|
 | nombre | TEXT | obligatorio |
-| telefono | TEXT | obligatorio; tras quitar espacios y guiones, «+» inicial opcional y de 9 a 15 cifras (spec-001 FR-004a). Se guarda tal como se escribió |
-| email | TEXT | obligatorio; una sola «@», texto delante y un dominio con punto detrás (spec-001 FR-004a) |
+| telefono | TEXT | obligatorio; formato válido según la [tabla de validación de spec-001](contracts/api.md#spec-001--citas) (FR-004a). Se guarda tal como se escribió |
+| email | TEXT | obligatorio; formato válido según la [tabla de validación de spec-001](contracts/api.md#spec-001--citas) (FR-004a) |
 
 Principio V: no hay más datos personales. La API pública nunca devuelve ninguno de estos campos.
 El correo solo lo usan los avisos (spec-004, spec-007); la lista de citas de recepción muestra

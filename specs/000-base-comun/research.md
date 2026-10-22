@@ -73,6 +73,16 @@ editando este archivo y la spec afectada.
   (spec-001 US3).
 - **Alternativas descartadas**: el aislamiento `SERIALIZABLE` con reintentos, porque es más
   complejo.
+- **Convención de claves de `pg_advisory_xact_lock`** (registro único; cualquier bloqueo nuevo se
+  añade aquí y lo revisan las dos personas):
+  | Forma | Clave | Uso |
+  |---|---|---|
+  | una clave (64 bits) | `(fecha - DATE '2000-01-01')::bigint` | cupo de la fecha de una cita (spec-001) |
+  | dos claves (32 + 32 bits) | `(1, hashtext(matricula_normalizada))` | una sola cita pendiente por matrícula (spec-001, research D3) |
+  
+  PostgreSQL no solapa los espacios de claves de una y de dos claves. Dentro de cada forma, un
+  bloqueo nuevo tiene que usar un rango o un primer valor distinto (p. ej., `(2, …)`). Si dos
+  bloqueos se toman en la misma transacción, se toman siempre en el orden de esta tabla.
 
 ## R7. Configuración y secretos
 

@@ -60,6 +60,12 @@ cd ../backend && cargo run                 # app en http://localhost:3000
 8. Elegir un día sin citas → «No hay citas para este día».
 9. Entrar como `luis` → no ve «Citas» en el menú; si escribe `/citas`, no ve ninguna lista. Como
    `paco` → ve la lista igual que `ana`.
+10. Cronometrar dos citas nuevas, desde abrir `/cita` hasta ver la confirmación, eligiendo días
+    que aún tengan plazas:
+    - con el vehículo demo `2222CCC` (conocido y sin cita pendiente): **menos de 1 minuto**
+      (spec-001 SC-001);
+    - con la matrícula nueva `9012DFG`, escribiendo bien todos los datos: **menos de 3 minutos**
+      (SC-002).
 
 La concurrencia (dos clientes a la vez por la última plaza o con la misma matrícula) la comprueban
 las pruebas automáticas (`cargo test`).

@@ -54,14 +54,17 @@ añade aquí y lo revisan las dos personas antes de implementarlo.
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `GET /api/publico/vehiculos/{matricula}` | 🔓 | — | `{matricula, marca, modelo, cita_pendiente}` · 404 si no existe · 422 «La matrícula no es válida». **Nunca** devuelve datos del cliente ni la fecha de la cita pendiente. |
+| `GET /api/publico/vehiculos/{matricula}` | 🔓 | — | `{matricula, marca, modelo, cita_pendiente}` · 404 «No hay ningún vehículo con esa matrícula» · 422 «La matrícula no es válida». **Nunca** devuelve datos del cliente ni la fecha de la cita pendiente. |
 | `GET /api/publico/dias-disponibles` | 🔓 | — | `["2026-10-16", …]` (de lunes a viernes, desde mañana hasta dentro de 30 días, con plazas) |
 | `POST /api/publico/citas` | 🔓 | `{matricula, fecha, motivo, vehiculo?: {marca, modelo}, cliente?: {nombre, telefono, email}}`. Si la matrícula es nueva, `vehiculo` y `cliente` son obligatorios. Si ya existe, se **ignoran**: nunca se modifican el vehículo ni su propietario | 201 `{fecha, motivo, matricula}` · 409 «Este vehículo ya tiene una cita pendiente.» · 409 «Ese día ya está completo» · 422 con el primer campo incorrecto (tabla de abajo) |
 | `GET /api/citas?fecha=YYYY-MM-DD` | recepcion | `fecha` opcional (si falta, hoy en Europe/Madrid) | `[{id, matricula, marca, modelo, motivo, cliente: {nombre, telefono}, orden_id|null}]`, en el orden en que se pidieron. **Nunca** devuelve el correo · 401 sin sesión · 403 otros roles |
 
-Validación de spec-001 (422). El servidor comprueba en este orden y responde el primer error como
-`{"error": "<mensaje>", "detalle": {"campo": "<campo>"}}`; los campos de `vehiculo` y `cliente`
-solo se comprueban si la matrícula es nueva:
+Validación de spec-001 (422). Esta tabla es la **fuente única** de las reglas de los campos; los
+demás documentos remiten a ella. El servidor comprueba en este orden y responde el primer error
+como `{"error": "<mensaje>", "detalle": {"campo": "<campo>"}}`. Los campos de `vehiculo` y
+`cliente` solo se comprueban si la matrícula es nueva. **Todos los 422 llegan antes que cualquier
+409**: primero las filas de esta tabla, después la cita pendiente (409) y por último el cupo
+(409).
 
 | Campo | Regla | Mensaje |
 |---|---|---|
