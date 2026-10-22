@@ -54,10 +54,24 @@ añade aquí y lo revisan las dos personas antes de implementarlo.
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `GET /api/publico/vehiculos/{matricula}` | 🔓 | — | `{matricula, marca, modelo}` · 404 si no existe. **Nunca** devuelve datos del cliente. |
+| `GET /api/publico/vehiculos/{matricula}` | 🔓 | — | `{matricula, marca, modelo, cita_pendiente}` · 404 si no existe · 422 «La matrícula no es válida». **Nunca** devuelve datos del cliente ni la fecha de la cita pendiente. |
 | `GET /api/publico/dias-disponibles` | 🔓 | — | `["2026-10-16", …]` (de lunes a viernes, desde mañana hasta dentro de 30 días, con plazas) |
-| `POST /api/publico/citas` | 🔓 | `{matricula, fecha, motivo, vehiculo?: {marca, modelo}, cliente?: {nombre, telefono, email}}` (`vehiculo` y `cliente` son obligatorios si la matrícula es nueva) | 201 `{fecha, motivo, matricula}` · 409 «Ese día ya está completo» · 422 |
-| `GET /api/citas?fecha=YYYY-MM-DD` | recepcion | — | `[{id, matricula, marca, modelo, motivo, orden_id|null}]` |
+| `POST /api/publico/citas` | 🔓 | `{matricula, fecha, motivo, vehiculo?: {marca, modelo}, cliente?: {nombre, telefono, email}}`. Si la matrícula es nueva, `vehiculo` y `cliente` son obligatorios. Si ya existe, se **ignoran**: nunca se modifican el vehículo ni su propietario | 201 `{fecha, motivo, matricula}` · 409 «Este vehículo ya tiene una cita pendiente.» · 409 «Ese día ya está completo» · 422 con el primer campo incorrecto (tabla de abajo) |
+| `GET /api/citas?fecha=YYYY-MM-DD` | recepcion | `fecha` opcional (si falta, hoy en Europe/Madrid) | `[{id, matricula, marca, modelo, motivo, cliente: {nombre, telefono}, orden_id|null}]`, en el orden en que se pidieron. **Nunca** devuelve el correo · 401 sin sesión · 403 otros roles |
+
+Validación de spec-001 (422). El servidor comprueba en este orden y responde el primer error como
+`{"error": "<mensaje>", "detalle": {"campo": "<campo>"}}`; los campos de `vehiculo` y `cliente`
+solo se comprueban si la matrícula es nueva:
+
+| Campo | Regla | Mensaje |
+|---|---|---|
+| `matricula` | tras quitar espacios y guiones y pasar a mayúsculas, de 2 a 10 letras (A-Z) o cifras | «La matrícula no es válida» |
+| `fecha` | uno de los días que ofrece `dias-disponibles` (sin contar el cupo, que da 409) | «Elige uno de los días disponibles» |
+| `motivo` | no vacío | «El motivo es obligatorio» |
+| `vehiculo.marca`, `vehiculo.modelo` | no vacíos | «La marca es obligatoria», «El modelo es obligatorio» |
+| `cliente.nombre` | no vacío | «El nombre es obligatorio» |
+| `cliente.telefono` | tras quitar espacios y guiones, «+» inicial opcional y de 9 a 15 cifras | «El teléfono no es válido» |
+| `cliente.email` | una sola «@», texto delante y, detrás, un dominio con un punto que tiene texto a ambos lados | «El correo no es válido» |
 
 ## spec-002 · Orden de reparación
 

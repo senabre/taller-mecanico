@@ -39,21 +39,39 @@ cd ../backend && cargo run                 # app en http://localhost:3000
    Historial. Ninguno de los dos ve el Tablero.
 
 ## §1 spec-001 · Pedir cita
-1. Sin entrar, abrir `/cita` y escribir `1234-bcd` → pide marca, modelo, nombre, teléfono y correo.
-2. Rellenar, elegir el primer día disponible, motivo «Ruido al frenar», Confirmar → se ve la fecha
-   (dd/mm/aaaa) y el motivo.
-3. Repetir en `/cita` con `1234BCD` → aparecen la marca y el modelo, sin datos del cliente.
-4. Pedir una segunda cita para el mismo día con otra matrícula → al volver a `/cita`, ese día **ya
-   no aparece** (cupo 2).
-5. Como `ana`, en `/citas` del día → aparecen las dos citas.
+1. Sin entrar, abrir `/cita` y escribir `12#4` → «La matrícula no es válida» y no deja confirmar.
+   Lo mismo con `A` y con `ABCDE123456`; en cambio, `AB` sí se acepta (pide los datos del
+   vehículo nuevo).
+2. Escribir `1234-bcd` → pide marca, modelo, nombre, teléfono y correo.
+3. Rellenar con teléfono `12345`, elegir el primer día disponible, motivo «Ruido al frenar» y
+   Confirmar → «El teléfono no es válido». Cambiarlo por `612-345-678` y poner el correo
+   `ana@correo` → «El correo no es válido». Cambiarlo por `ana@correo.es` y Confirmar → se ven la
+   fecha (dd/mm/aaaa) y el motivo.
+4. Volver a `/cita` y escribir `1234BCD` → aparecen la marca y el modelo, sin datos del cliente,
+   y el aviso «Este vehículo ya tiene una cita pendiente.», sin fecha. No deja confirmar.
+5. Pedir cita con la matrícula nueva `5678CDF` para el **mismo día** del paso 3 (teléfono
+   `+34 612 345 678`) → se confirma. Al volver a `/cita`, ese día **ya no aparece** (cupo 2).
+6. Escribir `1111BBB` (vehículo demo cuya última cita ya pasó) → aparece «Seat Ibiza» y solo pide
+   día y motivo, sin campos de contacto ni avisos. Elegir otro día, motivo «Cambio de aceite» y
+   Confirmar → se confirma.
+7. Entrar como `ana` → «Citas» abre con las citas de hoy. Elegir el día del paso 3 → aparecen
+   1234BCD y después 5678CDF, con marca, modelo, motivo, nombre y teléfono, y sin correo. En el
+   día del paso 6, 1111BBB aparece con «María López» y 600111222: sus datos no han cambiado.
+8. Elegir un día sin citas → «No hay citas para este día».
+9. Entrar como `luis` → no ve «Citas» en el menú; si escribe `/citas`, no ve ninguna lista. Como
+   `paco` → ve la lista igual que `ana`.
+
+La concurrencia (dos clientes a la vez por la última plaza o con la misma matrícula) la comprueban
+las pruebas automáticas (`cargo test`).
 
 ## §2 spec-002 · Abrir orden
 1. Como `ana`, en la cita de 1234BCD pulsar «Abrir orden»: 85.000 km, «Rayón puerta trasera
    izquierda», mecánico Luis, entrega dentro de 3 días → la orden se crea con su número (p. ej. **N**) y en
    estado «Recibida».
 2. Abrir la orden de la otra cita → número **N+1** (consecutivo, sin huecos).
-3. Pedir una cita nueva para 1234BCD, abrir su orden con 80.000 km → se rechaza: «…no puede ser
-   menor que el de la visita anterior (85.000 km)».
+3. Pedir una cita para `9999LLL` (vehículo demo cuya última orden tiene 120.400 km y no tiene
+   cita pendiente; 1234BCD no sirve porque ya tiene una, spec-001 FR-010) y abrir su orden con
+   100.000 km → se rechaza: «…no puede ser menor que el de la visita anterior (120.400 km)».
 
 ## §3 spec-003 · Diagnóstico y presupuesto
 1. Como `luis`, abrir la orden de 1234BCD, diagnóstico «Pastillas delanteras desgastadas» → «En

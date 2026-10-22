@@ -63,15 +63,18 @@ inicial crea las dos filas (ver research R5).
 | Campo | Tipo | Reglas |
 |---|---|---|
 | nombre | TEXT | obligatorio |
-| telefono | TEXT | obligatorio |
-| email | TEXT | obligatorio, con formato de correo válido |
+| telefono | TEXT | obligatorio; tras quitar espacios y guiones, «+» inicial opcional y de 9 a 15 cifras (spec-001 FR-004a). Se guarda tal como se escribió |
+| email | TEXT | obligatorio; una sola «@», texto delante y un dominio con punto detrás (spec-001 FR-004a) |
 
 Principio V: no hay más datos personales. La API pública nunca devuelve ninguno de estos campos.
+El correo solo lo usan los avisos (spec-004, spec-007); la lista de citas de recepción muestra
+nombre y teléfono, pero nunca el correo. En la v1 ningún endpoint modifica un cliente ya
+registrado (spec-001 FR-003).
 
 ### vehiculo *(spec-001)*
 | Campo | Tipo | Reglas |
 |---|---|---|
-| matricula | TEXT | **única**, normalizada: en mayúsculas y sin espacios ni guiones (`1234BCD`) |
+| matricula | TEXT | **única**, normalizada: en mayúsculas y sin espacios ni guiones (`1234BCD`); de 2 a 10 letras o cifras (spec-001 FR-002). La longitud la comprueba `normalizar_matricula`; el `CHECK` de la base de datos solo comprueba `^[A-Z0-9]+$` |
 | marca, modelo | TEXT | obligatorios |
 | cliente_id | FK cliente | obligatorio |
 
@@ -81,7 +84,11 @@ Principio V: no hay más datos personales. La API pública nunca devuelve ningun
 | vehiculo_id | FK | obligatorio |
 | fecha | DATE | de lunes a viernes, desde mañana hasta dentro de 30 días; nº de citas de la fecha < `TALLER_CUPO_DIARIO` (research R6) |
 | motivo | TEXT | obligatorio, no vacío |
-| creada_en | TIMESTAMPTZ | |
+| creada_en | TIMESTAMPTZ | ordena la lista de citas de recepción (en el orden en que se pidieron) |
+
+Restricción: como mucho una cita **pendiente** (fecha ≥ hoy en Europe/Madrid) por vehículo
+(spec-001 FR-010). No puede ir en un índice porque depende de hoy. La comprueba spec-001 en la
+misma transacción que el cupo (R6), con un segundo bloqueo por matrícula (research D3 de spec-001).
 
 ### orden *(spec-002; el estado lo cambian 003–007)*
 | Campo | Tipo | Reglas |
