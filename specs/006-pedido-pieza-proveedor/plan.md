@@ -97,14 +97,16 @@ pruebas, dos pantallas y un componente de la ficha de la orden.
      motivo si no está `en_reparacion` ni `en_espera_piezas`.
   3. Insertar el pedido (`estado = 'pendiente'`, `pedido_en = now()`). Si choca con el índice
      parcial → 409 «Ya hay un pedido pendiente de PF-123 para la orden 42».
-  4. Si la orden estaba `en_reparacion`, `cambiar_estado(&[EnReparacion], EnEsperaPiezas)`.
+  4. Si la orden estaba `en_reparacion`, `cambiar_estado(&[EnReparacion], EnEsperaPiezas)` y,
+     después del `commit`, `cambio.publicar(&eventos)` para el tablero (R11, R14).
 - **Recibir** (FR-007, FR-008):
   1. Leer `orden_id` del pedido (404 si no existe) y bloquear la orden `FOR UPDATE`.
   2. `UPDATE pedido SET estado = 'recibido', recibido_en = now() WHERE id = $1 AND estado =
      'pendiente'`. Si no se actualiza ninguna fila → 409 «Este pedido ya está recibido».
   3. `UPDATE pieza SET stock = stock + cantidad`.
   4. Si la orden ya no tiene pedidos `pendiente`,
-     `cambiar_estado(&[EnEsperaPiezas], EnReparacion)`.
+     `cambiar_estado(&[EnEsperaPiezas], EnReparacion)` y, después del `commit`,
+     `cambio.publicar(&eventos)` para el tablero (R11, R14).
 - **Sin cambio manual** (FR-008a, D4): no hay endpoint. Las pruebas comprueban que «terminar» e
   imputar devuelven 409 con la orden en espera.
 
