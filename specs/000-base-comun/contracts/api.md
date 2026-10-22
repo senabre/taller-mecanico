@@ -71,12 +71,15 @@ añade aquí y lo revisan las dos personas antes de implementarlo.
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `PUT /api/ordenes/{id}/diagnostico` | mecanico asignado | `{diagnostico}` | 200 `Orden` (`recibida → en_diagnostico`) |
-| `POST /api/ordenes/{id}/presupuestos` | mecanico asignado | — | 201 `Presupuesto` en borrador. El tipo se deduce del estado: `en_diagnostico` → inicial; `pendiente_conformidad` → ampliación. 409 si ya hay uno en borrador o uno emitido sin caducar |
-| `GET /api/presupuestos/{id}` | todos | — | `Presupuesto` = `{id, orden_id, tipo, estado, caducado, lineas:[Linea], …Totales, emitido_en, caduca_el, respondido_en, enlace}` |
-| `POST /api/presupuestos/{id}/lineas` | mecanico asignado | `{tipo:"mano_obra", concepto, cantidad}` o `{tipo:"pieza", pieza_id, cantidad}` | 201 `Presupuesto` · 409 si no está en borrador |
-| `DELETE /api/presupuestos/{id}/lineas/{linea_id}` | mecanico asignado | — | 200 `Presupuesto` |
-| `POST /api/presupuestos/{id}/emitir` | mecanico asignado | — | 200 `Presupuesto` (fija totales, `caduca_el` y token, y envía el correo con el enlace) · 422 si no tiene líneas |
+| `PUT /api/ordenes/{id}/diagnostico` | mecanico asignado | `{diagnostico}` | 200 `{id, numero, estado, diagnostico}` (`recibida → en_diagnostico`; en `en_diagnostico` solo lo cambia) · 409 «Ya se ha emitido un presupuesto para esta orden; el diagnóstico no se puede cambiar» · 409 si la orden no está recibida ni en diagnóstico · 422 si está vacío |
+| `POST /api/ordenes/{id}/presupuestos` | mecanico asignado | — | 201 `Presupuesto` en borrador. El tipo se deduce del estado: `en_diagnostico` → inicial; `pendiente_conformidad` → ampliación; otro estado → 409. 409 si ya hay uno en borrador o uno emitido sin caducar |
+| `GET /api/presupuestos/{id}` | todos | — | `Presupuesto` = `{id, orden_id, tipo, estado, caducado, lineas:[Linea], …Totales, emitido_en, caduca_el, respondido_en, enlace}` (en borrador los totales se calculan al momento; `enlace` es null hasta emitir) |
+| `POST /api/presupuestos/{id}/lineas` | mecanico asignado | `{tipo:"mano_obra", concepto, cantidad}` o `{tipo:"pieza", pieza_id, cantidad}` (`cantidad` como string decimal: horas en múltiplos de 0,25, piezas enteras; el concepto de una pieza lo pone el servidor) | 201 `Presupuesto` · 409 «El presupuesto ya está emitido; no se puede modificar» · 422 (cantidad no válida, concepto vacío, pieza inexistente) |
+| `DELETE /api/presupuestos/{id}/lineas/{linea_id}` | mecanico asignado | — | 200 `Presupuesto` · 409 si no está en borrador · 404 si la línea no es de ese presupuesto |
+| `POST /api/presupuestos/{id}/emitir` | mecanico asignado | — | 200 `Presupuesto` + `aviso_enviado` (fija totales, `caduca_el` = hoy + 15 y token, y después envía el correo con el enlace; si falla, `aviso_enviado: false`) · 409 si ya está emitido · 422 «El presupuesto no tiene líneas» |
+
+`PresupuestoResumen` (campo `presupuestos` de `GET /api/ordenes/{id}`; lo da
+`presupuestos::presupuestos_de_orden`): `{id, tipo, estado, caducado, total, emitido_en, caduca_el}`.
 | `GET /api/piezas?q=texto` | todos | — | `[{id, referencia, descripcion, precio_venta, stock}]` (búsqueda por referencia o descripción) |
 
 ## spec-004 · Respuesta del cliente

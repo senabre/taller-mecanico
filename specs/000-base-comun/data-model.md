@@ -125,7 +125,12 @@ caducado no cuenta y la orden puede tener otro.
 `presupuesto_id` FK, `tipo` tipo_linea, `concepto` TEXT, `pieza_id` FK NULL (obligatorio si
 `tipo = pieza`), `cantidad` NUMERIC(10,2) > 0, `precio_unitario` NUMERIC(12,2) (de
 `TALLER_PRECIO_HORA` o de `pieza.precio_venta`), `importe` NUMERIC(12,2).
-Solo se puede editar mientras el presupuesto está en `borrador`.
+- `cantidad`: mano de obra en múltiplos de 0,25 h; pieza en unidades enteras (`CHECK` de la
+  migración `0002`, spec-003 D1).
+- `concepto`: mano de obra, el que escribe el mecánico (obligatorio); pieza, «referencia
+  descripción» puesto por el servidor (spec-003 D3).
+- `precio_unitario` e `importe` se fijan al añadir la línea (spec-003 D4).
+- Solo se pueden añadir o quitar líneas mientras el presupuesto está en `borrador`; no se editan.
 
 ### pieza *(alta en spec-006; la usan 003 y 005)*
 | Campo | Tipo | Reglas |

@@ -64,6 +64,37 @@ export interface RespuestaError {
 	detalle?: Record<string, unknown>;
 }
 
+// --- spec-003 · Diagnóstico y presupuesto ---
+
+export type EstadoPresupuesto = 'borrador' | 'emitido' | 'aceptado' | 'rechazado';
+export type TipoPresupuesto = 'inicial' | 'ampliacion';
+
+export interface Presupuesto extends Totales {
+	id: number;
+	orden_id: number;
+	tipo: TipoPresupuesto;
+	estado: EstadoPresupuesto;
+	/** Emitido y pasada su fecha de caducidad (no es un estado guardado). */
+	caducado: boolean;
+	lineas: Linea[];
+	emitido_en: Instante | null;
+	caduca_el: Fecha | null;
+	respondido_en: Instante | null;
+	enlace: string | null;
+	/** Solo en la respuesta de emitir: si el correo con el enlace salió bien. */
+	aviso_enviado?: boolean;
+}
+
+export interface PresupuestoResumen {
+	id: number;
+	tipo: TipoPresupuesto;
+	estado: EstadoPresupuesto;
+	caducado: boolean;
+	total: Importe;
+	emitido_en: Instante | null;
+	caduca_el: Fecha | null;
+}
+
 // --- spec-006 · Almacén y pedidos ---
 
 export interface Pieza {
