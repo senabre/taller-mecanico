@@ -1,5 +1,6 @@
 //! Rutas de la API (`/api/...`). Cada spec añade aquí su módulo con `.merge(modulo::rutas())`.
 
+pub mod almacen;
 pub mod sesion;
 
 use axum::Router;
@@ -10,4 +11,5 @@ pub fn api() -> Router<EstadoApp> {
     Router::new()
         .merge(sesion::rutas())
         .merge(eventos::rutas())
+        .merge(almacen::rutas())
 }

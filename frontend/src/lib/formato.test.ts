@@ -4,6 +4,7 @@ import {
 	NOMBRE_ESTADO,
 	euros,
 	fecha,
+	fechaDe,
 	fechaHora,
 	hora,
 	numero
@@ -25,6 +26,11 @@ describe('formato', () => {
 	it('horas en hora de Madrid', () => {
 		expect(hora('2026-10-16T10:32:00+02:00')).toBe('10:32');
 		expect(fechaHora('2026-10-15T22:30:00Z')).toBe('16/10/2026 00:30');
+	});
+
+	it('día de un instante en Madrid', () => {
+		expect(fechaDe('2026-10-15T22:30:00Z')).toBe('16/10/2026');
+		expect(fechaDe('2026-10-16T10:32:00+02:00')).toBe('16/10/2026');
 	});
 
 	it('números con punto de miles y coma decimal', () => {
