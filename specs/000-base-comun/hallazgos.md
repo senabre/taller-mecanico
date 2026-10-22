@@ -13,7 +13,8 @@ analyze-3 (o se ha mantenido abierto en analyze-2).
 **Estado**: *Cerrado (verificado en analyze-3)* = cambio aplicado después de analyze-2 y
 comprobado en analyze-3; *Cerrado (verificado de forma puntual tras analyze-3)* = solo se
 ha comprobado ese hallazgo, sin un análisis completo; *Abierto (nuevo en analyze-3)* = lo ha encontrado analyze-3;
-*Cerrado (justificado)* = no se cambia, con el motivo en «Decisión»; *Asignado a spec-00X* = lo
+*Cerrado (justificado)* = no se cambia, con el motivo en «Decisión»; *Cerrado (decidido en el
+clarify de spec-00X)* = la decisión queda escrita en la spec de esa funcionalidad; *Asignado a spec-00X* = lo
 resuelve esa spec en su propio trabajo; *Cerrado (verificado en analyze-2)* = analyze-2 ha
 comprobado que el cambio está
 aplicado en todos los documentos; *Abierto (sigue en analyze-2)* = el hallazgo de analyze-1 sigue
@@ -58,7 +59,7 @@ el frontend común y sus specs (003, 005, 006, 007).
 | ID | Documento o criterio afectado | Gravedad | Evidencia | Decisión | Responsable | Estado | Tarea |
 |----|-------------------------------|----------|-----------|----------|-------------|--------|-------|
 | K2 | Constitución, principio V (excepción v1.2.0); tasks T031 y T042; `tasks.md`, `analyze-1.md` y `hallazgos.md` | CRITICAL | T031 escribiría `demo1234` en `backend/tests/comun/mod.rs`, fuera de los tres ficheros que permite la excepción; la revisión de secretos (T042) fallaría porque esos valores también aparecen en documentos de `specs/` | Corregido: T031 genera una contraseña aleatoria con `auth::nuevo_token()` (las pruebas no contienen ninguna escrita a mano); constitución 1.2.1 permite citar en `specs/` los valores demo del quickstart; T042 comprueba que nunca están en `backend/src/`, `backend/tests/` ni `frontend/src/` | A | Cerrado (verificado en analyze-3) | T031, T042 |
-| I11 | T014 (`matricula.rs`, `None` → 422) frente al plan de 001 y el contrato | LOW | El contrato solo prevé 404 en `GET /api/publico/vehiculos/{matricula}` y no dice qué pasa con una matrícula inválida | Pendiente: se decide en el clarify de spec-001 (qué responde una matrícula inválida y su reflejo en el contrato) | A | Asignado a spec-001 (clarify) | T014 |
+| I11 | T014 (`matricula.rs`, `None` → 422) frente al plan de 001 y el contrato | LOW | El contrato solo prevé 404 en `GET /api/publico/vehiculos/{matricula}` y no dice qué pasa con una matrícula inválida | Corregido: decidido en el clarify de spec-001, sesión 2026-10-22, Q1 ([spec-001](../001-pedir-cita-en-linea/spec.md) FR-002 y [decisiones-clarify.md](../001-pedir-cita-en-linea/decisiones-clarify.md)). La matrícula normalizada es válida solo con 2 a 10 letras o cifras; si no, se muestra «La matrícula no es válida», no se busca el vehículo y no se deja confirmar. El plan de spec-001 lleva al contrato la respuesta a una matrícula inválida | A | Cerrado (decidido en el clarify de spec-001) | T014 |
 | D2 | tasks de 006 (T007) frente a `tests/comun/mod.rs` (T023, T031) | LOW | 006 vuelve a escribir «crear usuario con rol, iniciar sesión y devolver la cookie», que ya da la base común | Pendiente: lo corrige spec-006 en su propia tarea T007 para usar `tests/comun`; no se tocan sus ficheros desde la base común. Nota de analyze-3: `crear_usuario` de `tests/comun` devuelve ahora `(id, contraseña)` y `entrar` recibe la contraseña (K2) | B | Asignado a spec-006 | 006/T007 |
 | A3 | T035 (`+error.svelte`) | LOW | «Si el mensaje viene del servidor en español, ese mensaje» no se puede comprobar | Corregido: T035 muestra siempre texto fijo («Esta página no existe» / «Ha ocurrido un error») | B | Cerrado (verificado en analyze-3) | T035 |
 | G9 | T039 (pedido demo de `PF-123`) frente a quickstart §5.1 | LOW | Si se recibe el pedido demo antes del §5, el stock de PF-123 pasa a 5 y «de 4 a 2» falla | Corregido: nueva pieza demo `BJ-7 Bujía` (stock 0) en T038, usada solo por el pedido pendiente de T039; el quickstart la menciona | A | Cerrado (verificado en analyze-3) | T038, T039 |
@@ -79,8 +80,8 @@ el frontend común y sus specs (003, 005, 006, 007).
   - verificación puntual tras analyze-3, sin análisis completo (1): K3
 - **Cerrados como justificados**: 6 (I6, I8, G7, G8, I12, D3)
 - **Resueltos en su tarea**: 1 (I10, en T001)
-- **Asignados a una spec**: 7
-  - spec-001 (clarify): I11
+- **Cerrados en el clarify de una spec**: 1 (I11, spec-001, sesión 2026-10-22, Q1)
+- **Asignados a una spec**: 6
   - spec-002: G6
   - spec-004: I5, D1
   - spec-006: D2
