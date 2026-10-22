@@ -50,6 +50,12 @@ export function fechaHora(i: Instante): string {
 	return `${p.day}/${p.month}/${p.year} ${p.hour}:${p.minute}`;
 }
 
+/** Día de un instante en Madrid: dd/mm/aaaa (fechas de pedido y recepción, spec-006). */
+export function fechaDe(i: Instante): string {
+	const p = partesEnMadrid(i);
+	return `${p.day}/${p.month}/${p.year}`;
+}
+
 /** Km, horas y unidades: 85000 → «85.000», "1.25" → «1,25». */
 export function numero(n: number | string): string {
 	return formatoNumero.format(Number(n));

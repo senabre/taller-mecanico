@@ -64,6 +64,34 @@ export interface RespuestaError {
 	detalle?: Record<string, unknown>;
 }
 
+// --- spec-006 · Almacén y pedidos ---
+
+export interface Pieza {
+	id: number;
+	referencia: string;
+	descripcion: string;
+	precio_venta: Importe;
+	stock: number;
+}
+
+export interface Proveedor {
+	id: number;
+	nombre: string;
+}
+
+export type EstadoPedido = 'pendiente' | 'recibido';
+
+export interface Pedido {
+	id: number;
+	proveedor: Proveedor;
+	pieza: { id: number; referencia: string; descripcion: string };
+	cantidad: number;
+	orden: { id: number; numero: number };
+	estado: EstadoPedido;
+	pedido_en: Instante;
+	recibido_en: Instante | null;
+}
+
 /** Evento `orden` de GET /api/eventos (SSE). */
 export interface EventoOrden {
 	id: number;
