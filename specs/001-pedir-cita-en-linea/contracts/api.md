@@ -10,8 +10,10 @@ Persona B):
 - `GET /api/publico/vehiculos/{matricula}`: añade `cita_pendiente` y el 422 por matrícula
   inválida (Q1, Q3).
 - `POST /api/publico/citas`: añade el 409 por cita pendiente, la tabla de validación de los 422
-  con `detalle.campo`, y la regla de que con una matrícula conocida se ignoran `vehiculo` y
-  `cliente` (Q2, Q3, Q5).
+  con `detalle.campo` (todos los 422 antes que los 409), y la regla de que con una matrícula
+  conocida se ignoran `vehiculo` y `cliente` (Q2, Q3, Q5).
+- `GET /api/publico/vehiculos/{matricula}`: el texto del 404 («No hay ningún vehículo con esa
+  matrícula»), que el formulario no muestra.
 - `GET /api/citas`: añade `cliente: {nombre, telefono}` (sin correo), el orden, la `fecha`
   opcional y los 401/403 (Q4).
 
@@ -21,11 +23,13 @@ Persona B):
 
 | Momento | Llamada | Qué muestra el formulario | Requisito |
 |---|---|---|---|
-| Al abrir | `GET /api/publico/dias-disponibles` | los días en el selector; si la lista está vacía, que no hay fechas libres y que llame al taller | FR-006, FR-007 |
+| Al abrir | `GET /api/publico/dias-disponibles` | los días en el selector; si la lista está vacía, «No quedan fechas libres en los próximos 30 días. Llama al taller para pedir cita.» | FR-006, FR-007 |
 | Al salir del campo matrícula | `GET /api/publico/vehiculos/{matricula}` | **200** sin cita pendiente: marca y modelo, y solo pide día y motivo · **200** con `cita_pendiente: true`: marca, modelo y «Este vehículo ya tiene una cita pendiente.», sin poder confirmar · **404**: pide marca, modelo, nombre, teléfono y correo · **422**: «La matrícula no es válida», sin poder confirmar | FR-002, FR-003, FR-004, FR-010 |
-| Al confirmar | `POST /api/publico/citas` (`vehiculo` y `cliente` solo si fue 404) | **201**: fecha en dd/mm/aaaa y motivo · **409** cita pendiente: el aviso de FR-010 · **409** día completo: vuelve a pedir los días y muestra «Ese día se acaba de completar; elige otro» · **422**: el mensaje bajo el campo de `detalle.campo` | FR-004a, FR-007, FR-008, FR-010 |
+| Al confirmar | `POST /api/publico/citas` (`vehiculo` y `cliente` solo si fue 404); los 422 llegan siempre antes que los 409 (orden de la tabla de validación) | **201**: fecha en dd/mm/aaaa y motivo · **409** cita pendiente: el aviso de FR-010 · **409** día completo: vuelve a pedir los días y muestra «Ese día se acaba de completar; elige otro» · **422**: el mensaje bajo el campo de `detalle.campo` | FR-004a, FR-007, FR-008, FR-010 |
 
-El formulario usa `novalidate` (research D2): todos los mensajes salen del servidor.
+El formulario usa `novalidate` (research D2): todos los mensajes de error de los campos salen
+del servidor. Los únicos textos propios del formulario son el de «no quedan fechas libres» y el
+de «Ese día se acaba de completar; elige otro».
 
 ### `/citas` (recepción y jefe)
 

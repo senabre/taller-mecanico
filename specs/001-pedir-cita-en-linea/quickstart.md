@@ -10,7 +10,8 @@ quien valide sepa que no se ha quedado ninguno sin probar.
 
 - Base de datos recién creada con `seed/demo.sql`. Las citas demo son de días pasados, así que no
   gastan el cupo y los vehículos demo no tienen ninguna cita pendiente.
-- Ninguna matrícula demo es `1234BCD` ni `5678CDF`: el recorrido las da de alta como nuevas.
+- Ninguna matrícula demo es `1234BCD`, `5678CDF` ni `9012DFG`: el recorrido las da de alta como
+  nuevas.
 
 ## Correspondencia de escenarios y pasos
 
@@ -32,6 +33,10 @@ quien valide sepa que no se ha quedado ninguno sin probar.
 | US2-4 · teléfonos y correo válidos | 3, 5 |
 | US3-1 · un día completo deja de ofrecerse | 5 |
 | US3-2 · dos clientes a la vez por la última plaza | pruebas automáticas (`spec001_citas.rs`) |
+| SC-001 · cita de un vehículo conocido en menos de 1 minuto | 10 (`2222CCC`) |
+| SC-002 · cita de un vehículo nuevo en menos de 3 minutos | 10 (`9012DFG`) |
+| SC-003 · nunca más citas que el cupo | 5 |
+| SC-004 · todas las citas confirmadas salen en la lista | 7 |
 
 ## Pruebas automáticas
 

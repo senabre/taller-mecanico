@@ -146,8 +146,8 @@ el tercer intento ese día ya no aparece como disponible.
   teléfonos válidos.
 - El cliente deja el motivo vacío: no se permite confirmar y se indica que el motivo es
   obligatorio.
-- No hay ningún día disponible en el periodo ofrecido: se muestra un mensaje indicando que no
-  hay fechas libres y que llame al taller.
+- No hay ningún día disponible en el periodo ofrecido: se muestra «No quedan fechas libres en los
+  próximos 30 días. Llama al taller para pedir cita.» y no se puede confirmar.
 - Un usuario con rol mecánico o almacén, o alguien sin sesión iniciada, intenta abrir la lista
   de citas: no la ve en el menú y no puede abrirla.
 - Recepción elige un día sin citas: se muestra «No hay citas para este día».

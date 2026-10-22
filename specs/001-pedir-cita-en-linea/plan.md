@@ -36,7 +36,9 @@ en menos de 3 (SC-002); pantallas en menos de 1 s.
 usada: `TALLER_CUPO_DIARIO`.
 
 **Scale/Scope**: 3 tablas existentes (`cliente`, `vehiculo`, `cita`) y ninguna migración nueva;
-4 endpoints; 2 pantallas; 1 cambio en un fichero compartido (`matricula.rs`).
+4 endpoints; 2 pantallas; cambios en 3 ficheros compartidos: `matricula.rs` (la regla de la
+matrícula), `tipos.ts` (los tipos del contrato) y `rutas/mod.rs` (una línea para registrar el
+módulo).
 
 - **Endpoints** ([contrato común](../000-base-comun/contracts/api.md#spec-001--citas)):
   `GET /api/publico/vehiculos/{matricula}`, `GET /api/publico/dias-disponibles`,
@@ -106,25 +108,31 @@ pruebas y dos pantallas, y toca un fichero compartido: `matricula.rs`.
 ### Reglas clave
 
 - **`GET /api/publico/vehiculos/{matricula}`**: `normalizar_matricula` → `None` = 422. Busca el
-  vehículo (404 si no existe) y devuelve `{matricula, marca, modelo, cita_pendiente}`.
+  vehículo (404 «No hay ningún vehículo con esa matrícula» si no existe) y devuelve `{matricula, marca, modelo, cita_pendiente}`.
   `cita_pendiente` = existe una cita del vehículo con `fecha >= fechas::hoy()`. Nunca devuelve la
   fecha ni datos del cliente.
-- **`POST /api/publico/citas`**, todo en una transacción (D2–D4):
+- **`POST /api/publico/citas`** (D2–D4), en el orden de la tabla de validación del contrato común:
   1. Validar `matricula`, `fecha` (en el rango de FR-006 y de lunes a viernes) y `motivo` → 422
      con el primer error y `detalle.campo`.
-  2. `pg_advisory_xact_lock(fecha)` (R6) y, **después**, `pg_advisory_xact_lock(1,
-     hashtext(matricula))` (D3). Siempre en este orden.
-  3. Si el vehículo existe y tiene una cita con `fecha >= hoy` → 409 «Este vehículo ya tiene una
+  2. Buscar el vehículo, todavía sin bloqueos. Si **no existe**, validar `vehiculo.marca`,
+     `vehiculo.modelo`, `cliente.nombre`, `cliente.telefono` y `cliente.email` → 422 (D2). Así,
+     todos los 422 llegan antes que cualquier 409.
+  3. Abrir la transacción: `pg_advisory_xact_lock(fecha)` (R6) y, **después**,
+     `pg_advisory_xact_lock(1, hashtext(matricula))` (D3). Siempre en este orden.
+  4. Volver a buscar el vehículo con los bloqueos tomados. Si ahora existe (lo ha dado de alta otra
+     persona entre el paso 2 y el 3), se trata como conocido: se ignoran `vehiculo` y `cliente` y
+     no se hace ningún `UPDATE` (D4).
+  5. Si el vehículo existe y tiene una cita con `fecha >= hoy` → 409 «Este vehículo ya tiene una
      cita pendiente.».
-  4. Contar las citas de esa fecha → 409 «Ese día ya está completo» si se ha llegado al cupo.
-  5. Si el vehículo **no existe**: validar `vehiculo.marca`, `vehiculo.modelo`, `cliente.nombre`,
-     `cliente.telefono` y `cliente.email` (→ 422, D2) e insertar cliente y vehículo. Si
-     **existe**: ignorar `vehiculo` y `cliente` y no hacer ningún `UPDATE` (D4).
-  6. Insertar la cita y responder 201 `{fecha, motivo, matricula}`.
+  6. Contar las citas de esa fecha → 409 «Ese día ya está completo» si se ha llegado al cupo.
+  7. Si el vehículo sigue sin existir, insertar cliente y vehículo con los datos ya validados en el
+     paso 2.
+  8. Insertar la cita y responder 201 `{fecha, motivo, matricula}`.
 - **`GET /api/citas`**: `Usuario` (401 sin sesión) + `exigir_rol(&[Recepcion])` (el jefe pasa y el
   resto recibe 403). `fecha` por defecto `fechas::hoy()`. Se unen `cita`, `vehiculo` y `cliente`,
   sin seleccionar `email`, y se ordena por `cita.creada_en, cita.id` (D5).
-- **Frontend `/cita`**: `novalidate`; al salir del campo matrícula llama al `GET`. El 422 se
+- **Frontend `/cita`**: `novalidate`; si no hay días disponibles, «No quedan fechas libres en
+  los próximos 30 días. Llama al taller para pedir cita.»; al salir del campo matrícula llama al `GET`. El 422 se
   muestra bajo la matrícula, el aviso de cita pendiente desactiva Confirmar, el 404 abre los
   campos de vehículo y contacto, y el 200 los oculta. Al confirmar, un 422 se muestra bajo el campo
   de `detalle.campo`. Con el 409 de cupo, se vuelven a pedir los días y se muestra «Ese día se
@@ -147,21 +155,24 @@ demo, principio V):
 3. Matrícula inválida (`12#4`, `A`, 11 caracteres) en el `GET` y en el `POST` → 422 «La matrícula
    no es válida» y no se crea nada.
 4. Teléfono `12345`, correo `ana@correo` y correo vacío → 422 con su mensaje y su
-   `detalle.campo`; `+34 612 345 678` y `612-345-678` → 201.
+   `detalle.campo`; `+34 612 345 678` y `612-345-678` → 201. Con el día lleno, un teléfono
+   incorrecto da el 422, no el 409 (todos los 422 antes que los 409).
 5. Motivo vacío, marca vacía o falta `cliente` con una matrícula nueva → 422.
 6. Vehículo conocido: el `POST` con otro `cliente` y otro `vehiculo` → 201. El cliente y el
    vehículo no cambian y no se crea ningún cliente nuevo.
 7. Vehículo con una cita para hoy o después → `GET` con `cita_pendiente: true` y `POST` con 409
    «Este vehículo ya tiene una cita pendiente.»; con la cita anterior a hoy → `cita_pendiente:
    false` y el `POST` da 201.
-8. Cupo: con cupo 2 y 2 citas, el día no sale en `dias-disponibles` y el `POST` da 409.
-9. Concurrencia del cupo: dos `POST` a la vez por la última plaza → uno 201 y otro 409.
+8. Cupo: con cupo 2 y 2 citas, el día no sale en `dias-disponibles` y el `POST` da 409. Los
+   vehículos se crean por SQL, sin depender del alta de US2.
+9. Concurrencia del cupo: dos `POST` a la vez por la última plaza → uno 201 y otro 409. Los
+   vehículos se crean por SQL.
 10. Concurrencia de la cita pendiente: dos `POST` a la vez con la misma matrícula para **días
     distintos** → uno 201 y otro 409 (comprueba el bloqueo por matrícula de D3).
-11. Fecha en sábado, hoy o a 31 días → 422.
+11. Fecha en sábado, hoy o a 31 días → 422; el último día laborable ≤ hoy + 30 sí se ofrece.
 12. `GET /api/citas`: sin sesión → 401; `mecanico` y `almacen` → 403; `recepcion` y `jefe` → 200
     con `cliente.nombre` y `cliente.telefono`, sin ningún campo `email`, en el orden en que se
-    pidieron. Sin `fecha` → las de hoy.
+    pidieron (vehículos creados por SQL). Sin `fecha` → las de hoy.
 
 **Dependencias**: base común. No depende de ninguna otra spec. spec-002 usa `GET /api/citas`
 (campo `orden_id`) y spec-007 usa `normalizar_matricula`.
@@ -173,12 +184,17 @@ demo, principio V):
 - [contracts/api.md](../000-base-comun/contracts/api.md): `cita_pendiente`, el 422 por matrícula
   inválida, el 409 por cita pendiente, la tabla de validación, la regla del vehículo conocido y
   los campos y el acceso de `GET /api/citas`.
-- [quickstart.md](../000-base-comun/quickstart.md): se reescribe el §1. En el §2.3 (spec-002) se
-  usa `9999LLL`, porque 1234BCD ya tiene una cita pendiente (research D7).
+- [quickstart.md](../000-base-comun/quickstart.md): se reescribe el §1, con un paso 10 que
+  cronometra SC-001 y SC-002. En el §2.3 (spec-002) se usa `9999LLL`, porque 1234BCD ya tiene una
+  cita pendiente (research D7).
+- [plan.md](../000-base-comun/plan.md) (maestro): `matricula.rs` y `rutas/mod.rs` en la lista de
+  ficheros compartidos ([hallazgos](hallazgos.md) I5).
+- [research.md](../000-base-comun/research.md) R6: la convención de las claves de
+  `pg_advisory_xact_lock` ([hallazgos](hallazgos.md) G1).
 - `backend/src/matricula.rs` (código compartido, ver arriba).
 
-**Pendiente fuera de esta spec**: la Assumptions de spec-002 sobre clientes que llegan sin cita
-choca con FR-006 (citas solo desde mañana). Se anota para el clarify de spec-002 (research D7).
+**Pendiente fuera de esta spec** ([hallazgos.md](hallazgos.md)): I2 e I6, abiertos para el
+clarify de spec-002 (Persona A); I4, asignado a spec-007 (Persona B).
 
 ## Complexity Tracking
 

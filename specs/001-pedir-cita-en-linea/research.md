@@ -31,9 +31,15 @@ y no se repite aquí. Fecha: 2026-10-22.
   - Correo: una sola «@», texto delante y, detrás, un dominio con un punto que tiene texto a
     ambos lados.
   - Matrícula, fecha, motivo, marca, modelo y nombre: no vacíos tras quitar espacios.
-  Se valida en orden fijo y se devuelve el **primer** error con el campo afectado:
+  Se valida en el orden fijo de la tabla de validación del contrato común, que es la fuente
+  única de estas reglas, y se devuelve el **primer** error con el campo afectado:
   `{"error": "El teléfono no es válido", "detalle": {"campo": "cliente.telefono"}}`. Los valores se
   guardan tal como se escribieron, quitando solo los espacios al principio y al final.
+- **Cuándo**: la matrícula, la fecha y el motivo se validan primero. Después se busca el
+  vehículo **sin bloqueos** y, si es nuevo, se validan sus datos. Solo entonces se toman los
+  bloqueos de D3. Así, todos los 422 llegan antes que cualquier 409: una matrícula nueva con un
+  teléfono incorrecto para un día lleno recibe el 422 del teléfono, no el 409 del cupo
+  ([hallazgos](hallazgos.md) I3).
 - **Motivo**: FR-004a exige que no se pueda confirmar con datos incorrectos, y una petición puede
   llegar sin pasar por el formulario. Con un solo error por respuesta, el formulario sigue
   mostrando el mensaje en el campo afectado (US2-3), sin estructuras de error nuevas.
@@ -57,6 +63,10 @@ y no se repite aquí. Fecha: 2026-10-22.
   matrícula para días **distintos** no se esperarían entre sí y las dos pasarían la
   comprobación. El bloqueo por matrícula las serializa. Además, evita que dos altas simultáneas
   de la misma matrícula nueva choquen en el `UNIQUE` de `vehiculo`.
+- **Segunda búsqueda**: con los bloqueos tomados, se vuelve a buscar el vehículo, porque la
+  búsqueda de D2 se hizo sin bloqueos. Si otra persona lo ha dado de alta entretanto, se aplica
+  D4 (vehículo conocido). El bloqueo por matrícula garantiza que esta segunda búsqueda no cambia
+  hasta el `commit`.
 - **Orden de las comprobaciones**: primero la cita pendiente y después el cupo. Si los dos
   fallan, el cliente ve el aviso de cita pendiente, porque elegir otro día no lo arreglaría.
 - **GET**: `GET /api/publico/vehiculos/{matricula}` devuelve `cita_pendiente: true|false` para que
@@ -76,7 +86,8 @@ y no se repite aquí. Fecha: 2026-10-22.
 - **Motivo**: FR-003 y Q5. Si un cambio de datos desde la página pública desviara el correo, otra
   persona podría aceptar o rechazar el presupuesto ajeno (spec-004). Ignorar los datos también
   resuelve el caso en el que otra persona da de alta la misma matrícula mientras el cliente
-  rellena el formulario: la cita queda con el propietario registrado.
+  rellena el formulario: la segunda búsqueda de D3 lo encuentra y la cita queda con el
+  propietario registrado.
 - **Alternativas descartadas**: responder 422 si llegan datos de contacto con una matrícula
   conocida, porque ese caso de carrera daría un error que el cliente no puede entender.
 
@@ -97,7 +108,9 @@ y no se repite aquí. Fecha: 2026-10-22.
 
 Sin cambios respecto al plan anterior: R6 para el cupo, días de lunes a viernes desde mañana y
 durante 30 días naturales (FR-006), y 409 «Ese día ya está completo» si se llena mientras el
-cliente decide. Una fecha fuera de ese rango → 422 «Elige uno de los días disponibles».
+cliente decide. Una fecha fuera de ese rango → 422 «Elige uno de los días disponibles». Si no
+queda ningún día, el formulario muestra «No quedan fechas libres en los próximos 30 días. Llama
+al taller para pedir cita.».
 
 ## D7. Efectos en otros documentos y specs
 
