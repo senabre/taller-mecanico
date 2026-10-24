@@ -64,6 +64,42 @@ export interface RespuestaError {
 	detalle?: Record<string, unknown>;
 }
 
+// --- spec-001 · Citas ---
+
+/** GET /api/publico/vehiculos/{matricula}: nunca trae datos del cliente ni la fecha de la cita. */
+export interface VehiculoPublico {
+	matricula: string;
+	marca: string;
+	modelo: string;
+	cita_pendiente: boolean;
+}
+
+/** POST /api/publico/citas: `vehiculo` y `cliente` solo si la matrícula es nueva. */
+export interface PeticionCita {
+	matricula: string;
+	fecha: Fecha;
+	motivo: string;
+	vehiculo?: { marca: string; modelo: string };
+	cliente?: { nombre: string; telefono: string; email: string };
+}
+
+export interface CitaCreada {
+	fecha: Fecha;
+	motivo: string;
+	matricula: string;
+}
+
+/** GET /api/citas: la lista de recepción nunca incluye el correo (spec-001 FR-009). */
+export interface CitaDelDia {
+	id: number;
+	matricula: string;
+	marca: string;
+	modelo: string;
+	motivo: string;
+	cliente: { nombre: string; telefono: string };
+	orden_id: number | null;
+}
+
 // --- spec-003 · Diagnóstico y presupuesto ---
 
 export type EstadoPresupuesto = 'borrador' | 'emitido' | 'aceptado' | 'rechazado';
