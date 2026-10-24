@@ -12,6 +12,20 @@ va a costar. Prioridad Alta · 5 pts.
 
 **Responsable**: Persona B
 
+## Clarifications
+
+### Session 2026-10-22
+
+- Q: ¿Qué cantidades se permiten en una línea del presupuesto? → A: Horas de mano de obra en
+  múltiplos de 0,25 (0,25, 0,5, 1,5…); piezas en unidades enteras (1, 2, 3…).
+- Q: Mientras el presupuesto está en borrador, ¿puede el mecánico quitar una línea? → A: Sí; para
+  corregir una línea se quita y se añade de nuevo (no hay edición de líneas).
+- Q: Después de guardar el diagnóstico, ¿puede el mecánico cambiarlo? → A: Sí, mientras la orden
+  esté «en diagnóstico» y aún no se haya emitido ningún presupuesto para ella.
+- Q: ¿Qué concepto lleva cada línea? → A: Mano de obra: concepto obligatorio escrito por el
+  mecánico. Pieza: se pone solo, «referencia descripción» del almacén (p. ej. «PF-123 Pastillas
+  freno»), y no se puede cambiar.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Registrar el diagnóstico (Priority: P1)
@@ -29,6 +43,11 @@ en la orden y que su estado es «en diagnóstico».
 1. **Given** una orden «recibida» asignada a Luis, **When** Luis guarda el diagnóstico «Pastillas
    delanteras desgastadas», **Then** el diagnóstico queda en la orden y esta pasa a «en
    diagnóstico».
+2. **Given** esa orden «en diagnóstico» sin presupuesto emitido, **When** Luis cambia el
+   diagnóstico a «Pastillas y discos delanteros desgastados», **Then** la orden muestra el nuevo
+   diagnóstico y sigue «en diagnóstico».
+3. **Given** esa orden con un presupuesto ya emitido, **When** Luis intenta cambiar el
+   diagnóstico, **Then** no se permite y se indica que el presupuesto ya se ha emitido.
 
 ---
 
@@ -49,11 +68,15 @@ y comprobar a mano los importes, la base, el IVA y el total.
 1. **Given** un precio por hora de 40,00 €, **When** el mecánico añade «Cambio de pastillas»
    con 1,5 h, **Then** la línea muestra cantidad 1,5 h, precio 40,00 € e importe 60,00 €.
 2. **Given** la referencia «PF-123 Pastillas freno» con precio de 25,00 €, **When** el mecánico la
-   elige con 2 unidades, **Then** la línea muestra 2 uds, 25,00 € e importe 50,00 €.
+   elige con 2 unidades, **Then** la línea muestra el concepto «PF-123 Pastillas freno», 2 uds,
+   25,00 € e importe 50,00 €.
 3. **Given** esas dos líneas, **When** se consulta el presupuesto, **Then** muestra base
    imponible 110,00 €, IVA (21 %) 23,10 € y total 133,10 €.
 4. **Given** el mecánico busca una pieza, **When** escribe parte de la referencia o de la
    descripción, **Then** solo puede elegir entre referencias dadas de alta en el almacén.
+5. **Given** un presupuesto en borrador con las dos líneas anteriores, **When** el mecánico quita
+   la de mano de obra, **Then** el presupuesto queda solo con la pieza y muestra base 50,00 €,
+   IVA 10,50 € y total 60,50 €.
 
 ---
 
@@ -77,6 +100,9 @@ y que ya no se pueden editar sus líneas.
 ### Edge Cases
 
 - Cantidad 0 o negativa en una línea: no se permite.
+- Horas que no son múltiplo de 0,25 (p. ej. 1,3 h) o unidades de pieza no enteras (p. ej. 2,5):
+  no se permite y se indica el motivo.
+- Línea de mano de obra sin concepto (vacío o solo espacios): no se permite.
 - La pieza elegida no tiene stock: se permite presupuestarla (el stock se comprueba al montarla,
   spec-005; si falta se pide, spec-006).
 - Redondeo: los importes se muestran con 2 decimales y la suma de las líneas coincide con la
@@ -89,10 +115,17 @@ y que ya no se pueden editar sus líneas.
 
 - **FR-001**: El mecánico asignado MUST poder registrar el diagnóstico de una orden «recibida»;
   al guardarlo, la orden MUST pasar a «en diagnóstico».
-- **FR-002**: El mecánico MUST poder crear un presupuesto con líneas de mano de obra (horas) y de
-  piezas (unidades).
+- **FR-001a**: El mecánico asignado MUST poder cambiar el diagnóstico mientras la orden esté «en
+  diagnóstico» y no se haya emitido ningún presupuesto para ella; después, el diagnóstico MUST
+  quedar fijo.
+- **FR-002**: El mecánico MUST poder crear un presupuesto con líneas de mano de obra (horas, en
+  múltiplos de 0,25) y de piezas (unidades enteras).
+- **FR-002a**: Mientras el presupuesto esté en borrador, el mecánico MUST poder quitar cualquiera
+  de sus líneas. Las líneas no se editan: para corregir una, se quita y se añade de nuevo.
 - **FR-003**: Cada línea MUST mostrar concepto, cantidad (horas o unidades), precio unitario e
-  importe (cantidad × precio unitario).
+  importe (cantidad × precio unitario). En las de mano de obra el concepto lo escribe el mecánico
+  y es obligatorio; en las de pieza el sistema MUST ponerlo solo como «referencia descripción» de
+  la referencia del almacén, sin que se pueda cambiar.
 - **FR-004**: Las líneas de mano de obra MUST usar el precio por hora del taller; las de piezas
   MUST usar el precio de venta de la referencia del almacén.
 - **FR-005**: Las piezas MUST elegirse entre las referencias dadas de alta en el almacén.
@@ -105,8 +138,8 @@ y que ya no se pueden editar sus líneas.
 
 ### Key Entities
 
-- **Presupuesto**: pertenece a una orden; estado (borrador, emitido, aceptado, rechazado,
-  caducado), fecha de emisión, fecha de caducidad, base imponible, IVA y total.
+- **Presupuesto**: pertenece a una orden; estado (borrador, emitido, aceptado, rechazado; un
+  emitido pasada su fecha de caducidad se considera caducado), fecha de emisión, fecha de caducidad, base imponible, IVA y total.
 - **Línea de presupuesto**: tipo (mano de obra o pieza), concepto, cantidad, precio unitario,
   importe; las de pieza apuntan a una referencia del almacén.
 - **Referencia de pieza**: código, descripción, precio de venta y stock (se da de alta en

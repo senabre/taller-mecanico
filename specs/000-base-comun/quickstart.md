@@ -81,11 +81,17 @@ las pruebas automáticas (`cargo test`).
 
 ## §3 spec-003 · Diagnóstico y presupuesto
 1. Como `luis`, abrir la orden de 1234BCD, diagnóstico «Pastillas delanteras desgastadas» → «En
+   diagnóstico». Cambiarlo a «Pastillas y discos delanteros desgastados» → se guarda y sigue «En
    diagnóstico».
 2. Nuevo presupuesto: mano de obra «Cambio de pastillas» 1,5 h → 60,00 €; pieza PF-123 × 2 →
-   50,00 €.
+   «PF-123 Pastillas freno», 50,00 €.
 3. Comprobar: base **110,00 €**, IVA 21 % **23,10 €**, total **133,10 €**.
-4. Emitir → «Válido hasta» = hoy + 15 días; las líneas ya no se pueden editar.
+4. Intentar añadir 1,3 h o 2,5 unidades de una pieza → se rechaza explicando el motivo.
+5. Añadir una línea «Prueba» de 1 h y quitarla → los totales vuelven a 110,00 / 23,10 / 133,10.
+6. Emitir → «Válido hasta» = hoy + 15 días; ya no se pueden añadir ni quitar líneas, y en
+   Mailpit llega el correo con el enlace.
+7. Intentar cambiar el diagnóstico → «Ya se ha emitido un presupuesto para esta orden; el
+   diagnóstico no se puede cambiar».
 
 ## §4 spec-004 · Respuesta del cliente
 1. En Mailpit, abrir el correo del presupuesto y pulsar el enlace → se ve el presupuesto completo.
