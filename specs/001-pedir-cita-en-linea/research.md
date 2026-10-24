@@ -95,12 +95,22 @@ y no se repite aquí. Fecha: 2026-10-22.
 
 - **Decisión**: `GET /api/citas` exige sesión (401) y llama a `exigir_rol(&[Recepcion])`, que deja
   pasar también al jefe (FR-002 de la base común); el resto recibe 403. `fecha` es opcional: si
-  falta, se usa `fechas::hoy()`, así el frontend no calcula «hoy» por su cuenta. Se ordena por
+  falta, se usa `fechas::hoy()`. Se ordena por
   `creada_en, id`. Cada cita devuelve `cliente: {nombre, telefono}` y **nunca** el correo. Se
   mantiene `orden_id`, que spec-002 necesita para el botón «Abrir orden» y no es un dato personal.
 - **Frontend**: el menú ya muestra «Citas» solo a recepción y jefe (layout de la base común). Si
-  otro rol escribe `/citas` a mano, la página recibe 403 y muestra el mensaje común «No tienes
-  permiso para hacer esto» sin ninguna lista; sin sesión, el layout lleva a `/entrar`.
+  otro rol escribe `/citas` a mano, la página recibe 403 y muestra solo el mensaje común «No tienes
+  permiso para hacer esto», sin título, selector ni lista; sin sesión, el layout lleva a `/entrar`.
+- **«Hoy» en el frontend**: la página calcula hoy con la zona Europe/Madrid, igual que R12
+  (`Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' })`), para mostrar esa fecha en el
+  selector, y llama siempre a `GET /api/citas?fecha=…`. El servidor sigue aceptando la llamada sin
+  `fecha` y usando `fechas::hoy()`. Como los dos usan la misma zona, la fecha coincide aunque el
+  ordenador esté en otra.
+- **Cambio de rumbo (2026-10-24)**: la decisión original era que el frontend **no** calculara
+  «hoy» y llamara sin `fecha`, para tener un solo sitio que decidiera el día. Se cambió tras la
+  prueba manual de T019: el selector salía vacío (dd/mm/aaaa) aunque el título dijera «Citas de
+  hoy», así que no se veía qué día se mostraba, y FR-009 pide que la lista abra con el día de hoy
+  ([hallazgos](hallazgos.md) I9).
 - **Alternativas descartadas**: añadir una protección de rutas por rol en el frontend, porque el
   servidor ya impide ver los datos (principio I).
 

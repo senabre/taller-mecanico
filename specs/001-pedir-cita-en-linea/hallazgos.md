@@ -10,8 +10,8 @@ resuelve fuera de esta spec.
 **Estado**: *Cerrado (pendiente de verificar en analyze-2)* = cambio aplicado y todavía sin
 comprobar en un nuevo análisis; *Cerrado (pendiente de revisión de B)* = además toca documentos
 comunes y debe revisarlo la Persona B antes de fusionar; *Abierto (spec-002)* = se decide en el
-clarify de spec-002; *Asignado a spec-007* = lo resuelve esa spec; *Cerrado (justificado)* y
-*Cerrado (falso positivo)* = no hay nada más que hacer; *Cerrado (verificado en analyze-2)* =
+clarify de spec-002; *Asignado a spec-007* = lo resuelve esa spec; *Cerrado (corregido)* = encontrado y corregido durante la implementación, sin esperar a un análisis;
+*Cerrado (justificado)* y *Cerrado (falso positivo)* = no hay nada más que hacer; *Cerrado (verificado en analyze-2)* =
 analyze-2 ha comprobado el cambio en todos los documentos; *Cerrado (verificado en analyze-2;
 revisión de B en T031)* = comprobado, pero toca documentos comunes y la revisión de la Persona B
 se da por hecha solo cuando se marque T031.
@@ -52,13 +52,15 @@ o se asignan).
 | ID | Historia o criterio | Gravedad | Evidencia | Decisión | Responsable | Estado |
 |----|---------------------|----------|-----------|----------|-------------|--------|
 | G3 | FR-002 · US1-5 · `backend/src/matricula.rs` (T001) | LOW | Al implementar T001 (2026-10-22): `normalizar_matricula` pasa la matrícula a mayúsculas con `to_uppercase()`, que convierte `ß` en `SS`. Por eso `aß` se acepta como `ASS`, aunque `ß` no es una letra A-Z. | Justificado (2026-10-24): el comportamiento ya existía en la base común antes de T001, que solo añade el límite de longitud, y `ß` no aparece en matrículas reales. No se cambia el código. | Persona A | Cerrado (justificado) |
+| I9 | FR-009 · US1-8 · research D5 · contrato de 001 (`/citas`) · T019 | LOW | **Origen: prueba manual de US1 (2026-10-24).** Al abrir `/citas`, el selector de fecha salía vacío (dd/mm/aaaa) aunque el título dijera «Citas de hoy», así que no se veía qué día se mostraba. La causa era research D5, que decidía que el frontend no calculara «hoy» y llamara a `GET /api/citas` sin `fecha`. En la misma prueba, con un 403 se veían el título y el selector junto al mensaje. | Corregido: la página calcula hoy con la zona Europe/Madrid (igual que R12), lo muestra en el selector y llama a `GET /api/citas?fecha=…`. El servidor sigue aceptando la llamada sin `fecha` (`fechas::hoy()`). Con un 403 solo se muestra el mensaje. Actualizados `frontend/src/routes/citas/+page.svelte`, research D5 (con el cambio de rumbo explicado), el contrato de 001 y la nota de T019. | Persona A | Cerrado (corregido) |
 
-## Resumen (tras analyze-2 y la Phase 1)
+## Resumen (tras analyze-2 y las Phases 1–3)
 
 - **Verificados en analyze-2**: 4 (I1, A2, A3, T2)
 - **Verificados en analyze-2, con revisión de la Persona B en T031** (tocan documentos comunes):
   5 (I3, A1, I5, T1, G1)
 - **Cerrados sin más trabajo**: 7 (I7 falso positivo; D1, D2, I8, G2, A4 y G3 justificados)
+- **Corregidos durante la implementación**: 1 (I9, tras la prueba manual de US1)
 - **Abiertos en spec-002** (Persona A, clarify): 2 (I2, I6)
 - **Asignados a spec-007** (Persona B): 1 (I4)
 - Ninguno bloquea `/speckit-implement` de spec-001. Antes de fusionar hay que completar T031

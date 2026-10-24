@@ -35,8 +35,8 @@ de «Ese día se acaba de completar; elige otro».
 
 | Momento | Llamada | Qué muestra | Requisito |
 |---|---|---|---|
-| Al abrir | `GET /api/citas` (sin `fecha`) | las citas de hoy | FR-009 |
+| Al abrir | `GET /api/citas?fecha=…` con la fecha de hoy (calculada en Europe/Madrid, research D5), que el selector muestra | las citas de hoy | FR-009 |
 | Al elegir otro día | `GET /api/citas?fecha=…` | matrícula, marca, modelo, motivo, nombre y teléfono, en el orden en que se pidieron; con lista vacía, «No hay citas para este día» | FR-009 |
-| Otro rol | la llamada da **403** | el mensaje común «No tienes permiso para hacer esto» y ninguna lista | FR-009 |
+| Otro rol | la llamada da **403** | solo el mensaje común «No tienes permiso para hacer esto», sin título, selector ni lista | FR-009 |
 
 `orden_id` no se muestra como dato. Lo usa spec-002 para el botón «Abrir orden».
