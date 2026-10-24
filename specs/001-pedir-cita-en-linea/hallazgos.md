@@ -47,12 +47,18 @@ o se asignan).
 | G2 | FR-010 · research D3 y D4 · T008 paso 4 · T013 | LOW | Ninguna prueba provoca dos `POST` simultáneos con la misma matrícula **nueva**, que es lo que recorre la segunda búsqueda y la rama D4; la prueba 10 parte de un vehículo existente. | Justificado: usa el mismo bloqueo por matrícula que la prueba 10, el resultado esperado está escrito en D3, D4 y T008, y el `UNIQUE` de `vehiculo` impide duplicados en cualquier caso. Se puede añadir como caso de la prueba 10 al implementar. | Persona A | Cerrado (justificado) |
 | A4 | FR-007 · T016 y T029 | LOW | En la rama del vehículo conocido, T016 inserta la cita tras comprobar la cita pendiente. T029 sitúa el cupo «antes del alta del vehículo nuevo» sin decir de forma explícita que también va antes de esa inserción. | Justificado: la prueba 8 usa vehículos conocidos (I1) y falla si el cupo queda mal colocado. El orden completo está en «Within Each User Story» y en el plan. | Persona A | Cerrado (justificado) |
 
-## Resumen (tras analyze-2)
+## Hallazgos encontrados durante la implementación
+
+| ID | Historia o criterio | Gravedad | Evidencia | Decisión | Responsable | Estado |
+|----|---------------------|----------|-----------|----------|-------------|--------|
+| G3 | FR-002 · US1-5 · `backend/src/matricula.rs` (T001) | LOW | Al implementar T001 (2026-10-22): `normalizar_matricula` pasa la matrícula a mayúsculas con `to_uppercase()`, que convierte `ß` en `SS`. Por eso `aß` se acepta como `ASS`, aunque `ß` no es una letra A-Z. | Justificado (2026-10-24): el comportamiento ya existía en la base común antes de T001, que solo añade el límite de longitud, y `ß` no aparece en matrículas reales. No se cambia el código. | Persona A | Cerrado (justificado) |
+
+## Resumen (tras analyze-2 y la Phase 1)
 
 - **Verificados en analyze-2**: 4 (I1, A2, A3, T2)
 - **Verificados en analyze-2, con revisión de la Persona B en T031** (tocan documentos comunes):
   5 (I3, A1, I5, T1, G1)
-- **Cerrados sin más trabajo**: 6 (I7 falso positivo; D1, D2, I8, G2 y A4 justificados)
+- **Cerrados sin más trabajo**: 7 (I7 falso positivo; D1, D2, I8, G2, A4 y G3 justificados)
 - **Abiertos en spec-002** (Persona A, clarify): 2 (I2, I6)
 - **Asignados a spec-007** (Persona B): 1 (I4)
 - Ninguno bloquea `/speckit-implement` de spec-001. Antes de fusionar hay que completar T031
