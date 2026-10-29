@@ -73,6 +73,7 @@ async fn buscar_vehiculo(db: impl PgExecutor<'_>, matricula: &str) -> Resultado<
 }
 
 const CITA_PENDIENTE: &str = "Este vehículo ya tiene una cita pendiente.";
+const DIA_COMPLETO: &str = "Ese día ya está completo";
 
 /// Lo único que la página pública sabe de un vehículo: nunca datos del cliente ni la fecha de su
 /// cita pendiente (FR-003, FR-010).
@@ -105,9 +106,26 @@ async fn vehiculo_publico(
     .ok_or_else(|| ErrorApi::NoEncontrado("No hay ningún vehículo con esa matrícula".to_string()))
 }
 
-/// De momento, todos los días del rango; el filtro por cupo lo añade T029.
-async fn dias_disponibles() -> Json<Vec<NaiveDate>> {
-    Json(dias_ofrecidos(fechas::hoy()))
+/// Los días del rango que aún tienen plazas (FR-007), con una sola consulta.
+async fn dias_disponibles(State(estado): State<EstadoApp>) -> Resultado<Json<Vec<NaiveDate>>> {
+    let dias = dias_ofrecidos(fechas::hoy());
+    let (Some(&primero), Some(&ultimo)) = (dias.first(), dias.last()) else {
+        return Ok(Json(dias));
+    };
+    let ocupacion: Vec<(NaiveDate, i64)> = sqlx::query_as(
+        "SELECT fecha, count(*) FROM cita WHERE fecha BETWEEN $1 AND $2 GROUP BY fecha",
+    )
+    .bind(primero)
+    .bind(ultimo)
+    .fetch_all(&estado.db)
+    .await?;
+    let cupo = i64::from(estado.config.cupo_diario);
+    let completos: Vec<NaiveDate> = ocupacion
+        .into_iter()
+        .filter(|(_, citas)| *citas >= cupo)
+        .map(|(fecha, _)| fecha)
+        .collect();
+    Ok(Json(dias.into_iter().filter(|dia| !completos.contains(dia)).collect()))
 }
 
 #[derive(Deserialize)]
@@ -247,7 +265,15 @@ async fn crear_cita(
         }
     }
 
-    // 6. Hueco de T029 (US3): cupo del día, 409.
+    // 6. Cupo del día (FR-007). El bloqueo por fecha garantiza que nadie más cuenta ni inserta
+    //    citas de ese día hasta el `commit`.
+    let citas_del_dia: i64 = sqlx::query_scalar("SELECT count(*) FROM cita WHERE fecha = $1")
+        .bind(fecha)
+        .fetch_one(&mut *tx)
+        .await?;
+    if citas_del_dia >= i64::from(estado.config.cupo_diario) {
+        return Err(ErrorApi::Conflicto(DIA_COMPLETO.to_string()));
+    }
 
     // 7. Alta del cliente y del vehículo nuevos, con los datos validados en el paso 2.
     let vehiculo_id = match (existente, alta) {

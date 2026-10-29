@@ -504,3 +504,87 @@ async fn prueba_5_obligatorios(pool: PgPool) {
         assert_eq!(contar(&pool, tabla).await, 0, "{tabla}");
     }
 }
+
+// ---------------------------------------------------------------------------------------------
+// US3 · Los días completos no se ofrecen
+// ---------------------------------------------------------------------------------------------
+
+const DIA_COMPLETO: &str = "Ese día ya está completo";
+
+async fn dias_disponibles(app: &axum::Router) -> Vec<Value> {
+    let (codigo, dias, _) =
+        comun::peticion(app, "GET", "/api/publico/dias-disponibles", None, None).await;
+    assert_eq!(codigo, StatusCode::OK, "{dias}");
+    dias.as_array().unwrap().clone()
+}
+
+/// Prueba 8 (FR-007; US3-1): con `cupo_diario = 2`, un día con dos citas deja de ofrecerse y no
+/// admite una tercera. Todos los vehículos, por SQL (no depende del alta de US2).
+#[sqlx::test]
+async fn prueba_8_cupo(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let (lleno, libre) = (laborable(1), laborable(2));
+    for matricula in ["1111AAA", "2222AAA"] {
+        let id = insertar_vehiculo(&pool, matricula, "Seat", "Ibiza", "Ana", "600000001", "a@ejemplo.test").await;
+        insertar_cita(&pool, id, lleno, "Revisión").await;
+    }
+
+    let dias = dias_disponibles(&app).await;
+    assert!(!dias.contains(&json!(lleno.to_string())), "{lleno} no debería ofrecerse: {dias:?}");
+    assert!(dias.contains(&json!(libre.to_string())), "{libre} debería ofrecerse: {dias:?}");
+
+    insertar_vehiculo(&pool, "3333AAA", "Kia", "Ceed", "Luis", "600000002", "l@ejemplo.test").await;
+    let (codigo, cuerpo) = pedir(&app, cita_conocida("3333AAA", lleno)).await;
+    assert_eq!(codigo, StatusCode::CONFLICT, "{cuerpo}");
+    assert_eq!(cuerpo["error"], DIA_COMPLETO);
+
+    // Con una cita pendiente además del día lleno, gana el aviso de cita pendiente (research D3).
+    let id = insertar_vehiculo(&pool, "4444AAA", "Kia", "Ceed", "Eva", "600000003", "e@ejemplo.test").await;
+    insertar_cita(&pool, id, laborable(3), "Revisión").await;
+    let (codigo, cuerpo) = pedir(&app, cita_conocida("4444AAA", lleno)).await;
+    assert_eq!(codigo, StatusCode::CONFLICT, "{cuerpo}");
+    assert_eq!(cuerpo["error"], CITA_PENDIENTE);
+
+    let en_el_dia: i64 = sqlx::query_scalar("SELECT count(*) FROM cita WHERE fecha = $1")
+        .bind(lleno)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(en_el_dia, 2);
+}
+
+/// Prueba 9 (FR-007; US3-2, SC-003): dos peticiones a la vez por la última plaza del día.
+#[sqlx::test]
+async fn prueba_9_concurrencia_cupo(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let fecha = laborable(1);
+    let primero = insertar_vehiculo(&pool, "1111AAA", "Seat", "Ibiza", "Ana", "600000001", "a@ejemplo.test").await;
+    insertar_vehiculo(&pool, "2222AAA", "Kia", "Ceed", "Luis", "600000002", "l@ejemplo.test").await;
+    insertar_vehiculo(&pool, "3333AAA", "Opel", "Corsa", "Eva", "600000003", "e@ejemplo.test").await;
+    insertar_cita(&pool, primero, fecha, "Revisión").await;
+
+    for vuelta in 0..20 {
+        let (a, b) = tokio::join!(
+            pedir(&app, cita_conocida("2222AAA", fecha)),
+            pedir(&app, cita_conocida("3333AAA", fecha)),
+        );
+        let mut codigos = [a.0, b.0];
+        codigos.sort();
+        assert_eq!(codigos, [StatusCode::CREATED, StatusCode::CONFLICT], "vuelta {vuelta}: {a:?} {b:?}");
+        let rechazada = if a.0 == StatusCode::CONFLICT { &a.1 } else { &b.1 };
+        assert_eq!(rechazada["error"], DIA_COMPLETO, "vuelta {vuelta}");
+        let en_el_dia: i64 = sqlx::query_scalar("SELECT count(*) FROM cita WHERE fecha = $1")
+            .bind(fecha)
+            .fetch_one(&pool)
+            .await
+            .unwrap();
+        assert_eq!(en_el_dia, 2, "vuelta {vuelta}");
+        // Se borra la cita que ha entrado, para que la vuelta siguiente vuelva a pelear por la
+        // última plaza (y para que ninguno de los dos tenga cita pendiente).
+        sqlx::query("DELETE FROM cita WHERE vehiculo_id <> $1")
+            .bind(primero)
+            .execute(&pool)
+            .await
+            .unwrap();
+    }
+}

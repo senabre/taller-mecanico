@@ -6,8 +6,11 @@
 	import type { CitaCreada, Fecha, PeticionCita, VehiculoPublico } from '$lib/tipos';
 
 	const CITA_PENDIENTE = 'Este vehículo ya tiene una cita pendiente.';
+	const DIA_COMPLETO = 'Ese día ya está completo';
 
 	let dias: Fecha[] = $state([]);
+	// Para no confundir «aún no se han cargado» con «no queda ningún día libre».
+	let diasCargados = $state(false);
 	let errorDias = $state('');
 
 	let matricula = $state('');
@@ -42,6 +45,7 @@
 	async function cargarDias() {
 		try {
 			dias = await get<Fecha[]>('/publico/dias-disponibles');
+			diasCargados = true;
 			errorDias = '';
 		} catch (e) {
 			errorDias = e instanceof ErrorApi ? e.message : 'No se pudieron cargar los días';
@@ -111,6 +115,11 @@
 				errores = { [e.detalle.campo]: e.message };
 			} else if (e instanceof ErrorApi && e.estado === 409 && e.message === CITA_PENDIENTE) {
 				if (vehiculo) vehiculo = { ...vehiculo, cita_pendiente: true };
+			} else if (e instanceof ErrorApi && e.estado === 409 && e.message === DIA_COMPLETO) {
+				// Otra persona ha cogido la última plaza: se quita ese día y se pide elegir otro.
+				fecha = '';
+				errores = { fecha: 'Ese día se acaba de completar; elige otro' };
+				await cargarDias();
 			} else {
 				error = e instanceof ErrorApi ? e.message : 'Ha ocurrido un error inesperado';
 			}
@@ -212,18 +221,24 @@
 				</fieldset>
 			{/if}
 
-			<label class="label">
-				<span class="label-text">Día</span>
-				<select class="select" name="fecha" bind:value={fecha}>
-					<option value="" disabled>Elige un día</option>
-					{#each dias as dia (dia)}
-						<option value={dia}>{fechaEs(dia)}</option>
-					{/each}
-				</select>
-				{#if errores.fecha}
-					<span class="text-error-500" role="alert">{errores.fecha}</span>
-				{/if}
-			</label>
+			{#if diasCargados && dias.length === 0}
+				<p class="text-warning-700-300" role="alert">
+					No quedan fechas libres en los próximos 30 días. Llama al taller para pedir cita.
+				</p>
+			{:else}
+				<label class="label">
+					<span class="label-text">Día</span>
+					<select class="select" name="fecha" bind:value={fecha}>
+						<option value="" disabled>Elige un día</option>
+						{#each dias as dia (dia)}
+							<option value={dia}>{fechaEs(dia)}</option>
+						{/each}
+					</select>
+					{#if errores.fecha}
+						<span class="text-error-500" role="alert">{errores.fecha}</span>
+					{/if}
+				</label>
+			{/if}
 			{#if errorDias}
 				<p class="text-error-500" role="alert">{errorDias}</p>
 			{/if}
