@@ -115,6 +115,9 @@
 				errores = { [e.detalle.campo]: e.message };
 			} else if (e instanceof ErrorApi && e.estado === 409 && e.message === CITA_PENDIENTE) {
 				if (vehiculo) vehiculo = { ...vehiculo, cita_pendiente: true };
+				// La matrícula era nueva, pero otra persona la ha dado de alta con su cita mientras
+				// tanto (research D4): al volver a buscarla, el formulario muestra el aviso.
+				else await buscarVehiculo();
 			} else if (e instanceof ErrorApi && e.estado === 409 && e.message === DIA_COMPLETO) {
 				// Otra persona ha cogido la última plaza: se quita ese día y se pide elegir otro.
 				fecha = '';

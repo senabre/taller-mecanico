@@ -22,14 +22,17 @@
 		cargada = false;
 		error = '';
 		try {
-			citas = await get<CitaDelDia[]>(`/citas?fecha=${elegido}`);
+			const lista = await get<CitaDelDia[]>(`/citas?fecha=${elegido}`);
+			// Si mientras tanto se ha elegido otro día, esta respuesta ya no vale.
+			if (elegido !== dia) return;
+			citas = lista;
 		} catch (e) {
+			if (elegido !== dia) return;
 			citas = [];
 			prohibido = e instanceof ErrorApi && e.estado === 403;
 			error = e instanceof ErrorApi ? e.message : 'No se pudo cargar la lista de citas';
-		} finally {
-			cargada = true;
 		}
+		cargada = true;
 	}
 
 	$effect(() => {

@@ -588,3 +588,59 @@ async fn prueba_9_concurrencia_cupo(pool: PgPool) {
             .unwrap();
     }
 }
+
+// ---------------------------------------------------------------------------------------------
+// Convergencia (converge-1)
+// ---------------------------------------------------------------------------------------------
+
+/// T036 (converge-1 F2; FR-004, FR-010, research D3 y D4): dos altas a la vez de la misma
+/// matrícula nueva, para días distintos (el bloqueo por fecha no las serializa). La segunda
+/// búsqueda, con el bloqueo por matrícula, ve el vehículo de la primera: D4 y 409 de cita
+/// pendiente, sin chocar con el `UNIQUE` de `vehiculo`.
+#[sqlx::test]
+async fn alta_simultanea_de_la_misma_matricula_nueva(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+
+    for vuelta in 0..20 {
+        let mut de_ana = cita_nueva("5678CDF", laborable(1));
+        de_ana["cliente"] = json!({ "nombre": "Ana Pérez", "telefono": "612345678", "email": "ana@ejemplo.test" });
+        let mut de_luis = cita_nueva("5678CDF", laborable(2));
+        de_luis["cliente"] = json!({ "nombre": "Luis Gil", "telefono": "699999999", "email": "luis@ejemplo.test" });
+
+        let (a, b) = tokio::join!(pedir(&app, de_ana), pedir(&app, de_luis));
+        let mut codigos = [a.0, b.0];
+        codigos.sort();
+        assert_eq!(codigos, [StatusCode::CREATED, StatusCode::CONFLICT], "vuelta {vuelta}: {a:?} {b:?}");
+        let rechazada = if a.0 == StatusCode::CONFLICT { &a.1 } else { &b.1 };
+        assert_eq!(rechazada["error"], CITA_PENDIENTE, "vuelta {vuelta}");
+
+        for tabla in ["cliente", "vehiculo", "cita"] {
+            assert_eq!(contar(&pool, tabla).await, 1, "vuelta {vuelta}: {tabla}");
+        }
+        // El propietario es el de la petición que ha recibido el 201.
+        let ganador = if a.0 == StatusCode::CREATED { "Ana Pérez" } else { "Luis Gil" };
+        assert_eq!(cliente_de(&pool, "5678CDF").await.0, ganador, "vuelta {vuelta}");
+
+        for tabla in ["cita", "vehiculo", "cliente"] {
+            sqlx::query(&format!("DELETE FROM {tabla}")).execute(&pool).await.unwrap();
+        }
+    }
+}
+
+/// T038 (converge-1 F4): los dos comportamientos que el contrato común recoge desde converge-1.
+#[sqlx::test]
+async fn errores_documentados_en_el_contrato(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+
+    // El 422 del GET público lleva `detalle.campo`, igual que el del POST.
+    let (codigo, cuerpo) = vehiculo_publico(&app, "A").await;
+    assert_eq!(codigo, StatusCode::UNPROCESSABLE_ENTITY, "{cuerpo}");
+    assert_eq!(cuerpo, json!({ "error": "La matrícula no es válida", "detalle": { "campo": "matricula" } }));
+
+    // Una fecha mal escrita en la lista de recepción → 400.
+    let (_, contrasena) = comun::crear_usuario(&pool, "anabel", "recepcion", true).await;
+    let cookie = comun::entrar(&app, "anabel", &contrasena).await;
+    let (codigo, cuerpo, _) = comun::peticion(&app, "GET", "/api/citas?fecha=ayer", Some(&cookie), None).await;
+    assert_eq!(codigo, StatusCode::BAD_REQUEST, "{cuerpo}");
+    assert_eq!(cuerpo["error"], "La fecha no es válida");
+}

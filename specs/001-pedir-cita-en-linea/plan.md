@@ -137,10 +137,16 @@ pruebas y dos pantallas, y toca un fichero compartido: `matricula.rs`.
   campos de vehículo y contacto, encabezados por el texto de pantalla «No conocemos este vehículo.
   Cuéntanos qué coche es y cómo contactarte.» (texto normal, no título), y el 200 los oculta. Al confirmar, un 422 se muestra bajo el campo
   de `detalle.campo`. Con el 409 de cupo, se vuelven a pedir los días y se muestra «Ese día se
-  acaba de completar; elige otro».
+  acaba de completar; elige otro». Tras la confirmación, un botón «Pedir otra cita» vuelve al
+  formulario vacío y recarga los días. Así se puede pedir la cita de otro vehículo, o comprobar con
+  la misma matrícula que ahora sale el aviso de cita pendiente (US1-4) y que, cuando esa cita ha
+  pasado, se puede pedir otra (US1-6). También sirve a recepción, que usa este formulario para las
+  citas por teléfono o en el mostrador (Assumptions de la spec). No cambia ningún dato.
 - **Frontend `/citas`**: un selector de fecha (hoy por defecto) y una tabla con matrícula, marca,
   modelo, motivo, nombre y teléfono; con la lista vacía, «No hay citas para este día»; con un 403,
-  el mensaje de error común.
+  el mensaje de error común. Con otro día elegido, el título pasa a ser «Citas del dd/mm/aaaa» y
+  aparece un botón «Hoy» que vuelve al día con el que abre la lista (FR-009: «La lista abre con el
+  día de hoy y permite elegir otro día»). Solo cambia el día que se consulta.
 
 ### Pruebas
 

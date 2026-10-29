@@ -28,8 +28,19 @@ Persona B):
 | Al confirmar | `POST /api/publico/citas` (`vehiculo` y `cliente` solo si fue 404); los 422 llegan siempre antes que los 409 (orden de la tabla de validación) | **201**: fecha en dd/mm/aaaa y motivo · **409** cita pendiente: el aviso de FR-010 · **409** día completo: vuelve a pedir los días y muestra «Ese día se acaba de completar; elige otro» · **422**: el mensaje bajo el campo de `detalle.campo` | FR-004a, FR-007, FR-008, FR-010 |
 
 El formulario usa `novalidate` (research D2): todos los mensajes de error de los campos salen
-del servidor. Los únicos textos propios del formulario son el de «no quedan fechas libres» y el
-de «Ese día se acaba de completar; elige otro».
+del servidor. Además de las etiquetas de los campos y los botones, los únicos textos propios
+del formulario son:
+
+- «No quedan fechas libres en los próximos 30 días. Llama al taller para pedir cita.» (lista de
+  días vacía, FR-006, FR-007);
+- «Ese día se acaba de completar; elige otro» (409 de cupo, US3-2);
+- «No conocemos este vehículo. Cuéntanos qué coche es y cómo contactarte.» (encabeza los campos
+  del vehículo nuevo tras un 404, FR-004; [plan](../plan.md), Frontend `/cita`);
+- «Buscando el vehículo…» (mientras se espera el `GET` de la matrícula);
+- «No se pudieron cargar los días» y «Ha ocurrido un error inesperado» (solo si falla la
+  conexión o el servidor responde sin el mensaje de error del contrato).
+
+(Lista completada el 2026-10-29 por converge-1 F4, T038.)
 
 ### `/citas` (recepción y jefe)
 
