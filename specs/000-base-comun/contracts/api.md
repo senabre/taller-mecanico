@@ -95,8 +95,12 @@ Efectos (en transacción): ver la máquina de estados en [data-model.md](../data
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `POST /api/ordenes/{id}/imputaciones` | mecanico asignado | `{tipo:"mano_obra", concepto, cantidad}` (múltiplo de 0,25) o `{tipo:"pieza", pieza_id, cantidad}` | 201 `Orden` (con `coste_acumulado` y, si se pasa del 10 %, `estado: "pendiente_conformidad"`) · 409 si la orden no está en reparación · 422 «Solo hay N unidades en stock» |
-| `POST /api/ordenes/{id}/terminar` | mecanico asignado | — | 200 `Orden` (`en_reparacion → terminada`) |
+| `POST /api/ordenes/{id}/imputaciones` | mecanico asignado | `{tipo:"mano_obra", concepto, cantidad}` (múltiplo de 0,25) o `{tipo:"pieza", pieza_id, cantidad}` (entera; el concepto lo pone el servidor). Mismas reglas que las líneas de presupuesto | 201 `ResumenImputaciones` (si se pasa del 10 %, `estado: "pendiente_conformidad"`) · 409 «La orden está {estado}; solo se puede imputar en órdenes en reparación» · 409 si no tiene presupuesto aceptado · 422 «Solo hay 2 unidades en stock de PF-123; el almacén puede pedirla al proveedor» («1 unidad» en singular) · 422 (cantidad o concepto no válidos, pieza inexistente) |
+| `POST /api/ordenes/{id}/terminar` | mecanico asignado | — | 200 `ResumenImputaciones` (`en_reparacion → terminada`) · 409 si no está en reparación · 422 «Primero hay que imputar el trabajo realizado» |
+
+`ResumenImputaciones` = `{orden_id, estado, coste_acumulado, total_presupuestado,
+imputaciones:[Linea]}` (de la más antigua a la más reciente). Lo da
+`imputaciones::resumen_imputaciones`, que spec-002 usa para llenar esos campos de `Orden`.
 
 Las ampliaciones usan los endpoints de spec-003 (`POST /api/ordenes/{id}/presupuestos` con la
 orden en `pendiente_conformidad`).

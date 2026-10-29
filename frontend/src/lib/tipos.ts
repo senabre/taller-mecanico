@@ -95,6 +95,22 @@ export interface PresupuestoResumen {
 	caduca_el: Fecha | null;
 }
 
+// --- spec-005 · Imputaciones ---
+
+/** Imputaciones de una orden con su acumulado y lo presupuestado (suma de los aceptados). */
+export interface ResumenImputaciones {
+	orden_id: number;
+	estado: EstadoOrden;
+	coste_acumulado: Importe;
+	total_presupuestado: Importe;
+	imputaciones: Linea[];
+}
+
+/** Lo que se envía para añadir una línea de presupuesto o una imputación. */
+export type NuevaLinea =
+	| { tipo: 'mano_obra'; concepto: string; cantidad: string }
+	| { tipo: 'pieza'; pieza_id: number; cantidad: string };
+
 // --- spec-006 · Almacén y pedidos ---
 
 export interface Pieza {

@@ -11,6 +11,19 @@ monto, para que la factura refleje el trabajo realmente realizado. Prioridad Alt
 
 **Responsable**: Persona B
 
+## Clarifications
+
+### Session 2026-10-29
+
+- Q: ¿Qué concepto lleva cada imputación? → A: Horas: concepto obligatorio escrito por el
+  mecánico. Pieza: se pone solo, «referencia descripción» del almacén, igual que en el
+  presupuesto (spec-003).
+- Q: ¿Se puede marcar como «terminada» una orden sin ninguna imputación? → A: No; para terminar
+  debe tener al menos una imputación, y si no se indica el motivo.
+- Q: Si el cliente rechaza la ampliación y no quiere ninguna otra, ¿cómo sale la orden de
+  «pendiente de conformidad»? → A: No sale: sigue «pendiente de conformidad». Resolverlo queda
+  fuera de la v1 (límite conocido).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Imputar tiempo y piezas (Priority: P1)
@@ -89,24 +102,31 @@ ya no admite imputaciones.
 
 **Acceptance Scenarios**:
 
-1. **Given** una orden «en reparación», **When** el mecánico la marca como terminada, **Then**
-   pasa a «terminada» y no admite más imputaciones.
+1. **Given** una orden «en reparación» con imputaciones, **When** el mecánico la marca como
+   terminada, **Then** pasa a «terminada» y no admite más imputaciones.
+2. **Given** una orden «en reparación» sin ninguna imputación, **When** el mecánico intenta
+   marcarla como terminada, **Then** no se permite y se indica que primero hay que imputar el
+   trabajo realizado.
 
 ### Edge Cases
 
 - Horas: se imputan en fracciones de 0,25 h; no se permiten 0 ni valores negativos.
 - Imputar una pieza que no estaba en el presupuesto: se permite (cuenta para el acumulado).
+- Imputación de horas sin concepto (vacío o solo espacios): no se permite.
 - Una orden «en espera de piezas», «pendiente de conformidad» o sin presupuesto aceptado no
   admite imputaciones.
-- Solo el mecánico asignado a la orden puede imputar en ella.
-- Una orden «pendiente de conformidad» no puede marcarse como terminada.
+- Solo el mecánico asignado a la orden puede imputar en ella (y el jefe de taller, que puede hacer
+  todo lo de los demás roles, spec-000 FR-002).
+- Una orden «pendiente de conformidad» no puede marcarse como terminada, tampoco si el cliente
+  ha rechazado la ampliación (ver el límite conocido en Assumptions).
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 - **FR-001**: El mecánico asignado MUST poder imputar horas y piezas en una orden «en
-  reparación».
+  reparación». En las horas el concepto lo escribe el mecánico y es obligatorio; en las piezas el
+  sistema MUST ponerlo solo como «referencia descripción» de la referencia del almacén.
 - **FR-002**: Cada pieza imputada MUST descontar su cantidad del stock del almacén en el mismo
   momento; el sistema MUST NOT permitir imputar más unidades de las que hay en stock.
 - **FR-003**: El sistema MUST mostrar en todo momento el coste acumulado (sin IVA) frente al
@@ -119,12 +139,13 @@ ya no admite imputaciones.
   cliente acepta o rechaza por enlace (spec-004).
 - **FR-007**: Al aceptarse la ampliación, la orden MUST volver a «en reparación» y el total
   presupuestado MUST pasar a ser la suma del original y de las ampliaciones aceptadas.
-- **FR-008**: El mecánico MUST poder marcar como «terminada» una orden «en reparación».
+- **FR-008**: El mecánico MUST poder marcar como «terminada» una orden «en reparación» que tenga
+  al menos una imputación; si no tiene ninguna, el sistema MUST impedirlo e indicar el motivo.
 
 ### Key Entities
 
-- **Imputación**: pertenece a una orden; tipo (horas o pieza), cantidad, precio unitario,
-  importe, fecha y hora, mecánico que la hace.
+- **Imputación**: pertenece a una orden; tipo (horas o pieza), concepto, cantidad, precio
+  unitario, importe, fecha y hora, mecánico que la hace.
 - **Ampliación de presupuesto**: presupuesto adicional de una orden, con las mismas reglas de
   líneas, IVA, caducidad y respuesta por enlace que el presupuesto inicial.
 - **Stock**: unidades disponibles de cada referencia de pieza.
@@ -148,4 +169,7 @@ ya no admite imputaciones.
 - La imputación que hace superar el umbral sí se registra; lo que se bloquea son las siguientes.
 - Si el cliente rechaza la ampliación, la orden sigue «pendiente de conformidad» y el mecánico
   puede emitir otra ampliación (spec-004).
+- **Límite conocido de la v1**: si el cliente no acepta ninguna ampliación, la orden se queda
+  «pendiente de conformidad»: no se puede terminar ni facturar desde la aplicación. Resolver ese
+  caso (cerrarla, facturar solo lo aceptado…) queda fuera de esta spec.
 - Corregir o anular una imputación hecha por error queda fuera de la v1.

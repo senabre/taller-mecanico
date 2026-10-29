@@ -10,6 +10,7 @@ pub mod estados;
 pub mod eventos;
 pub mod fechas;
 pub mod formato;
+pub mod lineas;
 pub mod matricula;
 pub mod rutas;
 

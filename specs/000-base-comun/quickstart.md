@@ -78,13 +78,16 @@ cd ../backend && cargo run                 # app en http://localhost:3000
    «En diagnóstico».
 
 ## §5 spec-005 · Imputar
-1. Orden de 1234BCD, imputar PF-123 × 2 → en `/almacen` el stock de PF-123 pasa de 4 a **2**.
-2. Imputar 1 h → «Acumulado 90,00 € de 110,00 €».
-3. Imputar 1 h más → acumulado 130,00 € (> 121,00 €) → la orden pasa a «Pendiente de
-   conformidad» y ya no deja imputar.
-4. Crear una ampliación de 1 h (40,00 €), emitirla y aceptarla desde Mailpit → la orden vuelve a
+1. Orden de 1234BCD, intentar terminarla sin imputar nada → «Primero hay que imputar el trabajo
+   realizado».
+2. Imputar PF-123 × 2 → concepto «PF-123 Pastillas freno»; en `/almacen` el stock de PF-123 pasa
+   de 4 a **2**. Intentar imputar PF-123 × 3 → «Solo hay 2 unidades en stock de PF-123…».
+3. Imputar «Cambio de pastillas» 1 h → «Acumulado 90,00 € de 110,00 €».
+4. Imputar 1 h más → acumulado 130,00 € (> 121,00 €) → la orden pasa a «Pendiente de
+   conformidad» y ya no deja imputar ni terminar.
+5. Crear una ampliación de 1 h (40,00 €), emitirla y aceptarla desde Mailpit → la orden vuelve a
    «En reparación» con 150,00 € presupuestados.
-5. Marcar como terminada → «Terminada».
+6. Marcar como terminada → «Terminada» y ya no deja imputar.
 
 ## §6 spec-006 · Almacén y pedidos
 1. Como `pepe`, en `/almacen` dar de alta `FA-9 Filtro aceite`, 12,00 €, **sin** indicar stock →

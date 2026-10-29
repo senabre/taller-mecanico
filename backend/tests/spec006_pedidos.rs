@@ -508,9 +508,8 @@ async fn un_mecanico_no_puede_pedir(pool: PgPool) {
 }
 
 /// FR-006 y FR-008a: con la orden en espera no se puede terminar ni imputar. Los endpoints son de
-/// spec-005; quitar el `#[ignore]` cuando existan (T031).
+/// spec-005 (activada en spec-005 T027).
 #[sqlx::test]
-#[ignore = "necesita los endpoints de terminar e imputar de spec-005"]
 async fn orden_en_espera_no_se_puede_terminar_ni_imputar(pool: PgPool) {
     let e = escenario(&pool).await;
     assert_eq!(

@@ -22,7 +22,7 @@ INSERT INTO usuario (nombre, login, hash_contrasena, rol) VALUES
 -- ---------------------------------------------------------------------------------------------
 
 INSERT INTO pieza (referencia, descripcion, precio_venta, stock) VALUES
-    ('PF-123', 'Pastillas freno', 25.00, 4),  -- la del quickstart (§3, §5.1: stock 4)
+    ('PF-123', 'Pastillas freno', 25.00, 4),  -- la del quickstart (§3, §5.2: stock 4)
     ('BJ-7',   'Bujía',            8.00, 0);  -- solo para el pedido demo pendiente (parte 3)
 
 INSERT INTO proveedor (nombre) VALUES
@@ -119,7 +119,7 @@ UPDATE contador SET ultimo = (SELECT max(numero) FROM orden) WHERE nombre = 'ord
 -- Parte 4 · Presupuestos, imputaciones y factura
 --   Todos los presupuestos tienen las mismas dos líneas: 1,5 h × 40,00 = 60,00 y
 --   PF-123 × 2 × 25,00 = 50,00 → base 110,00, IVA 21 % 23,10, total 133,10 (dinero.rs).
---   Las imputaciones demo no descuentan stock: PF-123 se queda con 4 (quickstart §5.1).
+--   Las imputaciones demo no descuentan stock: PF-123 se queda con 4 (quickstart §5.2).
 -- ---------------------------------------------------------------------------------------------
 
 -- Presupuesto inicial aceptado en las órdenes que ya están en reparación o más allá. Su token no
