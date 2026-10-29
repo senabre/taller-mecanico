@@ -300,3 +300,12 @@ código definitivo.
   - *Hecho el 2026-10-29*. **Cambios del contrato común, pendientes de revisión de la Persona B (añadidos a T031)**: en `specs/000-base-comun/contracts/api.md`, (1) el 422 de `GET /api/publico/vehiculos/{matricula}` lleva `detalle.campo = "matricula"`, igual que en el `POST`; (2) `GET /api/citas` responde 400 «La fecha no es válida» si `fecha` no es YYYY-MM-DD. En `contracts/api.md` de 001 se completa la lista de textos propios de `/cita`. No se cambia código. **Prueba reproducible (5.3.4)**: *antes*, el contrato no recogía esas dos respuestas, que el servidor ya daba (`GET /api/publico/vehiculos/A` → `{"error":"La matrícula no es válida","detalle":{"campo":"matricula"}}`; `GET /api/citas?fecha=ayer` con sesión de recepción → 400). *Después*, el contrato las recoge y la nueva prueba `errores_documentados_en_el_contrato` comprueba las dos: falla si el código deja de cumplir lo que dice el contrato.
 - [X] T039 Justificar en `plan.md` (Frontend `/cita` y `/citas`) los botones «Pedir otra cita» (tras la confirmación; recepción usa el mismo formulario, Assumptions de la spec) y «Hoy» (en `/citas`, vuelve al día con el que abre la lista, FR-009), o quitarlos del código (converge-1 F5; Persona A, revisa Persona B) per Constitución III (unrequested)
   - *Hecho el 2026-10-29*: los dos botones se mantienen y quedan justificados en `plan.md`, en la sección del frontend: «Pedir otra cita» en `/cita` (US1-4, US1-6 y el uso por recepción de las Assumptions) y «Hoy» en `/citas` (FR-009). No se cambia código. **Prueba reproducible (5.3.4)**: *antes*, ni la spec ni el plan nombraban los botones (`grep -n "Pedir otra cita\|«Hoy»" plan.md` no encontraba nada); *después*, el plan los nombra con su requisito. Su funcionamiento ya se comprobó en la prueba manual de US1 (T018, T019).
+
+---
+
+## Phase 8: Convergence
+
+Tareas que salen de [converge-2.md](converge-2.md) (2026-10-29). **Responsable**: Persona A ·
+**Revisor**: Persona B.
+
+- [ ] T040 En `contracts/api.md` de 001, completar la frase «Además de las etiquetas de los campos y los botones, los únicos textos propios del formulario son…» para que excluya también los títulos («Pedir cita», «Cita confirmada») y las etiquetas de los datos mostrados («Fecha:», «Motivo:», «Vehículo:»), o añadir esos textos a la lista; no cambia el código ni el contrato común (converge-2 G1; Persona A, revisa Persona B) per contracts/api.md de 001, texto de T038 (contradicts)
