@@ -165,12 +165,12 @@ pendiente por orden y referencia (spec-006 FR-004a).
 ### factura *(spec-007)*
 | Campo | Tipo | Reglas |
 |---|---|---|
-| numero | BIGINT | **único**, sale de `contador('factura')` |
+| numero | BIGINT | **único**, sale de `contador('factura')`: una sola serie que no se reinicia cada año; se muestra «Factura nº 12» (spec-007) |
 | orden_id | FK | **único** (como mucho una factura por orden) |
 | fecha | DATE | |
 | cliente_nombre, matricula | TEXT | copia del momento de emitirla (factura simplificada, Q2-A) |
 | iva_porcentaje, base, iva, total | NUMERIC | se calculan a partir de las imputaciones |
-| aviso_enviado | BOOLEAN | si se pudo enviar el correo de «listo para recoger» |
+| aviso_enviado | BOOLEAN | si se pudo enviar el correo de «listo para recoger»; se anota después del `commit` (spec-007 D2) |
 
 ### linea_factura *(spec-007)*
 Es una copia de cada imputación: `concepto`, `cantidad`, `precio_unitario`, `importe`. La factura

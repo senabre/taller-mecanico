@@ -1,6 +1,7 @@
 //! Rutas de la API (`/api/...`). Cada spec añade aquí su módulo con `.merge(modulo::rutas())`.
 
 pub mod almacen;
+pub mod facturas;
 pub mod imputaciones;
 pub mod presupuestos;
 pub mod sesion;
@@ -16,4 +17,5 @@ pub fn api() -> Router<EstadoApp> {
         .merge(almacen::rutas())
         .merge(presupuestos::rutas())
         .merge(imputaciones::rutas())
+        .merge(facturas::rutas())
 }

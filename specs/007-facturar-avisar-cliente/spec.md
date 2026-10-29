@@ -12,6 +12,19 @@ Prioridad Alta · 3 pts.
 
 **Responsable**: Persona B
 
+## Clarifications
+
+### Session 2026-10-29
+
+- Q: ¿Cómo recibe el cliente su factura? → A: Recepción la imprime desde la app (vista de factura
+  con botón «Imprimir» del navegador, que también permite guardarla como PDF) y se la entrega al
+  recoger el coche. El correo de aviso no lleva la factura.
+- Q: ¿Cómo se numeran las facturas? → A: Un único número que sigue siempre (1, 2, 3…), sin
+  reiniciar cada año; se muestra tal cual («Factura nº 12»).
+- Q: ¿Puede la factura llevar el logo del taller? (petición de la Persona B, 29/10) → A: Sí, es
+  opcional: si el taller tiene configurado un logo, sale en la cabecera de la factura; si no lo
+  tiene, la factura sale sin logo y sin dejar hueco.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Generar la factura de una orden terminada (Priority: P1)
@@ -32,7 +45,13 @@ factura las recoge todas con los importes correctos.
    (21 %) 27,30 € y total 157,30 €.
 2. **Given** la factura emitida, **When** se consulta, **Then** tiene número de factura, fecha,
    datos del cliente y matrícula del vehículo.
-3. **Given** una orden en cualquier estado distinto de «terminada», **When** la recepcionista la
+3. **Given** la factura emitida, **When** la recepcionista pulsa «Imprimir», **Then** se abre la
+   impresión del navegador con la factura sola (sin menú ni botones de la aplicación), lista para
+   imprimir o guardar como PDF.
+4. **Given** el taller tiene configurado su logo, **When** se consulta o se imprime la factura,
+   **Then** el logo sale en la cabecera, junto a los datos del taller; **Given** no lo tiene
+   configurado, **Then** la factura sale igual pero sin logo.
+5. **Given** una orden en cualquier estado distinto de «terminada», **When** la recepcionista la
    abre, **Then** la opción «Facturar» no está disponible.
 
 ---
@@ -48,8 +67,8 @@ puede recoger el vehículo.
 
 **Acceptance Scenarios**:
 
-1. **Given** una orden de la matrícula 1234 BCD, **When** se emite su factura, **Then** el
-   cliente recibe un correo «Su vehículo 1234 BCD está listo para recoger» con el total.
+1. **Given** una orden de la matrícula 1234BCD, **When** se emite su factura, **Then** el
+   cliente recibe un correo «Su vehículo 1234BCD está listo para recoger» con el total.
 
 ---
 
@@ -78,6 +97,8 @@ comprobar que aparecen ambas con sus líneas.
 - El correo del aviso no se puede enviar: la factura se emite igual y la orden muestra que el
   aviso no se envió para que recepción llame al cliente.
 - Las facturas emitidas no se pueden modificar.
+- El logo está configurado pero su archivo no existe o no se puede leer: la factura sale sin
+  logo, igual que si no estuviera configurado.
 
 ## Requirements *(mandatory)*
 
@@ -87,15 +108,20 @@ comprobar que aparecen ambas con sus líneas.
 - **FR-002**: La factura MUST generarse con las horas y piezas imputadas en la orden, sin
   introducir datos a mano.
 - **FR-003**: La factura MUST mostrar cada línea (concepto, cantidad, precio unitario, importe),
-  la base imponible, el IVA desglosado y el total, en euros con formato español.
+  la base imponible, el IVA desglosado y el total, en euros con formato español. MUST poder
+  imprimirse desde la aplicación con la impresión del navegador (que permite guardarla como PDF);
+  no se genera PDF en el servidor ni se envía la factura por correo.
 - **FR-004**: Cada factura MUST tener un número correlativo propio, sin huecos ni repeticiones, y
-  la fecha de emisión.
+  la fecha de emisión. Es una única serie (1, 2, 3…) que no se reinicia al cambiar de año y se
+  muestra tal cual («Factura nº 12»).
 - **FR-005**: Al emitir la factura, la orden MUST pasar a «facturada» y dejar de estar abierta.
 - **FR-006**: Al emitir la factura, el sistema MUST enviar al cliente un aviso por correo de que
   puede recoger el vehículo.
 - **FR-007**: La reparación facturada MUST incorporarse al historial del vehículo, consultable
   por matrícula.
 - **FR-008**: Una orden MUST tener como máximo una factura.
+- **FR-009**: Si el taller tiene configurado un logo, la factura MUST mostrarlo en la cabecera
+  (también al imprimirla); si no lo tiene, MUST mostrarse sin logo y sin hueco.
 
 ### Key Entities
 
@@ -124,3 +150,5 @@ comprobar que aparecen ambas con sus líneas.
   empresas queda fuera de la v1.
 - El envío de facturas a la Agencia Tributaria (VeriFactu u otros) queda fuera de la v1.
 - El historial solo recoge reparaciones facturadas; el historial anterior en papel no se migra.
+- El logo lo configura el equipo al instalar la aplicación (igual que el nombre, el NIF y la
+  dirección del taller); cambiarlo desde una pantalla queda fuera de la v1.

@@ -107,10 +107,15 @@ cd ../backend && cargo run                 # app en http://localhost:3000
 
 ## §7 spec-007 · Factura e historial
 1. Como `ana`, en una orden «En reparación» → **no** aparece «Facturar».
-2. En la orden de 1234BCD («Terminada») pulsar Facturar → factura con su número correlativo con las líneas imputadas, base,
-   IVA y total que cuadran con la calculadora. Sin escribir nada.
-3. En Mailpit llega «Su vehículo 1234BCD está listo para recoger».
-4. En `/historial`, buscar `1234 bcd` → aparece la reparación con fecha, km, diagnóstico y líneas.
+2. En la orden de 1234BCD («Terminada») pulsar Facturar → «Factura nº N» con su número correlativo, las líneas
+   imputadas, base, IVA y total que cuadran con la calculadora. Sin escribir nada.
+3. Pulsar «Ver e imprimir» y después «Imprimir» → la vista previa de impresión muestra solo la factura (sin menú),
+   y se puede guardar como PDF. Sin `TALLER_LOGO` en el `.env` sale sin logo; con `TALLER_LOGO` apuntando a una
+   imagen y la app reiniciada, el logo sale en la cabecera.
+4. En Mailpit llega «Su vehículo 1234BCD está listo para recoger», con el total.
+5. En `/historial`, buscar `1234 bcd` → aparece la reparación con fecha, km, diagnóstico y líneas. Buscar `9999LLL`
+   (datos demo) → aparece su reparación facturada; buscar una matrícula que no existe → «No hay historial para esa
+   matrícula».
 
 ## §8 spec-008 · Tablero
 1. Como `paco`, abrir `/tablero` → 6 columnas (vacías incluidas) y la carga «Luis N · Marta N».

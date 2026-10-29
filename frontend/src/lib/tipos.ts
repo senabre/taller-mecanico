@@ -111,6 +111,44 @@ export type NuevaLinea =
 	| { tipo: 'mano_obra'; concepto: string; cantidad: string }
 	| { tipo: 'pieza'; pieza_id: number; cantidad: string };
 
+// --- spec-007 · Factura e historial ---
+
+/** Línea de factura: copia de una imputación, sin tipo ni id. */
+export interface LineaFactura {
+	concepto: string;
+	cantidad: string;
+	precio_unitario: Importe;
+	importe: Importe;
+}
+
+export interface Factura extends Totales {
+	id: number;
+	numero: number;
+	orden_id: number;
+	fecha: Fecha;
+	/** `logo`: ruta de la imagen si el taller tiene logo configurado (spec-007 FR-009). */
+	taller: { nombre: string; nif: string; direccion: string; logo: string | null };
+	cliente_nombre: string;
+	matricula: string;
+	lineas: LineaFactura[];
+	aviso_enviado: boolean;
+}
+
+export interface Historial {
+	matricula: string;
+	marca: string;
+	modelo: string;
+	reparaciones: {
+		orden_numero: number;
+		fecha: Fecha;
+		km: number;
+		diagnostico: string | null;
+		factura_numero: number;
+		lineas: LineaFactura[];
+		total: Importe;
+	}[];
+}
+
 // --- spec-006 · Almacén y pedidos ---
 
 export interface Pieza {

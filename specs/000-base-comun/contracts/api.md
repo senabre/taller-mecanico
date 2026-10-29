@@ -122,9 +122,15 @@ solo sale de ahí con `recibir` (spec-006 FR-008a).
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `POST /api/ordenes/{id}/factura` | recepcion | — | 201 `Factura` (la orden pasa a `facturada` y se envía el aviso) · 409 si no está terminada o ya tiene factura · 422 si no tiene imputaciones |
-| `GET /api/facturas/{id}` | recepcion | — | `Factura` = `{id, numero, fecha, taller:{nombre,nif,direccion}, cliente_nombre, matricula, lineas, …Totales, aviso_enviado}` |
-| `GET /api/vehiculos/{matricula}/historial` | todos | — | `{matricula, marca, modelo, reparaciones:[{orden_numero, fecha, km, diagnostico, factura_numero, lineas, total}]}` (de la más reciente a la más antigua) |
+| `POST /api/ordenes/{id}/factura` | recepcion | — | 201 `Factura` (la orden pasa a `facturada` y, después de guardar, se envía el aviso) · 409 «La orden está {estado}; solo se puede facturar una orden terminada» · 409 «Esta orden ya tiene factura» · 422 «La orden no tiene imputaciones; no se puede facturar» |
+| `GET /api/facturas/{id}` | recepcion | — | `Factura` = `{id, numero, orden_id, fecha, taller:{nombre,nif,direccion,logo}, cliente_nombre, matricula, lineas:[LineaFactura], …Totales, aviso_enviado}` · 404 |
+| `GET /api/vehiculos/{matricula}/historial` | todos | — | `{matricula, marca, modelo, reparaciones:[{orden_numero, fecha, km, diagnostico, factura_numero, lineas:[LineaFactura], total}]}` (de la más reciente a la más antigua; `[]` si no tiene facturas) · 404 «No hay ningún vehículo con la matrícula 1234BCD» · 422 «Matrícula no válida» |
+
+| `GET /api/taller/logo` | todos | — | la imagen del logo (`TALLER_LOGO`) con su tipo · 404 «No hay logo configurado» |
+
+`taller.logo` es `"/api/taller/logo"` si el taller tiene logo configurado y `null` si no (spec-007 FR-009).
+`LineaFactura` = `{concepto, cantidad, precio_unitario, importe}` (copia de la imputación, sin
+`tipo`). La ficha de la orden (spec-002) llena `factura_id` con `facturas::factura_de_orden`.
 
 ## spec-008 · Tablero
 
