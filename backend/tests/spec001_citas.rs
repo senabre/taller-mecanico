@@ -363,3 +363,144 @@ async fn prueba_12_lista_de_citas(pool: PgPool) {
         assert_eq!(nada, json!([]));
     }
 }
+
+// ---------------------------------------------------------------------------------------------
+// US2 · Cliente con vehículo nuevo
+// ---------------------------------------------------------------------------------------------
+
+/// Prueba 1 (FR-004; US2-1, US2-2): alta del cliente, del vehículo y de la cita.
+#[sqlx::test]
+async fn prueba_1_alta_completa(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let (codigo, _) = vehiculo_publico(&app, "5678CDF").await;
+    assert_eq!(codigo, StatusCode::NOT_FOUND);
+
+    let fecha = laborable(1);
+    let mut cuerpo = cita_nueva("5678 cdf", fecha);
+    cuerpo["vehiculo"] = json!({ "marca": "  Kia ", "modelo": " Ceed  " });
+    cuerpo["cliente"] =
+        json!({ "nombre": "  Luis Gil ", "telefono": " 612-345-678 ", "email": " luis@ejemplo.test  " });
+    let (codigo, respuesta) = pedir(&app, cuerpo).await;
+    assert_eq!(codigo, StatusCode::CREATED, "{respuesta}");
+    assert_eq!(
+        respuesta,
+        json!({ "fecha": fecha.to_string(), "motivo": "Ruido al frenar", "matricula": "5678CDF" })
+    );
+
+    for tabla in ["cliente", "vehiculo", "cita"] {
+        assert_eq!(contar(&pool, tabla).await, 1, "{tabla}");
+    }
+    // Tal como se escribieron, sin los espacios del principio y del final.
+    assert_eq!(
+        cliente_de(&pool, "5678CDF").await,
+        ("Luis Gil".into(), "612-345-678".into(), "luis@ejemplo.test".into())
+    );
+    let (codigo, vehiculo) = vehiculo_publico(&app, "5678CDF").await;
+    assert_eq!(codigo, StatusCode::OK, "{vehiculo}");
+    assert_eq!(
+        vehiculo,
+        json!({ "matricula": "5678CDF", "marca": "Kia", "modelo": "Ceed", "cita_pendiente": true })
+    );
+}
+
+/// Petición con matrícula nueva y el teléfono y el correo indicados.
+fn con_contacto(matricula: &str, fecha: NaiveDate, telefono: &str, email: &str) -> Value {
+    let mut cuerpo = cita_nueva(matricula, fecha);
+    cuerpo["cliente"]["telefono"] = json!(telefono);
+    cuerpo["cliente"]["email"] = json!(email);
+    cuerpo
+}
+
+/// Prueba 4 (FR-004a; US2-3, US2-4): reglas del teléfono y del correo, y su lugar en el orden
+/// de las comprobaciones.
+#[sqlx::test]
+async fn prueba_4_telefono_y_correo(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let fecha = laborable(1);
+    const TELEFONO: &str = "El teléfono no es válido";
+    const CORREO: &str = "El correo no es válido";
+
+    let incorrectos = [
+        ("12345", "ana@correo.es", TELEFONO, "cliente.telefono"),
+        ("", "ana@correo.es", TELEFONO, "cliente.telefono"),
+        ("61234567", "ana@correo.es", TELEFONO, "cliente.telefono"), // 8 cifras
+        ("6123456789012345", "ana@correo.es", TELEFONO, "cliente.telefono"), // 16 cifras
+        ("6123+45678", "ana@correo.es", TELEFONO, "cliente.telefono"),
+        ("612345678", "ana@correo", CORREO, "cliente.email"),
+        ("612345678", "", CORREO, "cliente.email"),
+        ("612345678", "a@@b.es", CORREO, "cliente.email"),
+        ("612345678", "@b.es", CORREO, "cliente.email"),
+        ("612345678", "a@.es", CORREO, "cliente.email"),
+        ("612345678", "a@b.", CORREO, "cliente.email"),
+    ];
+    for (telefono, email, mensaje, campo) in incorrectos {
+        let (codigo, cuerpo) = pedir(&app, con_contacto("5678CDF", fecha, telefono, email)).await;
+        assert_eq!(codigo, StatusCode::UNPROCESSABLE_ENTITY, "{telefono:?} {email:?}: {cuerpo}");
+        assert_eq!(cuerpo["error"], mensaje, "{telefono:?} {email:?}");
+        assert_eq!(cuerpo["detalle"]["campo"], campo, "{telefono:?} {email:?}");
+    }
+    for tabla in ["cliente", "vehiculo", "cita"] {
+        assert_eq!(contar(&pool, tabla).await, 0, "{tabla}");
+    }
+
+    // Válidos: cada uno con su matrícula y su día, para no llenar el cupo (T029).
+    let correctos = [
+        ("5678CDF", "+34 612 345 678"),
+        ("5679CDF", "612-345-678"),
+        ("5680CDF", "612345678901234"), // 15 cifras
+    ];
+    for (n, (matricula, telefono)) in correctos.into_iter().enumerate() {
+        let cuerpo = con_contacto(matricula, laborable(n + 1), telefono, "ana@correo.es");
+        let (codigo, respuesta) = pedir(&app, cuerpo).await;
+        assert_eq!(codigo, StatusCode::CREATED, "{telefono:?}: {respuesta}");
+    }
+
+    // Con el día ya lleno, un teléfono incorrecto da 422 y no el 409 del cupo: los datos del
+    // vehículo nuevo se validan antes de los bloqueos (hallazgo I3).
+    let lleno = laborable(5);
+    for matricula in ["1111AAA", "2222AAA"] {
+        let id = insertar_vehiculo(&pool, matricula, "Seat", "Ibiza", "Ana", "600000001", "a@ejemplo.test").await;
+        insertar_cita(&pool, id, lleno, "Revisión").await;
+    }
+    let (codigo, cuerpo) = pedir(&app, con_contacto("9012DFG", lleno, "12345", "ana@correo.es")).await;
+    assert_eq!(codigo, StatusCode::UNPROCESSABLE_ENTITY, "{cuerpo}");
+    assert_eq!(cuerpo["error"], TELEFONO);
+}
+
+/// Prueba 5 (FR-004, FR-005): campos obligatorios con una matrícula nueva.
+#[sqlx::test]
+async fn prueba_5_obligatorios(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let fecha = laborable(1);
+
+    let mut sin_motivo = cita_nueva("5678CDF", fecha);
+    sin_motivo["motivo"] = json!("   ");
+    let mut sin_marca = cita_nueva("5678CDF", fecha);
+    sin_marca["vehiculo"]["marca"] = json!("");
+    let mut sin_modelo = cita_nueva("5678CDF", fecha);
+    sin_modelo["vehiculo"]["modelo"] = json!("  ");
+    let mut sin_vehiculo = cita_nueva("5678CDF", fecha);
+    sin_vehiculo.as_object_mut().unwrap().remove("vehiculo");
+    let mut sin_nombre = cita_nueva("5678CDF", fecha);
+    sin_nombre["cliente"]["nombre"] = json!(" ");
+    let mut sin_cliente = cita_nueva("5678CDF", fecha);
+    sin_cliente.as_object_mut().unwrap().remove("cliente");
+
+    let casos = [
+        (sin_motivo, "El motivo es obligatorio", "motivo"),
+        (sin_marca, "La marca es obligatoria", "vehiculo.marca"),
+        (sin_modelo, "El modelo es obligatorio", "vehiculo.modelo"),
+        (sin_vehiculo, "La marca es obligatoria", "vehiculo.marca"),
+        (sin_nombre, "El nombre es obligatorio", "cliente.nombre"),
+        (sin_cliente, "El nombre es obligatorio", "cliente.nombre"),
+    ];
+    for (cuerpo, mensaje, campo) in casos {
+        let (codigo, respuesta) = pedir(&app, cuerpo).await;
+        assert_eq!(codigo, StatusCode::UNPROCESSABLE_ENTITY, "{campo}: {respuesta}");
+        assert_eq!(respuesta["error"], mensaje, "{campo}");
+        assert_eq!(respuesta["detalle"]["campo"], campo, "{campo}");
+    }
+    for tabla in ["cliente", "vehiculo", "cita"] {
+        assert_eq!(contar(&pool, tabla).await, 0, "{tabla}");
+    }
+}

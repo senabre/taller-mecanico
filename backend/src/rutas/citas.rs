@@ -42,6 +42,27 @@ fn dias_ofrecidos(hoy: NaiveDate) -> Vec<NaiveDate> {
         .collect()
 }
 
+/// Teléfono (contrato, tabla de validación): tras quitar espacios y guiones, un «+» opcional
+/// solo al principio y de 9 a 15 cifras.
+fn telefono_valido(texto: &str) -> bool {
+    let limpio: String = texto.chars().filter(|c| *c != ' ' && *c != '-').collect();
+    let cifras = limpio.strip_prefix('+').unwrap_or(&limpio);
+    (9..=15).contains(&cifras.len()) && cifras.chars().all(|c| c.is_ascii_digit())
+}
+
+/// Correo (contrato, tabla de validación): una sola «@», texto delante y, detrás, un dominio con
+/// un «.» que tiene texto a ambos lados. Solo se comprueban caracteres (research D2).
+fn correo_valido(texto: &str) -> bool {
+    let Some((usuario, dominio)) = texto.split_once('@') else {
+        return false;
+    };
+    !usuario.is_empty()
+        && !dominio.contains('@')
+        && dominio.contains('.')
+        && !dominio.starts_with('.')
+        && !dominio.ends_with('.')
+}
+
 /// Id del vehículo con esa matrícula (ya normalizada), si existe.
 async fn buscar_vehiculo(db: impl PgExecutor<'_>, matricula: &str) -> Resultado<Option<i64>> {
     let id = sqlx::query_scalar("SELECT id FROM vehiculo WHERE matricula = $1")
@@ -94,6 +115,75 @@ struct PeticionCita {
     matricula: Option<String>,
     fecha: Option<String>,
     motivo: Option<String>,
+    /// Solo cuentan si la matrícula es nueva; con un vehículo conocido se ignoran (D4).
+    vehiculo: Option<DatosVehiculo>,
+    cliente: Option<DatosCliente>,
+}
+
+#[derive(Deserialize)]
+struct DatosVehiculo {
+    marca: Option<String>,
+    modelo: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct DatosCliente {
+    nombre: Option<String>,
+    telefono: Option<String>,
+    email: Option<String>,
+}
+
+/// Datos de un vehículo nuevo y de su propietario, ya validados y sin espacios al principio ni
+/// al final; por lo demás, tal como se escribieron (research D2).
+struct AltaNueva<'a> {
+    marca: &'a str,
+    modelo: &'a str,
+    nombre: &'a str,
+    telefono: &'a str,
+    email: &'a str,
+}
+
+/// Valida los datos del vehículo nuevo en el orden de la tabla de validación. Si falta el objeto
+/// `vehiculo` o `cliente`, sus campos cuentan como vacíos.
+fn validar_alta(peticion: &PeticionCita) -> Resultado<AltaNueva<'_>> {
+    fn texto(valor: Option<&String>) -> &str {
+        valor.map(|v| v.trim()).unwrap_or_default()
+    }
+    fn obligatorio<'a>(valor: &'a str, campo: &str, mensaje: &str) -> Resultado<&'a str> {
+        if valor.is_empty() {
+            Err(error_campo(campo, mensaje))
+        } else {
+            Ok(valor)
+        }
+    }
+    let vehiculo = peticion.vehiculo.as_ref();
+    let cliente = peticion.cliente.as_ref();
+    let alta = AltaNueva {
+        marca: obligatorio(
+            texto(vehiculo.and_then(|v| v.marca.as_ref())),
+            "vehiculo.marca",
+            "La marca es obligatoria",
+        )?,
+        modelo: obligatorio(
+            texto(vehiculo.and_then(|v| v.modelo.as_ref())),
+            "vehiculo.modelo",
+            "El modelo es obligatorio",
+        )?,
+        nombre: obligatorio(
+            texto(cliente.and_then(|c| c.nombre.as_ref())),
+            "cliente.nombre",
+            "El nombre es obligatorio",
+        )?,
+        telefono: texto(cliente.and_then(|c| c.telefono.as_ref())),
+        email: texto(cliente.and_then(|c| c.email.as_ref())),
+    };
+    if !telefono_valido(alta.telefono) {
+        return Err(error_campo("cliente.telefono", "El teléfono no es válido"));
+    }
+    if !correo_valido(alta.email) {
+        return Err(error_campo("cliente.email", "El correo no es válido"));
+    }
+    Ok(alta)
 }
 
 async fn crear_cita(
@@ -119,13 +209,10 @@ async fn crear_cita(
 
     // 2. Antes de los bloqueos: si el vehículo es nuevo, sus datos se validan aquí, para que
     //    todos los 422 lleguen antes que cualquier 409.
-    if buscar_vehiculo(&estado.db, &matricula).await?.is_none() {
-        // Hueco de T024 (US2): validar marca, modelo, nombre, teléfono y correo.
-        return Err(ErrorApi::Validacion {
-            mensaje: "Todavía no se pueden dar de alta vehículos nuevos".to_string(),
-            detalle: None,
-        });
-    }
+    let alta = match buscar_vehiculo(&estado.db, &matricula).await? {
+        Some(_) => None,
+        None => Some(validar_alta(&peticion)?),
+    };
 
     // 3. Los dos bloqueos, siempre en este orden para que no haya interbloqueos (R6 del plan
     //    maestro, tabla de claves; research D3). Primero la fecha, con la forma de una clave de
@@ -162,13 +249,30 @@ async fn crear_cita(
 
     // 6. Hueco de T029 (US3): cupo del día, 409.
 
-    // 7. Hueco de T024 (US2): alta del cliente y del vehículo nuevos. Inalcanzable hasta
-    //    entonces, porque el paso 2 ya ha respondido con una matrícula nueva.
-    let Some(vehiculo_id) = existente else {
-        return Err(ErrorApi::Validacion {
-            mensaje: "Todavía no se pueden dar de alta vehículos nuevos".to_string(),
-            detalle: None,
-        });
+    // 7. Alta del cliente y del vehículo nuevos, con los datos validados en el paso 2.
+    let vehiculo_id = match (existente, alta) {
+        (Some(id), _) => id,
+        (None, Some(alta)) => {
+            sqlx::query_scalar(
+                "WITH nuevo AS (
+                     INSERT INTO cliente (nombre, telefono, email) VALUES ($4, $5, $6) RETURNING id
+                 )
+                 INSERT INTO vehiculo (matricula, marca, modelo, cliente_id)
+                 SELECT $1, $2, $3, id FROM nuevo RETURNING id",
+            )
+            .bind(&matricula)
+            .bind(alta.marca)
+            .bind(alta.modelo)
+            .bind(alta.nombre)
+            .bind(alta.telefono)
+            .bind(alta.email)
+            .fetch_one(&mut *tx)
+            .await?
+        }
+        // Existía en el paso 2 y ya no: no hay ninguna operación que borre vehículos.
+        (None, None) => {
+            return Err(ErrorApi::Interno(format!("el vehículo {matricula} ha desaparecido")));
+        }
     };
 
     // 8. La cita.
@@ -272,4 +376,37 @@ async fn citas_del_dia(
         })
         .collect();
     Ok(Json(citas))
+}
+
+#[cfg(test)]
+mod pruebas {
+    use super::*;
+
+    #[test]
+    fn telefonos_validos() {
+        for texto in ["612345678", "+34 612 345 678", "612-345-678", "612345678901234"] {
+            assert!(telefono_valido(texto), "{texto:?}");
+        }
+    }
+
+    #[test]
+    fn telefonos_no_validos() {
+        for texto in ["", "12345", "61234567", "6123456789012345", "6123+45678", "+", "61234567a"] {
+            assert!(!telefono_valido(texto), "{texto:?}");
+        }
+    }
+
+    #[test]
+    fn correos_validos() {
+        for texto in ["ana@correo.es", "a@b.c", "ana.perez@mi.correo.es"] {
+            assert!(correo_valido(texto), "{texto:?}");
+        }
+    }
+
+    #[test]
+    fn correos_no_validos() {
+        for texto in ["", "ana@correo", "a@@b.es", "@b.es", "a@.es", "a@b.", "a@b@c.es", "ana.es"] {
+            assert!(!correo_valido(texto), "{texto:?}");
+        }
+    }
 }

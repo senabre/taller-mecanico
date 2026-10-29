@@ -3,7 +3,7 @@
 	// salen del servidor: el formulario usa `novalidate` (research D2).
 	import { ErrorApi, get, post } from '$lib/api';
 	import { fecha as fechaEs } from '$lib/formato';
-	import type { CitaCreada, Fecha, VehiculoPublico } from '$lib/tipos';
+	import type { CitaCreada, Fecha, PeticionCita, VehiculoPublico } from '$lib/tipos';
 
 	const CITA_PENDIENTE = 'Este vehículo ya tiene una cita pendiente.';
 
@@ -18,6 +18,14 @@
 	let vehiculo = $state<VehiculoPublico | null>(null);
 	let buscando = $state(false);
 
+	// Vehículo nuevo (404): se piden sus datos y los del contacto (US2). Se envían solo en ese caso.
+	let nuevo = $state(false);
+	let marca = $state('');
+	let modelo = $state('');
+	let nombre = $state('');
+	let telefono = $state('');
+	let email = $state('');
+
 	// Mensaje de error por campo (`detalle.campo` del 422) y error general.
 	let errores: Record<string, string> = $state({});
 	let error = $state('');
@@ -25,7 +33,10 @@
 	let confirmada = $state<CitaCreada | null>(null);
 
 	const puedeConfirmar = $derived(
-		vehiculo !== null && !vehiculo.cita_pendiente && fecha !== '' && !enviando && !buscando
+		(nuevo || (vehiculo !== null && !vehiculo.cita_pendiente)) &&
+			fecha !== '' &&
+			!enviando &&
+			!buscando
 	);
 
 	async function cargarDias() {
@@ -41,8 +52,18 @@
 		cargarDias();
 	});
 
+	function vaciarDatosNuevos() {
+		marca = '';
+		modelo = '';
+		nombre = '';
+		telefono = '';
+		email = '';
+	}
+
 	function matriculaCambiada() {
 		vehiculo = null;
+		// Se ocultan hasta volver a buscar, pero conservan lo escrito por si sigue siendo nueva.
+		nuevo = false;
 		delete errores.matricula;
 		error = '';
 	}
@@ -51,17 +72,19 @@
 		if (matricula.trim() === '') return;
 		buscando = true;
 		vehiculo = null;
+		nuevo = false;
 		errores = {};
 		error = '';
 		try {
 			vehiculo = await get<VehiculoPublico>(
 				'/publico/vehiculos/' + encodeURIComponent(matricula.trim())
 			);
+			vaciarDatosNuevos();
 		} catch (e) {
 			if (e instanceof ErrorApi && e.estado === 422) {
 				errores = { matricula: e.message };
 			} else if (e instanceof ErrorApi && e.estado === 404) {
-				// Vehículo nuevo: los campos de vehículo y contacto los añade T025 (US2).
+				nuevo = true;
 			} else {
 				error = e instanceof ErrorApi ? e.message : 'Ha ocurrido un error inesperado';
 			}
@@ -77,11 +100,12 @@
 		errores = {};
 		error = '';
 		try {
-			confirmada = await post<CitaCreada>('/publico/citas', {
-				matricula: matricula.trim(),
-				fecha,
-				motivo
-			});
+			const peticion: PeticionCita = { matricula: matricula.trim(), fecha: fecha as Fecha, motivo };
+			if (nuevo) {
+				peticion.vehiculo = { marca, modelo };
+				peticion.cliente = { nombre, telefono, email };
+			}
+			confirmada = await post<CitaCreada>('/publico/citas', peticion);
 		} catch (e) {
 			if (e instanceof ErrorApi && e.estado === 422 && typeof e.detalle?.campo === 'string') {
 				errores = { [e.detalle.campo]: e.message };
@@ -101,6 +125,8 @@
 		fecha = '';
 		motivo = '';
 		vehiculo = null;
+		nuevo = false;
+		vaciarDatosNuevos();
 		errores = {};
 		cargarDias();
 	}
@@ -144,6 +170,46 @@
 				{#if vehiculo.cita_pendiente}
 					<p class="text-warning-700-300" role="alert">{CITA_PENDIENTE}</p>
 				{/if}
+			{:else if nuevo}
+				<fieldset class="space-y-4">
+					<legend>No conocemos este vehículo. Cuéntanos qué coche es y cómo contactarte.</legend>
+					<label class="label">
+						<span class="label-text">Marca</span>
+						<input class="input" name="marca" autocomplete="off" bind:value={marca} />
+						{#if errores['vehiculo.marca']}
+							<span class="text-error-500" role="alert">{errores['vehiculo.marca']}</span>
+						{/if}
+					</label>
+					<label class="label">
+						<span class="label-text">Modelo</span>
+						<input class="input" name="modelo" autocomplete="off" bind:value={modelo} />
+						{#if errores['vehiculo.modelo']}
+							<span class="text-error-500" role="alert">{errores['vehiculo.modelo']}</span>
+						{/if}
+					</label>
+					<label class="label">
+						<span class="label-text">Nombre</span>
+						<input class="input" name="nombre" autocomplete="name" bind:value={nombre} />
+						{#if errores['cliente.nombre']}
+							<span class="text-error-500" role="alert">{errores['cliente.nombre']}</span>
+						{/if}
+					</label>
+					<!-- type="tel" y type="email" solo por el teclado del móvil: el formulario es novalidate. -->
+					<label class="label">
+						<span class="label-text">Teléfono</span>
+						<input class="input" type="tel" name="telefono" autocomplete="tel" bind:value={telefono} />
+						{#if errores['cliente.telefono']}
+							<span class="text-error-500" role="alert">{errores['cliente.telefono']}</span>
+						{/if}
+					</label>
+					<label class="label">
+						<span class="label-text">Correo electrónico</span>
+						<input class="input" type="email" name="email" autocomplete="email" bind:value={email} />
+						{#if errores['cliente.email']}
+							<span class="text-error-500" role="alert">{errores['cliente.email']}</span>
+						{/if}
+					</label>
+				</fieldset>
 			{/if}
 
 			<label class="label">

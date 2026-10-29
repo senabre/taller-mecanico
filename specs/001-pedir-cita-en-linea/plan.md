@@ -134,7 +134,8 @@ pruebas y dos pantallas, y toca un fichero compartido: `matricula.rs`.
 - **Frontend `/cita`**: `novalidate`; si no hay días disponibles, «No quedan fechas libres en
   los próximos 30 días. Llama al taller para pedir cita.»; al salir del campo matrícula llama al `GET`. El 422 se
   muestra bajo la matrícula, el aviso de cita pendiente desactiva Confirmar, el 404 abre los
-  campos de vehículo y contacto, y el 200 los oculta. Al confirmar, un 422 se muestra bajo el campo
+  campos de vehículo y contacto, encabezados por el texto de pantalla «No conocemos este vehículo.
+  Cuéntanos qué coche es y cómo contactarte.» (texto normal, no título), y el 200 los oculta. Al confirmar, un 422 se muestra bajo el campo
   de `detalle.campo`. Con el 409 de cupo, se vuelven a pedir los días y se muestra «Ese día se
   acaba de completar; elige otro».
 - **Frontend `/citas`**: un selector de fecha (hoy por defecto) y una tabla con matrícula, marca,
