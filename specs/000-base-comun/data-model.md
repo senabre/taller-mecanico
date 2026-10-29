@@ -152,6 +152,12 @@ caducado no cuenta y la orden puede tener otro.
 (las horas en múltiplos de 0,25), `precio_unitario`, `importe`, `usuario_id` FK, `creada_en`.
 Solo se admite si la orden está `en_reparacion`. Una imputación de pieza descuenta el stock en la
 misma transacción: `UPDATE pieza SET stock = stock - $n WHERE id = $1 AND stock >= $n`.
+- `cantidad`: horas en múltiplos de 0,25 (`CHECK` de `0001`); piezas en unidades enteras (`CHECK`
+  de `0003`, spec-005 D2).
+- `concepto`: horas, el que escribe el mecánico (obligatorio); pieza, «referencia descripción»
+  puesto por el servidor. Misma validación que `linea_presupuesto` (`lineas.rs`, spec-005 D1).
+- Tras cada imputación, si `coste_acumulado > total_presupuestado × 1,10` la orden pasa a
+  `pendiente_conformidad` (spec-005 D4). Nunca se modifican ni se borran.
 
 ### proveedor *(spec-006)*
 `nombre` TEXT único. Vienen **precargados** (los de demo en `seed/demo.sql`); la app no los crea,

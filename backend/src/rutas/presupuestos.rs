@@ -1,8 +1,6 @@
 //! Diagnóstico y presupuesto (spec-003; contrato, sección «spec-003 · Diagnóstico y
 //! presupuesto»). Las ampliaciones de spec-005 usan estos mismos endpoints.
 
-use std::str::FromStr;
-
 use axum::Router;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
@@ -10,16 +8,16 @@ use axum::routing::{delete, get, post, put};
 use chrono::{DateTime, Days, NaiveDate, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use sqlx::PgConnection;
 
 use crate::EstadoApp;
 use crate::auth::{Usuario, nuevo_token};
 use crate::config::Config;
-use crate::dinero::{importe_linea, totales};
+use crate::dinero::totales;
 use crate::error::{ErrorApi, Json, Resultado};
 use crate::estados::{Estado, cambiar_estado};
 use crate::fechas;
+use crate::lineas::{Linea, NuevaLinea, validar};
 
 pub fn rutas() -> Router<EstadoApp> {
     Router::new()
@@ -79,21 +77,6 @@ async fn presupuesto_bloqueado(
     .fetch_optional(tx)
     .await?
     .ok_or_else(|| ErrorApi::NoEncontrado("No existe el presupuesto".to_string()))
-}
-
-/// El objeto `Linea` del contrato.
-#[derive(Serialize, sqlx::FromRow)]
-struct Linea {
-    id: i64,
-    tipo: String,
-    concepto: String,
-    pieza_id: Option<i64>,
-    #[serde(with = "rust_decimal::serde::str")]
-    cantidad: Decimal,
-    #[serde(with = "rust_decimal::serde::str")]
-    precio_unitario: Decimal,
-    #[serde(with = "rust_decimal::serde::str")]
-    importe: Decimal,
 }
 
 /// El objeto `Presupuesto` del contrato.
@@ -400,30 +383,6 @@ async fn ver_presupuesto(
     ))
 }
 
-/// Los campos llegan como JSON sin tipar para responder 422 (y no 400) a un tipo equivocado.
-#[derive(Deserialize)]
-struct NuevaLinea {
-    tipo: Option<String>,
-    concepto: Option<String>,
-    pieza_id: Option<Value>,
-    cantidad: Option<Value>,
-}
-
-/// Cantidad > 0 con 2 decimales como máximo, como texto (`"1.5"`) o número.
-fn cantidad(valor: &Option<Value>) -> Option<Decimal> {
-    let decimal = match valor.as_ref()? {
-        Value::String(texto) => Decimal::from_str(texto.trim()).ok()?,
-        Value::Number(numero) => Decimal::from_str(&numero.to_string()).ok()?,
-        _ => return None,
-    };
-    if decimal <= Decimal::ZERO || decimal.normalize().scale() > 2 {
-        return None;
-    }
-    let mut decimal = decimal;
-    decimal.rescale(2);
-    Some(decimal)
-}
-
 async fn anadir_linea(
     State(estado): State<EstadoApp>,
     usuario: Usuario,
@@ -437,58 +396,8 @@ async fn anadir_linea(
         return Err(ErrorApi::Conflicto(EMITIDO.to_string()));
     }
 
-    let (tipo, concepto, pieza_id, cantidad, precio_unitario) = match nueva.tipo.as_deref() {
-        Some("mano_obra") => {
-            let horas = cantidad(&nueva.cantidad)
-                .ok_or_else(|| validacion("Indica las horas: un número mayor que 0"))?;
-            if (horas * Decimal::from(4)).fract() != Decimal::ZERO {
-                return Err(validacion(
-                    "Las horas van en múltiplos de 0,25 (p. ej. 1,5)",
-                ));
-            }
-            let concepto = nueva.concepto.as_deref().unwrap_or("").trim().to_string();
-            if concepto.is_empty() {
-                return Err(validacion("Escribe el concepto de la mano de obra"));
-            }
-            (
-                "mano_obra",
-                concepto,
-                None,
-                horas,
-                estado.config.precio_hora,
-            )
-        }
-        Some("pieza") => {
-            let unidades = cantidad(&nueva.cantidad)
-                .ok_or_else(|| validacion("Indica las unidades: un número mayor que 0"))?;
-            if unidades.fract() != Decimal::ZERO {
-                return Err(validacion(
-                    "Las unidades de pieza deben ser un número entero",
-                ));
-            }
-            let pieza: Option<(i64, String, String, Decimal)> =
-                match nueva.pieza_id.as_ref().and_then(Value::as_i64) {
-                    Some(pieza_id) => sqlx::query_as(
-                        "SELECT id, referencia, descripcion, precio_venta FROM pieza WHERE id = $1",
-                    )
-                    .bind(pieza_id)
-                    .fetch_optional(&mut *tx)
-                    .await?,
-                    None => None,
-                };
-            let (pieza_id, referencia, descripcion, precio_venta) =
-                pieza.ok_or_else(|| validacion("Elige una referencia de pieza dada de alta"))?;
-            // El concepto de una pieza lo pone el servidor (research D3). No se mira el stock.
-            (
-                "pieza",
-                format!("{referencia} {descripcion}"),
-                Some(pieza_id),
-                unidades,
-                precio_venta,
-            )
-        }
-        _ => return Err(validacion("El tipo de línea debe ser mano de obra o pieza")),
-    };
+    // Validación compartida con las imputaciones (lineas.rs). En el presupuesto no se mira el stock.
+    let linea = validar(&mut tx, &estado.config, &nueva).await?;
 
     sqlx::query(
         "INSERT INTO linea_presupuesto (presupuesto_id, tipo, concepto, pieza_id, cantidad,
@@ -496,12 +405,12 @@ async fn anadir_linea(
          VALUES ($1, $2::tipo_linea, $3, $4, $5, $6, $7)",
     )
     .bind(id)
-    .bind(tipo)
-    .bind(concepto)
-    .bind(pieza_id)
-    .bind(cantidad)
-    .bind(precio_unitario)
-    .bind(importe_linea(cantidad, precio_unitario))
+    .bind(linea.tipo)
+    .bind(linea.concepto)
+    .bind(linea.pieza_id)
+    .bind(linea.cantidad)
+    .bind(linea.precio_unitario)
+    .bind(linea.importe)
     .execute(&mut *tx)
     .await?;
     let presupuesto = presupuesto_por_id(&mut tx, id, &estado.config).await?;

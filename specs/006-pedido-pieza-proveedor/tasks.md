@@ -152,7 +152,7 @@ como `luis` → aparecen los dos con su estado.
 
 - [x] T029 [P] Revisar que todos los mensajes de error de `backend/src/rutas/almacen.rs` y de las pantallas están en español de España y que precios y fechas usan `frontend/src/lib/formato.ts`
 - [x] T030 [P] Revisar que no existe ningún endpoint ni control de interfaz para crear proveedores ni para cambiar a mano el estado de una orden (`grep` de `proveedores` y `estado` en `backend/src/rutas/` y `frontend/src/routes/`), y que no hay ninguna conexión con catálogos de fabricantes ni dependencia nueva para ello (FR-008a, FR-010, FR-011)
-- [ ] T031 *(ejecutado: 21 pruebas en verde y `npm run check` sin errores; queda quitar los `#[ignore]` cuando existan spec-002 y spec-005)* Ejecutar `cd backend && cargo test spec006` y `cd frontend && npm run check`; quitar el `#[ignore]` de T016 y T026 en cuanto existan spec-002 y spec-005
+- [ ] T031 *(ejecutado: 21 pruebas en verde y `npm run check` sin errores. El `#[ignore]` de T016 se quitó en spec-005 (T027) y pasa; queda el de T026, que espera a spec-002)* Ejecutar `cd backend && cargo test spec006` y `cd frontend && npm run check`; quitar el `#[ignore]` de T016 y T026 en cuanto existan spec-002 y spec-005
 - [ ] T032 *(22/10/2026: la Persona B recorrió en pantalla como `pepe` los pasos 1–6, 8 y 9 y todo se cumple; la vuelta de la orden a «en reparación» se comprobó en la base de datos. Falta el paso 7, que necesita la ficha de la orden de spec-002)* Recorrer a mano [quickstart §6](../000-base-comun/quickstart.md) completo como `pepe`, `luis` y `paco`, y anotar que se cumplen SC-001…SC-006
 
 ---
