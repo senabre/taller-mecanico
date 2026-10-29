@@ -28,9 +28,16 @@ Persona B):
 | Al confirmar | `POST /api/publico/citas` (`vehiculo` y `cliente` solo si fue 404); los 422 llegan siempre antes que los 409 (orden de la tabla de validación) | **201**: fecha en dd/mm/aaaa y motivo · **409** cita pendiente: el aviso de FR-010 · **409** día completo: vuelve a pedir los días y muestra «Ese día se acaba de completar; elige otro» · **422**: el mensaje bajo el campo de `detalle.campo` | FR-004a, FR-007, FR-008, FR-010 |
 
 El formulario usa `novalidate` (research D2): todos los mensajes de error de los campos salen
-del servidor. Además de las etiquetas de los campos y los botones, los únicos textos propios
-del formulario son:
+del servidor. Se consideran **etiquetas**, y no se enumeran aquí, los nombres de los campos
+(Matrícula, Día, Motivo de la visita, Marca, Modelo, Nombre, Teléfono, Correo electrónico), los
+textos de los botones («Confirmar», «Confirmando…», «Pedir otra cita»), la opción vacía del
+selector («Elige un día»), el ejemplo del campo matrícula («1234 BCD») y los rótulos que preceden
+a un dato mostrado («Vehículo:», «Fecha:», «Motivo:»). Aparte de las etiquetas, los únicos textos
+propios del formulario son:
 
+- «Pedir cita» (título de la página) y «Cita confirmada» (título de la confirmación, FR-008);
+- «Este vehículo ya tiene una cita pendiente.» (texto fijado por FR-010), que el formulario
+  muestra tras el `GET` con `cita_pendiente: true` y es el mismo del 409;
 - «No quedan fechas libres en los próximos 30 días. Llama al taller para pedir cita.» (lista de
   días vacía, FR-006, FR-007);
 - «Ese día se acaba de completar; elige otro» (409 de cupo, US3-2);
