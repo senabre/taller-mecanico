@@ -281,3 +281,17 @@ Task: "T019 Lista de citas en frontend/src/routes/citas/+page.svelte"
 - T001 va en un commit propio. El resto, un commit por tarea o por grupo lógico.
 - Los ficheros compartidos (`matricula.rs`, `tipos.ts` y los documentos de `specs/000-base-comun/`)
   los revisa la Persona B antes de fusionar.
+
+---
+
+## Phase 7: Convergence
+
+Tareas que salen de [converge-1.md](converge-1.md) (2026-10-29). **Responsable**: Persona A ·
+**Revisor**: Persona B. Conviene hacerlas antes de T032, para que la prueba manual se haga sobre el
+código definitivo.
+
+- [ ] T035 [US1] En `frontend/src/routes/cita/+page.svelte`, con un 409 «Este vehículo ya tiene una cita pendiente.» mostrar siempre el aviso y desactivar Confirmar, también cuando el formulario había tratado la matrícula como nueva (`nuevo = true`, `vehiculo = null`); por ejemplo, volviendo a buscar el vehículo para que pase a «conocido con cita pendiente» y se oculten los campos de vehículo nuevo (converge-1 F1; Persona A, revisa Persona B) per FR-010, US1-4 (partial)
+- [ ] T036 [US2] En `backend/tests/spec001_citas.rs`, añadir una prueba de concurrencia del alta: dos `POST` a la vez con la misma matrícula **nueva** y datos de cliente distintos → un 201 y un 409 «Este vehículo ya tiene una cita pendiente.», exactamente 1 cliente, 1 vehículo y 1 cita, y el cliente guardado es el de la petición que ha recibido el 201; repetir 20 veces y comprobar que falla si se quita temporalmente el bloqueo por matrícula (converge-1 F2; Persona A, revisa Persona B) per FR-004, FR-010, research D3 y D4 (partial)
+- [ ] T037 [US1] En `frontend/src/routes/citas/+page.svelte`, ignorar las respuestas de `GET /api/citas` que no correspondan al día seleccionado en ese momento, para que la tabla nunca muestre las citas de un día distinto del del selector (converge-1 F3; Persona A, revisa Persona B) per FR-009, US1-8 (partial)
+- [ ] T038 Alinear los contratos con lo implementado: en `contracts/api.md` de 001, la lista completa de textos propios de `/cita` («No conocemos este vehículo. Cuéntanos qué coche es y cómo contactarte.», «Buscando el vehículo…», «No se pudieron cargar los días», «Ha ocurrido un error inesperado», además de los dos que ya figuran); en el contrato común, `detalle.campo` en el 422 de `GET /api/publico/vehiculos/{matricula}` y el 400 «La fecha no es válida» de `GET /api/citas` (desviaciones de T015 y T017). Si la Persona B rechaza alguno, cambiar el código en su lugar (converge-1 F4; Persona A, revisa Persona B, porque el contrato común es compartido) per contracts/api.md de 001 y contrato común (contradicts)
+- [ ] T039 Justificar en `plan.md` (Frontend `/cita` y `/citas`) los botones «Pedir otra cita» (tras la confirmación; recepción usa el mismo formulario, Assumptions de la spec) y «Hoy» (en `/citas`, vuelve al día con el que abre la lista, FR-009), o quitarlos del código (converge-1 F5; Persona A, revisa Persona B) per Constitución III (unrequested)
