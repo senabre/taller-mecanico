@@ -119,13 +119,16 @@ async fn dias_disponibles(State(estado): State<EstadoApp>) -> Resultado<Json<Vec
     .bind(ultimo)
     .fetch_all(&estado.db)
     .await?;
+    // Un día sin citas no sale en el `GROUP BY`: cuenta como 0, que también llena un cupo de 0
+    // (hallazgo H1), igual que la comprobación del `POST`.
     let cupo = i64::from(estado.config.cupo_diario);
-    let completos: Vec<NaiveDate> = ocupacion
-        .into_iter()
-        .filter(|(_, citas)| *citas >= cupo)
-        .map(|(fecha, _)| fecha)
-        .collect();
-    Ok(Json(dias.into_iter().filter(|dia| !completos.contains(dia)).collect()))
+    let citas_de = |dia: &NaiveDate| {
+        ocupacion
+            .iter()
+            .find(|(fecha, _)| fecha == dia)
+            .map_or(0, |(_, citas)| *citas)
+    };
+    Ok(Json(dias.into_iter().filter(|dia| citas_de(dia) < cupo).collect()))
 }
 
 #[derive(Deserialize)]

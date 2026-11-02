@@ -644,3 +644,21 @@ async fn errores_documentados_en_el_contrato(pool: PgPool) {
     assert_eq!(codigo, StatusCode::BAD_REQUEST, "{cuerpo}");
     assert_eq!(cuerpo["error"], "La fecha no es válida");
 }
+
+/// H1 (verificación de T032; FR-007, caso límite «No quedan fechas libres»): con cupo 0 ningún
+/// día tiene plazas, tampoco los que no tienen ninguna cita, y el `GET` coincide con el `POST`.
+#[sqlx::test]
+async fn con_cupo_0_no_se_ofrece_ningun_dia(pool: PgPool) {
+    let mut estado = comun::estado_prueba(pool.clone());
+    let mut config = (*estado.config).clone();
+    config.cupo_diario = 0;
+    estado.config = std::sync::Arc::new(config);
+    let app = taller::app(estado);
+
+    assert_eq!(dias_disponibles(&app).await, Vec::<Value>::new());
+
+    insertar_vehiculo(&pool, "1234BCD", "Seat", "Ibiza", "Ana", "600000001", "a@ejemplo.test").await;
+    let (codigo, cuerpo) = pedir(&app, cita_conocida("1234BCD", laborable(1))).await;
+    assert_eq!(codigo, StatusCode::CONFLICT, "{cuerpo}");
+    assert_eq!(cuerpo["error"], DIA_COMPLETO);
+}
