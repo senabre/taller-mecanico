@@ -20,8 +20,9 @@ persona: escribe en los campos, elige en los selectores, pulsa los botones y lee
 
 ## Resultado
 
-**31/31 comprobaciones superadas** con el cupo normal. El paso **(c) no se supera**: ver
-[hallazgo H1](#hallazgo-h1--con-cupo-0-se-ofrecen-días-que-el-servidor-rechaza).
+**31/31 comprobaciones superadas** con el cupo normal. El paso **(c) no se superó** en esta
+primera pasada (ver [hallazgo H1](#hallazgo-h1--con-cupo-0-se-ofrecen-días-que-el-servidor-rechaza));
+tras corregirlo en T041 se repitió y **se supera** (ver [Repetición tras T041](#repetición-tras-t041-2026-11-02)).
 
 | # | Paso | Esperado | Observado | ✓ | Captura |
 |---|------|----------|-----------|---|---------|
@@ -86,9 +87,21 @@ tabla siguió mostrando las citas del 30/10 (1234BCD y 5678CDF): la respuesta an
   0 para los días sin citas (por ejemplo, si `cupo == 0` no ofrecer ninguno), con una prueba nueva
   «con cupo 0 no se ofrece ningún día» que falle antes del cambio. Después, repetir el paso (c).
 
+## Repetición tras T041 (2026-11-02)
+
+**Commit verificado**: `00e6436` (incluye T041). Mismo entorno y mismo guion, con la base de datos
+recién cargada con `demo.sql`. Fecha del sistema: lunes 02/11/2026.
+
+| Paso | Esperado | Antes (`2cdb35a`) | Después (`00e6436`) | Captura |
+|------|----------|-------------------|---------------------|---------|
+| (c) con `TALLER_CUPO_DIARIO=0` | `dias-disponibles` vacío; «No quedan fechas libres en los próximos 30 días. Llama al taller para pedir cita.» en lugar del selector; Confirmar desactivado; sin que el mensaje aparezca mientras cargan los días | Se ofrecían 09/11–27/11 y el `POST` respondía 409 ❌ | `GET /api/publico/dias-disponibles` → `[]`. Mensaje exacto, sin selector, Confirmar desactivado. Con la respuesta de días retrasada 1,5 s, durante la carga se ve el selector vacío y **no** el mensaje ✅ | [c3-tras-T041-cargando-dias.png](c3-tras-T041-cargando-dias.png), [c4-tras-T041-no-quedan-fechas.png](c4-tras-T041-no-quedan-fechas.png) |
+| Regresión: pasos 1–10, (a), (b), (d), (e), móvil y T034 con cupo 2 | Las mismas 31 comprobaciones | 31/31 ✅ | **31/31** ✅ (días ofrecidos desde el 03/11) | — |
+
+H1 queda verificado en el navegador: el paso (c) de T032 y el mensaje de T030 se han visto en pantalla.
+
 ## Qué queda pendiente
 
-1. Corregir H1 (nueva tarea correctora) y repetir el paso (c).
+1. ~~Corregir H1 (nueva tarea correctora) y repetir el paso (c).~~ Hecho: T041 y repetición del 2026-11-02.
 2. Que una persona cronometre el paso 10 (SC-001 y SC-002).
 3. T034, segunda parte: abrir la orden de `9999LLL` con 100.000 km cuando exista spec-002.
 4. Revisión de la Persona B (T031).
