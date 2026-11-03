@@ -59,8 +59,8 @@ I6 de spec-001), y las decisiones técnicas están en [research.md](research.md)
 |---|---|---|
 | I. Simplicidad | Sin migraciones ni dependencias nuevas. «Una cita, una orden» con un bloqueo de fila sobre la cita (`FOR UPDATE`, D2), sin claves consultivas nuevas. El número, con el `contador` de R5. La ficha reutiliza las funciones que ya tiene cada módulo de B (D6), y el formulario, la lista de hoy de spec-001 (D7) en vez de un endpoint nuevo. | ✅ |
 | II. Español y euro | Mensajes de error en español fijados en el contrato común. Km con separador de miles con `formato::numero` («85.000 km») y fechas dd/mm/aaaa con `formato.ts`. El formulario usa `novalidate` para que el navegador no muestre avisos propios. Sin importes nuevos. | ✅ |
-| III. Cero alcance fantasma | Sin atención sin cita (Q1), sin fotos de daños, sin editar ni anular órdenes. El enlace «Orden Nº N» de `/citas` lo pide FR-008 (Q5). `orden_numero` en `GET /api/citas` existe solo para ese enlace. Los datos demo nuevos (D8) solo sirven para verificar Q1–Q5 en la app. `/ordenes` y «Mis órdenes» ya estaban en el contrato y el menú comunes. | ✅ |
-| IV. Verificable sin código | Cada escenario y caso límite de la spec tiene su paso en el [quickstart común §2](../000-base-comun/quickstart.md) ([correspondencia](quickstart.md)), con datos demo que dan citas de hoy (D8), incluido el cronometraje de SC-001. La concurrencia (dos recepcionistas a la vez, FR-002 y Q5) solo se provoca con pruebas automáticas; su efecto visible (números consecutivos y el mensaje de Q5 en dos pestañas) sí se comprueba en la app. | ✅ |
+| III. Cero alcance fantasma | Sin atención sin cita (Q1), sin fotos de daños, sin editar ni anular órdenes. El enlace «Orden Nº N» de `/citas` lo pide FR-008 (Q5). `orden_numero` en `GET /api/citas` existe solo para ese enlace. Los datos demo nuevos (D8) solo sirven para verificar Q1–Q5 en la app. `/ordenes` y «Mis órdenes» no salen de un FR de spec-002: los exige el menú común (escenario 1 de la US1 de la base común, «Mis órdenes»; quickstart §0.4, «Órdenes»; el jefe las ve por FR-002 común) y los usa el quickstart §3 («Como `luis`, abrir la orden…»). Se implementan aquí porque spec-002 es la que crea las órdenes (hallazgo E1, justificado). | ✅ |
+| IV. Verificable sin código | Cada escenario y caso límite de la spec tiene su paso en el [quickstart común §2](../000-base-comun/quickstart.md) ([correspondencia](quickstart.md)), con datos demo que dan citas de hoy (D8), incluido el cronometraje de SC-001. **SC-002** se reescribió en el clarify (Q6, hallazgo C1 de [analyze-1](analyze-1.md)) para comprobarse en la app: el §2 abre seguidas las órdenes 10 y 11 con intentos rechazados entre medias (pasos 3–5) y la lista de citas muestra los números consecutivos. La apertura simultánea (FR-002 y Q5) solo se provoca con pruebas automáticas; su efecto visible (el mensaje de Q5 en dos pestañas) sí se comprueba en la app. | ✅ |
 | V. Datos con respeto | No se piden datos personales nuevos. La ficha y la lista de órdenes muestran matrícula, marca y modelo, nunca datos del cliente. Los datos demo nuevos reutilizan clientes ficticios que ya existen; `pedro` es un usuario ficticio con la contraseña demo documentada. Las pruebas no usan valores demo. | ✅ |
 
 **Re-check post-diseño (Phase 1)**: los cambios en el contrato, el data-model y el quickstart
@@ -117,6 +117,7 @@ pruebas y tres pantallas, y toca los ficheros compartidos marcados arriba.
 | `frontend/src/routes/ordenes/[id]/+page.svelte` | Contenedor: carga `Orden` y pasa sus campos a cada sección (D6) | Plan maestro: `ordenes/[id]` es compartido |
 | `specs/000-base-comun/contracts/api.md` | Sección spec-002 con la tabla de validación, 404/409 y `GET /api/ordenes/{id}`; `orden_numero` en `GET /api/citas` | Fuente única de reglas y textos |
 | `specs/000-base-comun/data-model.md` | `orden`: mecánico activo, día de la cita, «visita anterior» | Q2, Q3, D3 |
+| `specs/000-base-comun/plan.md` (maestro) | `backend/seed/demo.sql` en la lista de ficheros compartidos | Hallazgo G1 |
 | `specs/000-base-comun/quickstart.md` | §0 (`pedro`), §2 reescrito, «1234BCD» → «1313MMM» en §3, §4, §5 y §7, §9 en dos días | D8 |
 
 ### Reglas clave
@@ -139,7 +140,9 @@ pruebas y tres pantallas, y toca los ficheros compartidos marcados arriba.
 - **`GET /api/ordenes/{id}`** (todos): consulta propia + `presupuestos_de_orden` (003) +
   `resumen_imputaciones` (005) + `pedidos_de_orden` (006); `factura_id` por subconsulta. 404 «No
   existe la orden» (D6).
-- **`GET /api/ordenes?mias=true`** (recepción y mecánicos; el jefe pasa): `[OrdenResumen]`, de la
+- **`GET /api/ordenes?mias=true`** (recepción y mecánicos; el jefe pasa). No sale de un FR de
+  spec-002: lo exigen el menú común («Órdenes» y «Mis órdenes») y el quickstart §3, y se hace aquí
+  porque spec-002 crea las órdenes (hallazgo E1). Devuelve `[OrdenResumen]`, de la
   más reciente a la más antigua; con `mias=true`, solo las del mecánico que ha entrado. `retrasada`
   como en el data-model común (estado ≠ `facturada` y entrega < hoy).
 - **`GET /api/citas`** (spec-001): añade `orden_numero` con un `LEFT JOIN` que ya existe (D7).
@@ -166,9 +169,9 @@ valores demo, principio V; las citas de hoy, con `fechas::hoy()`):
    mecánico, entrega y `vehiculo_id` de la cita; un suscriptor de `eventos` recibe `{id,
    recibida}` (US1-1, FR-005, FR-006, FR-007, D5).
 2. Correlativo: con el contador en 41 → 42; tras un 422 de cada campo y tras los dos 409, la
-   siguiente orden sigue siendo la 42, sin huecos (US1-2, FR-002).
+   siguiente orden sigue siendo la 42, sin huecos (US1-2, US1-9, FR-002, SC-002).
 3. Concurrencia del número: 10 `POST` a la vez para 10 citas distintas → números consecutivos, sin
-   huecos ni repetidos (FR-002, SC-002).
+   huecos ni repetidos (FR-002).
 4. Concurrencia de la cita: dos `POST` a la vez para la misma cita → un 201 y un 409 «Esta cita ya
    tiene una orden (Nº N)» con `detalle.orden_id` y `detalle.numero`; 1 orden y el contador
    avanzado en 1. Repetir 20 veces. Se comprueba que falla quitando el `FOR UPDATE` (FR-008, Q5,

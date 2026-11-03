@@ -121,7 +121,9 @@ Europe/Madrid, errores, contador sin huecos, eventos del tablero) está en
   `Presupuesto` (`orden`, `presupuestos`), `Imputaciones` (`resumen` construido con `{orden_id:
   orden.id, estado, coste_acumulado, total_presupuestado, imputaciones}`) y `Pedidos` (`pedidos`).
   `onCambio` y `onguardado` vuelven a pedir la orden. Una sección nueva de B es una línea en el
-  contenedor.
+  contenedor. `puedeEditar` (mecánico asignado o jefe) vale para las secciones del mecánico; el
+  contenedor pasa también el rol del usuario, para que la sección «Factura» de spec-007 se active
+  para **recepción** y el jefe (hallazgo I4).
 
 ## D7. La lista de citas enseña la orden de cada cita (Q5)
 

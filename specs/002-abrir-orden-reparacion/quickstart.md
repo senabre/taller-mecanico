@@ -27,6 +27,7 @@ que no se ha quedado ninguno sin probar.
 | US1-6 · cliente sin cita | 1 (no está en la lista; la página pública ofrece días desde mañana, §1) |
 | US1-7 · solo mecánicos activos | 2 (Pedro no aparece); la baja con el formulario abierto, en las pruebas automáticas |
 | US1-8 · daños obligatorios | 3, 5 («Sin daños visibles») |
+| US1-9 · números consecutivos con intentos rechazados entre medias | 3, 4 y 5 (errores, Nº 10, segunda pestaña, Nº 11) |
 | US2-1 · km menor que el anterior, con el valor previo | 6 (`8888KKK`, 39.800 km) |
 | US2-2 · km igual al anterior | pruebas automáticas (`spec002_ordenes.rs`) |
 | US2-3 · vehículo sin visitas anteriores | 4 (`1313MMM`), 5 (`1414NNN`) |
@@ -34,7 +35,7 @@ que no se ha quedado ninguno sin probar.
 | Caso límite · entrega anterior a hoy | 3 |
 | Caso límite · dos recepcionistas a la vez | pruebas automáticas; en la app, la numeración consecutiva de 4 y 5 |
 | SC-001 · abrir una orden en menos de 2 minutos | 4 (cronometrado) |
-| SC-002 · números consecutivos sin huecos | 4, 5; las 10 seguidas, en las pruebas automáticas |
+| SC-002 · órdenes seguidas con números consecutivos, sin huecos ni repetidos, aunque haya intentos rechazados (Q6) | 3, 4, 5 y 6 («Orden Nº 10» y «Orden Nº 11» en «Citas»); la apertura simultánea (FR-002), en las pruebas automáticas |
 | SC-003 · todo km menor se rechaza con el valor previo | 6 |
 | SC-004 · toda orden muestra su cita, su vehículo y su mecánico | 4, 7 |
 
