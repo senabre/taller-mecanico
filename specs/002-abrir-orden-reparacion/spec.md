@@ -36,6 +36,15 @@ se entregó. Prioridad Alta · 3 pts.
   número) como enlace a la orden. Un segundo intento (p. ej. desde otra pestaña) no se guarda, no
   consume número y muestra «Esta cita ya tiene una orden (Nº 42)».
 
+### Session 2026-11-03
+
+- Q: ¿Cómo debe redactarse SC-002 para que una persona pueda comprobarlo en la aplicación con los
+  datos demo, sin tener que abrir diez órdenes? → A: Tras abrir seguidas varias órdenes, con
+  intentos rechazados entre medias (datos incorrectos, una segunda pestaña o un km menor), sus
+  números son consecutivos al último existente, sin huecos ni repetidos; se ve en la lista de
+  citas («Orden Nº N»). La apertura simultánea queda en FR-002 y en las pruebas automáticas
+  (cierra el hallazgo C1 de analyze-1).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Abrir la orden al recibir el coche (Priority: P1)
@@ -80,6 +89,11 @@ km, los daños, el mecánico y la fecha prometida, y que está en estado «recib
    solo con espacios) y guarda, **Then** la orden no se guarda, no se consume ningún número y
    aparece «Describe los daños visibles o escribe “Sin daños visibles”»; y si escribe «Sin daños
    visibles», la orden se guarda con ese texto.
+9. **Given** la última orden abierta tiene el número 41 y hay dos citas de hoy sin orden, **When**
+   la recepcionista intenta abrir la primera con un dato incorrecto, lo corrige y la guarda, y
+   después abre la segunda en dos pestañas y guarda en las dos, **Then** las dos órdenes reciben
+   los números 42 y 43, los intentos rechazados no han gastado ningún número, y la lista de citas
+   muestra «Orden Nº 42» y «Orden Nº 43».
 
 ---
 
@@ -166,8 +180,10 @@ una orden con 80.000 km y comprobar el rechazo con el mensaje que muestra 85.000
 ### Measurable Outcomes
 
 - **SC-001**: La recepcionista abre una orden en menos de 2 minutos desde la lista de citas.
-- **SC-002**: Tras abrir 10 órdenes seguidas, sus números son consecutivos sin huecos ni
-  repetidos.
+- **SC-002**: Tras abrir seguidas varias órdenes, con intentos rechazados entre medias (datos
+  incorrectos, una segunda pestaña o un km menor), sus números son consecutivos al último
+  existente, sin huecos ni repetidos, y así se ven en la lista de citas («Orden Nº N»). La
+  apertura simultánea de órdenes la garantiza FR-002 y la comprueban las pruebas automáticas.
 - **SC-003**: El 100 % de los intentos de anotar un kilometraje menor que el anterior se
   rechazan mostrando el valor previo.
 - **SC-004**: Toda orden muestra a qué cita, vehículo y mecánico pertenece.

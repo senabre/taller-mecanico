@@ -1,11 +1,12 @@
 # Registro de decisiones del clarify · spec-002 · Recibir el vehículo y abrir la orden de reparación (HU-02)
 
-**Sesión**: 2026-11-02 · **Spec**: [spec.md](spec.md) (sección «Clarifications», sesión 2026-11-02)
-· **Constitución**: 1.2.1
+**Sesiones**: 2026-11-02 (Q1–Q5) y 2026-11-03 (Q6) · **Spec**: [spec.md](spec.md) (sección
+«Clarifications», sesiones 2026-11-02 y 2026-11-03) · **Constitución**: 1.2.1
 
 Cada pregunta se hizo de una en una, con una opción recomendada. La respuesta de cada una está
 integrada en la spec, en los requisitos y escenarios que se indican. Q1 y Q2 cierran los
-hallazgos I2 e I6 de spec-001 ([hallazgos](../001-pedir-cita-en-linea/hallazgos.md)).
+hallazgos I2 e I6 de spec-001 ([hallazgos](../001-pedir-cita-en-linea/hallazgos.md)). Q6 cierra el
+hallazgo C1 de [analyze-1](analyze-1.md) ([hallazgos](hallazgos.md)).
 
 | ID | Historia y criterio afectados | Pregunta | Opciones consideradas | Respuesta | Justificación | Autora | Revisor |
 |----|-------------------------------|----------|-----------------------|-----------|---------------|--------|---------|
@@ -14,6 +15,7 @@ hallazgos I2 e I6 de spec-001 ([hallazgos](../001-pedir-cita-en-linea/hallazgos.
 | Q3 | HU-02 · FR-005, escenario 7 de la US1, entidad Mecánico, casos límite | ¿A quién se puede asignar como mecánico al abrir la orden? | A) solo usuarios con rol mecánico y activos; con otro valor, «Elige un mecánico de la lista»; B) usuarios activos con rol mecánico o jefe de taller; C) cualquier usuario con rol mecánico, activo o de baja | **A** (la recomendada) | La descripción del sistema distingue a los mecánicos del jefe: el taller tiene «seis mecánicos» y Paco «lo dirige»; el jefe no es uno de los mecánicos a los que se asigna el trabajo, así que **B se descarta**: además, una orden asignada al jefe falsearía la carga por mecánico del tablero (spec-008). **C se descarta** porque un mecánico dado de baja no puede entrar en la aplicación y, por tanto, no podría imputar tiempo ni piezas en su orden (spec-005): la orden quedaría bloqueada. Con A, la lista y el mensaje se comprueban en pantalla (principio IV) | Persona A | Persona B (pendiente) |
 | Q4 | HU-02 · FR-003, escenario 8 de la US1, casos límite | ¿Es obligatorio rellenar los daños visibles, y cómo se registra un coche que no tiene ninguno? | A) obligatorio; sin daños se escribe «Sin daños visibles»; vacío, «Describe los daños visibles o escribe “Sin daños visibles”»; B) opcional; vacío se guarda como «Sin daños visibles»; C) una casilla «Sin daños visibles» que, marcada, hace innecesario el texto | **A** (la recomendada) | La descripción del sistema dice que en la orden se anotan «los golpes o arañazos visibles, para evitar discusiones posteriores». Para que sirva de prueba, la orden tiene que dejar constancia expresa también cuando no hay daños. **B se descarta** porque un olvido de la recepcionista quedaría registrado como «sin daños», justo la constancia que luego se discutiría. **C se descarta** porque añade un control que la HU no pide para obtener lo mismo que A (principios I y III). El error y su texto se comprueban en pantalla (principio IV) | Persona A | Persona B (pendiente) |
 | Q5 | HU-02 · FR-008, escenario 4 de la US1, casos límite | En la lista de citas del día, ¿qué se ve en una cita que ya tiene orden, y qué ocurre si alguien intenta abrirle una segunda? | A) la cita muestra «Orden Nº 42» como enlace a la orden; un segundo intento no se guarda, no consume número y muestra «Esta cita ya tiene una orden (Nº 42)»; B) solo se oculta «Abrir orden»; un segundo intento muestra «Esta cita ya tiene una orden»; C) el botón sigue visible y, si la cita ya tiene orden, lleva a esa orden sin error | **A** (la recomendada) | Que un intento rechazado no consuma número protege FR-002 (número correlativo sin huecos), también cuando dos recepcionistas intentan abrir la orden de la misma cita a la vez. Mostrar el número de la orden existente, en la lista y en el mensaje, dice a recepción qué coches ya están dentro. **C se descarta** porque ocultaría a la segunda recepcionista que la cita ya estaba atendida: creería haber abierto la orden ella. **B se descarta** porque obliga a buscar la orden existente sin decir cuál es. El enlace, el mensaje y la numeración se comprueban en la aplicación (principio IV) | Persona A | Persona B (pendiente) |
+| Q6 | HU-02 · SC-002, escenario 9 de la US1 (nuevo) · FR-002 · hallazgo C1 de analyze-1 | ¿Cómo debe redactarse SC-002 para que una persona pueda comprobarlo en la aplicación con los datos demo, sin tener que abrir diez órdenes? | A) tras abrir seguidas varias órdenes, con intentos rechazados entre medias (datos incorrectos, una segunda pestaña o un km menor), sus números son consecutivos al último existente, sin huecos ni repetidos, y así se ven en la lista de citas; la apertura simultánea queda en FR-002 y en las pruebas automáticas; B) mantener «10 órdenes seguidas» y añadir diez citas de hoy a los datos demo y un paso al quickstart; C) mantener SC-002 y declararlo comprobable solo con pruebas automáticas, como excepción al principio IV | **A** (la recomendada) | El principio IV dice que «Cada criterio de éxito de una spec DEBE poder comprobarse usando la aplicación, sin leer código, consultar la base de datos ni usar herramientas técnicas». Con «10 órdenes seguidas» no se podía: los datos demo del quickstart §2 solo permiten abrir dos órdenes (hallazgo C1). Lo que SC-002 quiere asegurar es que el correlativo no salta ni repite números, y eso se pone a prueba precisamente con los intentos rechazados entre dos aperturas, que son los que podrían gastar un número: el §2 ya los provoca (datos incorrectos, segunda pestaña, km menor) y la lista de citas muestra los números consecutivos. Que diez órdenes no cambian la regla respecto a dos lo garantiza FR-002, que también cubre las aperturas a la vez; una persona no puede provocar la simultaneidad a mano, así que esa parte la comprueban las pruebas automáticas, como hizo spec-001 con el cupo (US3-2). **C se descarta** porque la constitución no admite excepciones al principio IV dentro de una spec. **B se descarta** porque añade diez citas demo y un paso largo solo para repetir ocho veces lo que el §2 ya comprueba con dos órdenes (principio I) | Persona A | Persona B (pendiente) |
 
 ## Criterios de aceptación resultantes
 
@@ -59,6 +61,14 @@ límite equivalentes siguen en la spec y no contradicen ningún criterio.
   guarda, no se consume ningún número y aparece «Esta cita ya tiene una orden (Nº 42)». [US1,
   escenario 4]
 
+### Q6 · Números consecutivos comprobables en la aplicación (SC-002, FR-002)
+
+- **Dado** la última orden abierta tiene el número 41 y hay dos citas de hoy sin orden, **cuando**
+  la recepcionista intenta abrir la primera con un dato incorrecto, lo corrige y la guarda, y
+  después abre la segunda en dos pestañas y guarda en las dos, **entonces** las dos órdenes reciben
+  los números 42 y 43, los intentos rechazados no han gastado ningún número, y la lista de citas
+  muestra «Orden Nº 42» y «Orden Nº 43». [US1, escenario 9, nuevo]
+
 ## Comando y versión
 
 - **Comando**: `/speckit-clarify` con este argumento:
@@ -79,6 +89,17 @@ límite equivalentes siguen en la spec y no contradicen ningún criterio.
   días»), porque la fecha fija ya era anterior a hoy, y se añadieron a la spec los escenarios 6, 7
   y 8 de la US1 para que cada decisión tenga su criterio «Dado… Cuando… Entonces…». Quedan para el
   plan los textos de los errores de km vacío o negativo y de fecha de entrega anterior a hoy.
+- **Comando (sesión 2026-11-03, Q6)**: `/speckit-clarify` con este argumento:
+
+  > Revisa solo SC-002 de specs/002-abrir-orden-reparacion/spec.md (hallazgo C1 de analyze-1):
+  > debe poder comprobarse usando la aplicación con los datos demo (principio IV). Formula la
+  > pregunta necesaria para reescribirlo de forma verificable, por ejemplo con las órdenes del
+  > quickstart §2, que muestran números consecutivos aunque haya intentos fallidos entre medias,
+  > dejando la parte de concurrencia a la prueba automática. Añade la decisión a
+  > decisiones-clarify.md como Q6, con su justificación y su criterio «Dado… Cuando… Entonces…».
+
+  Se hizo una sola pregunta. El escenario 9 de la US1 se añadió a la spec al integrar la
+  respuesta, para que Q6 tenga su criterio «Dado… Cuando… Entonces…».
 - **Spec Kit**: plantillas del proyecto inicializadas con la versión 1.0.6
   (`.specify/init-options.json` e `.specify/integration.json`). La CLI `specify` no estaba en el
   PATH durante esta sesión, así que no se pudo consultar su versión instalada; el registro de
