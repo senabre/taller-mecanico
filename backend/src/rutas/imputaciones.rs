@@ -21,16 +21,17 @@ pub fn rutas() -> Router<EstadoApp> {
         .route("/ordenes/{id}/terminar", post(terminar))
 }
 
-/// El objeto `ResumenImputaciones` del contrato.
+/// El objeto `ResumenImputaciones` del contrato. Los tres últimos campos son públicos porque la
+/// ficha de la orden (spec-002, `ordenes.rs`) los copia al objeto `Orden`.
 #[derive(Serialize)]
 pub struct ResumenImputaciones {
     orden_id: i64,
     estado: Estado,
     #[serde(with = "rust_decimal::serde::str")]
-    coste_acumulado: Decimal,
+    pub coste_acumulado: Decimal,
     #[serde(with = "rust_decimal::serde::str")]
-    total_presupuestado: Decimal,
-    imputaciones: Vec<Linea>,
+    pub total_presupuestado: Decimal,
+    pub imputaciones: Vec<Linea>,
 }
 
 /// Lo imputado y lo presupuestado de una orden, calculados al vuelo (research D4).
