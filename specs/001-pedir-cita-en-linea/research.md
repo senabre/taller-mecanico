@@ -126,9 +126,12 @@ al taller para pedir cita.».
 
 - **Quickstart común §1**: se reescribe con los pasos de Q1–Q5 (ver [quickstart.md](quickstart.md)).
 - **Quickstart común §2.3 (spec-002, Persona A)**: pedía una segunda cita para 1234BCD, que tras
-  §1 ya tiene una pendiente y FR-010 lo impide. Pasa a usar el vehículo demo `9999LLL` (última
-  orden con 120.400 km, cita ya pasada).
-- **Observación para spec-002 (no se resuelve aquí)**: su Assumptions dice que, si un cliente
-  llega sin cita, recepción le registra primero la cita y después abre la orden, pero FR-006 de
-  spec-001 solo ofrece días desde mañana. Ese caso ya no encajaba antes del clarify y lo tiene
-  que decidir el clarify de spec-002.
+  §1 ya tiene una pendiente y FR-010 lo impide. Pasó a usar el vehículo demo `9999LLL` (última
+  orden con 120.400 km, cita ya pasada). **Superado el 2026-11-03**: con el clarify de spec-002
+  (Q2) la orden solo se abre el día de la cita, y la cita de `9999LLL` la pide la página pública
+  para mañana como pronto. El plan de spec-002 (research D8) reescribe el §2 con citas demo de
+  hoy, y la regla del km la comprueba el §2.6 con `8888KKK` (39.800 km).
+- **Observación para spec-002**: su Assumptions decía que, si un cliente llega sin cita,
+  recepción le registra primero la cita y después abre la orden, pero FR-006 de spec-001 solo
+  ofrece días desde mañana. **Resuelto en el clarify de spec-002 (Q1, 2026-11-02)**: en la v1 no
+  se atiende sin cita el mismo día, y FR-006 de spec-001 no cambia (hallazgo I2).

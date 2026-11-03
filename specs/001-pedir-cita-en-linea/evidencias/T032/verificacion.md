@@ -103,5 +103,17 @@ H1 queda verificado en el navegador: el paso (c) de T032 y el mensaje de T030 se
 
 1. ~~Corregir H1 (nueva tarea correctora) y repetir el paso (c).~~ Hecho: T041 y repetición del 2026-11-02.
 2. Que una persona cronometre el paso 10 (SC-001 y SC-002).
-3. T034, segunda parte: abrir la orden de `9999LLL` con 100.000 km cuando exista spec-002.
-4. Revisión de la Persona B (T031).
+3. ~~T034, segunda parte: abrir la orden de `9999LLL` con 100.000 km cuando exista spec-002.~~
+   Trasladada a spec-002 (2026-11-03): con su Q2 la orden solo se abre el día de la cita, así que
+   la regla del km la comprueba el quickstart común §2.6 con la cita demo de hoy de `8888KKK`.
+
+## Aviso para volver a ejecutar el guion
+
+Los datos demo de spec-002 (parte 5 de `backend/seed/demo.sql`, propuesta en su research D8)
+añaden citas de **hoy** (`1313MMM`, `1414NNN`, `8888KKK`) y una de ayer (`1515PPP`). Las
+comprobaciones registradas aquí se hicieron con los datos demo anteriores y siguen siendo
+válidas. Pero si se vuelve a ejecutar [t032.mjs](t032.mjs) con los datos nuevos, hay que ajustar
+la comprobación de **«hoy sin citas»** de la fila 30 («Citas de hoy; sin citas=true»), porque la
+lista de hoy ya no estará vacía. Conviene revisar también la fila 15, que abre «Citas» con la fecha
+de hoy.
+4. ~~Revisión de la Persona B (T031).~~ Hecho el 2026-11-02: la Persona B revisó y dio por correctos los cambios compartidos de spec-001 (T031 marcada).
