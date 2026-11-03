@@ -44,12 +44,17 @@ frontend/src/routes/tablero/+page.svelte
 ```
 
 **Reglas clave**:
-- `retrasada` = `fecha_entrega_prometida < fechas::hoy()` (Europe/Madrid). Se calcula en el
-  backend para que el criterio sea el mismo en todas las pantallas.
+- `retrasada` = orden no facturada con `fecha_entrega_prometida < fechas::hoy()` (Europe/Madrid),
+  como dice el [data-model común](../000-base-comun/data-model.md), que es la fuente única. Se
+  calcula en el backend para que el criterio sea el mismo en todas las pantallas (corregido por el
+  hallazgo I1 de spec-002, 2026-11-03).
+- Las tarjetas usan el tipo `OrdenResumen` y su consulta de `backend/src/rutas/ordenes.rs`
+  (spec-002, `pub`), que ya calcula `retrasada`; `tablero.rs` no escribe una consulta propia de
+  las órdenes, solo las agrupa por estado (hallazgo I2 de spec-002).
 - Carga por mecánico: `LEFT JOIN` de los usuarios mecánicos activos con las órdenes no facturadas,
   de modo que aparecen los que tienen 0.
 - Frontend: con `EventSource('/api/eventos')`, en cada evento `orden` se vuelve a pedir
   `/api/tablero`. Con `onerror` se muestra el aviso de desconexión; la reconexión es automática.
 
-**Dependencias**: base común (`eventos`, `cambiar_estado`). Se puede hacer desde el principio con
+**Dependencias**: base común (`eventos`, `cambiar_estado`); spec-002 (`OrdenResumen` y el evento `{id, recibida}` al abrir una orden). Se puede hacer desde el principio con
 las órdenes demo en varios estados.
