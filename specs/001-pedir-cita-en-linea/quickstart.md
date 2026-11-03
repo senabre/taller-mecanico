@@ -8,8 +8,10 @@ quien valide sepa que no se ha quedado ninguno sin probar.
 
 ## Antes de empezar
 
-- Base de datos recién creada con `seed/demo.sql`. Las citas demo son de días pasados, así que no
-  gastan el cupo y los vehículos demo no tienen ninguna cita pendiente.
+- Base de datos recién creada con `seed/demo.sql`. Las citas demo son de días pasados, de hoy o de
+  ayer, así que no gastan el cupo de los próximos días. Los vehículos demo de las órdenes 1–9 no
+  tienen cita pendiente, salvo `8888KKK`; `1313MMM`, `1414NNN` y `8888KKK` tienen una cita de hoy
+  (las usa el §2 de spec-002) y el recorrido del §1 no las usa.
 - Ninguna matrícula demo es `1234BCD`, `5678CDF` ni `9012DFG`: el recorrido las da de alta como
   nuevas.
 

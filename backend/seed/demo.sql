@@ -31,7 +31,8 @@ INSERT INTO proveedor (nombre) VALUES
 
 -- ---------------------------------------------------------------------------------------------
 -- Parte 3 · Clientes, vehículos, citas y órdenes en los 7 estados
---   Las citas son de días pasados para no gastar el cupo de los próximos días (quickstart §1.4).
+--   Las citas de esta parte son de días pasados para no gastar el cupo de los próximos días
+--   (quickstart §1.4). La parte 5 añade citas de hoy y de ayer, que tampoco lo gastan.
 --   Ninguna matrícula es 1234BCD: el quickstart §1 la da de alta como nueva.
 --
 --   nº  estado                 mecánico  para qué
@@ -192,5 +193,46 @@ SELECT f.id, i.concepto, i.cantidad, i.precio_unitario, i.importe
  ORDER BY i.id;
 
 UPDATE contador SET ultimo = (SELECT max(numero) FROM factura) WHERE nombre = 'factura';
+
+-- ---------------------------------------------------------------------------------------------
+-- Parte 5 · Citas de hoy para abrir órdenes (spec-002, research D8; quickstart §2)
+--   La orden solo se abre el día de la cita (spec-002 Q2), y la página pública solo da citas
+--   desde mañana: sin estas citas no se podría abrir ninguna orden el día del recorrido.
+--   Por eso los datos demo se cargan el mismo día en que se recorre el quickstart.
+--   «Hoy» es el de Europe/Madrid (research R12), no current_date, que en un servidor en UTC aún
+--   sería ayer entre las 00:00 y las 02:00 de Madrid. No se crean órdenes ni se toca el contador:
+--   la primera orden real sigue siendo la Nº 10. No hay datos personales nuevos: los vehículos
+--   son de clientes demo de la parte 3.
+--
+--   1313MMM  cita hoy, sin órdenes      §2.1–§2.4: orden Nº 10; después §3, §4, §5 y §7
+--   1414NNN  cita hoy, sin órdenes      §2.5: orden Nº 11 y segunda pestaña; «la otra orden» (§4)
+--   8888KKK  cita hoy (orden 8, 39.800 km)  §2.6: km menor rechazado, sin crear orden
+--   1515PPP  cita ayer, sin orden       §2.1: una cita de otro día no ofrece «Abrir orden»
+--   pedro    mecánico de baja           §2.2: no aparece en la lista de mecánicos
+-- ---------------------------------------------------------------------------------------------
+
+INSERT INTO usuario (nombre, login, hash_contrasena, rol, activo)
+SELECT 'Pedro', 'pedro', hash_contrasena, 'mecanico', false
+  FROM usuario WHERE login = 'luis';  -- la misma contraseña ficticia (demo1234)
+
+INSERT INTO vehiculo (matricula, marca, modelo, cliente_id)
+SELECT v.matricula, v.marca, v.modelo, c.id
+  FROM (VALUES
+        ('1313MMM', 'Seat',    'León',    'lucia.fernandez@ejemplo.test'),
+        ('1414NNN', 'Renault', 'Mégane',  'andres.gil@ejemplo.test'),
+        ('1515PPP', 'Ford',    'Fiesta',  'jorge.martin@ejemplo.test')
+       ) AS v (matricula, marca, modelo, email)
+  JOIN cliente c ON c.email = v.email;
+
+-- «dias»: días antes de hoy en Madrid (0 = hoy, 1 = ayer).
+INSERT INTO cita (vehiculo_id, fecha, motivo)
+SELECT ve.id, (now() AT TIME ZONE 'Europe/Madrid')::date - d.dias, d.motivo
+  FROM (VALUES
+        ('1313MMM', 0, 'Revisión general'),
+        ('1414NNN', 0, 'Cambio de aceite'),
+        ('8888KKK', 0, 'Revisión de frenos'),
+        ('1515PPP', 1, 'Ruido en la suspensión')
+       ) AS d (matricula, dias, motivo)
+  JOIN vehiculo ve USING (matricula);
 
 COMMIT;
