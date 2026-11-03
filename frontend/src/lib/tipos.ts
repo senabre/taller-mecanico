@@ -98,6 +98,38 @@ export interface CitaDelDia {
 	motivo: string;
 	cliente: { nombre: string; telefono: string };
 	orden_id: number | null;
+	/** Número de la orden de la cita, para «Orden Nº N» en la lista (spec-002 FR-008). */
+	orden_numero: number | null;
+}
+
+// --- spec-002 · Órdenes ---
+
+/** POST /api/ordenes. `km` puede ir como número o como texto con cifras (contrato común). */
+export interface PeticionOrden {
+	cita_id: number;
+	km: number | string;
+	danos: string;
+	mecanico_id: number;
+	fecha_entrega_prometida: Fecha;
+}
+
+/**
+ * GET /api/ordenes/{id}: la ficha de la orden. Los campos de spec-002 más los de cada sección:
+ * `presupuestos` (spec-003), `total_presupuestado`, `coste_acumulado` e `imputaciones` (spec-005),
+ * `pedidos` (spec-006) y `factura_id` (spec-007).
+ */
+export interface Orden extends OrdenResumen {
+	cita: { fecha: Fecha; motivo: string };
+	vehiculo: { marca: string; modelo: string };
+	km: number;
+	danos: string;
+	diagnostico: string | null;
+	total_presupuestado: Importe;
+	coste_acumulado: Importe;
+	presupuestos: PresupuestoResumen[];
+	imputaciones: Linea[];
+	pedidos: Pedido[];
+	factura_id: number | null;
 }
 
 // --- spec-003 · Diagnóstico y presupuesto ---
