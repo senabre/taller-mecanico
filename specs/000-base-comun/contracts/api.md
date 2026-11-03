@@ -89,11 +89,14 @@ los demás documentos remiten a ella. El servidor comprueba primero que la cita 
 después las filas de esta tabla en este orden, y responde el primer error como `{"error":
 "<mensaje>", "detalle": {"campo": "<campo>"}}`. **Todos los 422 llegan antes que cualquier 409**:
 después de la tabla, la cita de otro día (409) y por último, con la cita bloqueada, la cita que ya
-tiene orden (409). El número de la orden solo se pide cuando todo ha pasado.
+tiene orden (409). El número de la orden solo se pide cuando todo ha pasado. Un campo que falta
+o que llega con otro tipo JSON no da el 400 de «JSON mal formado», sino el error de su fila: sin
+`cita_id` (o con uno que no existe) → 404 «No existe la cita»; sin `km`, `danos`, `mecanico_id` o
+`fecha_entrega_prometida` → el 422 de su fila (hallazgo A1 de spec-002).
 
 | Campo | Regla | Mensaje |
 |---|---|---|
-| `km` | número entero de 0 a 2.147.483.647 (vacío, negativo, con decimales o con letras no vale) | «El kilometraje debe ser un número entero igual o mayor que 0» |
+| `km` | número entero de 0 a 2.147.483.647, como número JSON o como texto con solo cifras (`85000` o `"85000"`); vacío, negativo, con decimales o con letras no vale | «El kilometraje debe ser un número entero igual o mayor que 0» |
 | `danos` | no vacío tras quitar los espacios del principio y del final (si no hay daños, «Sin daños visibles») | «Describe los daños visibles o escribe “Sin daños visibles”» |
 | `mecanico_id` | un usuario con rol `mecanico` y activo | «Elige un mecánico de la lista» |
 | `fecha_entrega_prometida` | presente y con formato de fecha | «Indica la fecha de entrega prometida» |
