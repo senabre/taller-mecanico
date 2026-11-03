@@ -94,11 +94,11 @@ misma transacción que el cupo (R6), con un segundo bloqueo por matrícula (rese
 | Campo | Tipo | Reglas |
 |---|---|---|
 | numero | BIGINT | **único**, sale de `contador('orden')` |
-| cita_id | FK | **único** (como mucho una orden por cita) |
+| cita_id | FK | **único** (como mucho una orden por cita); la orden solo se abre el día de la cita (fecha de la cita = hoy en Europe/Madrid) |
 | vehiculo_id | FK | el mismo de la cita |
-| mecanico_id | FK usuario | el usuario debe tener rol `mecanico` |
-| km | INTEGER | ≥ 0 y ≥ km de la orden anterior del mismo vehículo |
-| danos | TEXT | obligatorio (puede ser «Sin daños visibles») |
+| mecanico_id | FK usuario | el usuario debe tener rol `mecanico` y estar activo al abrir la orden |
+| km | INTEGER | ≥ 0 y ≥ km de la visita anterior: la orden más reciente del mismo vehículo para otra cita |
+| danos | TEXT | obligatorio, no vacío tras quitar espacios (si no hay daños, «Sin daños visibles») |
 | fecha_entrega_prometida | DATE | ≥ fecha de apertura |
 | diagnostico | TEXT NULL | lo escribe spec-003 |
 | estado | estado_orden | inicial `recibida` |

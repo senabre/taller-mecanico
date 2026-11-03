@@ -22,7 +22,11 @@ cd ../backend && cargo run                 # app en http://localhost:3000
 - Correos enviados: **http://localhost:8025** (Mailpit).
 - Configuración demo (`.env.example`): cupo diario **2**, precio hora **40,00 €**, IVA **21 %**.
 - Usuarios demo (contraseña `demo1234`, ficticia y solo para demostración; constitución, principio V): `ana` (recepción), `luis` y `marta` (mecánicos), `pepe`
-  (almacén), `paco` (jefe).
+  (almacén), `paco` (jefe). `pedro` es un mecánico **de baja**: no puede entrar ni se le pueden
+  asignar órdenes (spec-002 Q3).
+- Citas demo de **hoy** (spec-002 Q2: la orden solo se abre el día de la cita): `1313MMM`,
+  `1414NNN` y `8888KKK`; y una de **ayer** sin orden, `1515PPP`. Por eso los datos demo se cargan
+  el mismo día en que se recorre el quickstart.
 - Pieza demo: `PF-123 Pastillas freno`, 25,00 €, stock 4. (`BJ-7 Bujía`, stock 0, solo está para el
   pedido demo pendiente de la orden en espera de piezas.)
 - Presupuesto demo emitido (token ficticio, solo para demostración; constitución, principio V):
@@ -71,16 +75,30 @@ La concurrencia (dos clientes a la vez por la última plaza o con la misma matr�
 las pruebas automáticas (`cargo test`).
 
 ## §2 spec-002 · Abrir orden
-1. Como `ana`, en la cita de 1234BCD pulsar «Abrir orden»: 85.000 km, «Rayón puerta trasera
-   izquierda», mecánico Luis, entrega dentro de 3 días → la orden se crea con su número (p. ej. **N**) y en
-   estado «Recibida».
-2. Abrir la orden de la otra cita → número **N+1** (consecutivo, sin huecos).
-3. Pedir una cita para `9999LLL` (vehículo demo cuya última orden tiene 120.400 km y no tiene
-   cita pendiente; 1234BCD no sirve porque ya tiene una, spec-001 FR-010) y abrir su orden con
-   100.000 km → se rechaza: «…no puede ser menor que el de la visita anterior (120.400 km)».
+1. Como `ana`, «Citas» abre con hoy → `1313MMM`, `1414NNN` y `8888KKK` tienen «Abrir orden».
+   Elegir el día de la cita de 1234BCD (§1.3) → no tiene «Abrir orden»; elegir ayer → `1515PPP`
+   tampoco (la orden solo se abre el día de la cita). Un cliente que llega hoy sin cita no está en
+   la lista y la página pública solo le ofrece días desde mañana (§1).
+2. «Abrir orden» en `1313MMM` → se ven su matrícula, marca, modelo y motivo. El selector de
+   mecánicos ofrece a Luis y a Marta, y no a Pedro (de baja) ni a otros usuarios.
+3. Guardar con los daños vacíos → «Describe los daños visibles o escribe “Sin daños visibles”»;
+   con «-5» km → «El kilometraje debe ser un número entero igual o mayor que 0»; con la entrega de
+   ayer → «La fecha de entrega prometida no puede ser anterior a hoy».
+4. Guardar con 85.000 km, «Rayón puerta trasera izquierda», mecánico Luis y entrega dentro de 3
+   días → la ficha muestra la orden **Nº 10** en estado «Recibida», con la cita, la matrícula y el
+   mecánico (los errores del paso 3 no han gastado ningún número). Cronometrar desde la lista de
+   citas hasta ver la ficha: **menos de 2 minutos** (spec-002 SC-001). En «Citas», `1313MMM` muestra
+   «Orden Nº 10», que lleva a la ficha.
+5. Abrir el formulario de `1414NNN` en **dos pestañas**. En la primera, guardar con 23.500 km,
+   «Sin daños visibles», mecánico Luis y entrega dentro de 2 días → orden **Nº 11** (consecutiva).
+   En la segunda, guardar → «Esta cita ya tiene una orden (Nº 11)», con un enlace a esa orden; en
+   «Órdenes» solo hay una orden de `1414NNN`.
+6. «Abrir orden» en `8888KKK` con 30.000 km → se rechaza: «El kilometraje no puede ser menor que el
+   de la visita anterior (39.800 km)».
+7. Como `luis`, «Mis órdenes» → aparecen la 10 y la 11.
 
 ## §3 spec-003 · Diagnóstico y presupuesto
-1. Como `luis`, abrir la orden de 1234BCD, diagnóstico «Pastillas delanteras desgastadas» → «En
+1. Como `luis`, abrir la orden de 1313MMM, diagnóstico «Pastillas delanteras desgastadas» → «En
    diagnóstico». Cambiarlo a «Pastillas y discos delanteros desgastados» → se guarda y sigue «En
    diagnóstico».
 2. Nuevo presupuesto: mano de obra «Cambio de pastillas» 1,5 h → 60,00 €; pieza PF-123 × 2 →
@@ -96,13 +114,13 @@ las pruebas automáticas (`cargo test`).
 ## §4 spec-004 · Respuesta del cliente
 1. En Mailpit, abrir el correo del presupuesto y pulsar el enlace → se ve el presupuesto completo.
 2. Aceptar y confirmar → se ve la fecha y la hora. Volver a abrir el enlace → ya no hay botones.
-3. Como `luis`, la orden de 1234BCD está «En reparación» con «Aceptado el … a las …».
+3. Como `luis`, la orden de 1313MMM está «En reparación» con «Aceptado el … a las …».
 4. Comprobar en otra orden con presupuesto sin responder que **no** aparece la opción de imputar.
-5. (Rechazo) Emitir un presupuesto en la otra orden y rechazarlo desde el enlace → la orden vuelve a
+5. (Rechazo) Emitir un presupuesto en la orden de 1414NNN y rechazarlo desde el enlace → la orden vuelve a
    «En diagnóstico».
 
 ## §5 spec-005 · Imputar
-1. Orden de 1234BCD, intentar terminarla sin imputar nada → «Primero hay que imputar el trabajo
+1. Orden de 1313MMM, intentar terminarla sin imputar nada → «Primero hay que imputar el trabajo
    realizado».
 2. Imputar PF-123 × 2 → concepto «PF-123 Pastillas freno»; en `/almacen` el stock de PF-123 pasa
    de 4 a **2**. Intentar imputar PF-123 × 3 → «Solo hay 2 unidades en stock de PF-123…».
@@ -131,10 +149,10 @@ las pruebas automáticas (`cargo test`).
 
 ## §7 spec-007 · Factura e historial
 1. Como `ana`, en una orden «En reparación» → **no** aparece «Facturar».
-2. En la orden de 1234BCD («Terminada») pulsar Facturar → factura con su número correlativo con las líneas imputadas, base,
+2. En la orden de 1313MMM («Terminada») pulsar Facturar → factura con su número correlativo con las líneas imputadas, base,
    IVA y total que cuadran con la calculadora. Sin escribir nada.
-3. En Mailpit llega «Su vehículo 1234BCD está listo para recoger».
-4. En `/historial`, buscar `1234 bcd` → aparece la reparación con fecha, km, diagnóstico y líneas.
+3. En Mailpit llega «Su vehículo 1313MMM está listo para recoger».
+4. En `/historial`, buscar `1313 mmm` → aparece la reparación con fecha, km, diagnóstico y líneas.
 
 ## §8 spec-008 · Tablero
 1. Como `paco`, abrir `/tablero` → 6 columnas (vacías incluidas) y la carga «Luis N · Marta N».
@@ -146,4 +164,6 @@ las pruebas automáticas (`cargo test`).
 
 ## §9 Integración (los dos juntos)
 Recorrer §1 → §8 seguidos con un vehículo nuevo, desde la cita hasta la factura, mirando el
-tablero en otra ventana durante todo el recorrido.
+tablero en otra ventana durante todo el recorrido. Como la orden solo se abre el día de la cita
+(spec-002 Q2) y la página pública solo ofrece días desde mañana, el recorrido ocupa dos días:
+pedir la cita un día y seguir el día de la cita.

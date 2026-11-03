@@ -57,7 +57,7 @@ añade aquí y lo revisan las dos personas antes de implementarlo.
 | `GET /api/publico/vehiculos/{matricula}` | 🔓 | — | `{matricula, marca, modelo, cita_pendiente}` · 404 «No hay ningún vehículo con esa matrícula» · 422 «La matrícula no es válida» con `detalle.campo = "matricula"`, igual que en el `POST`. **Nunca** devuelve datos del cliente ni la fecha de la cita pendiente. |
 | `GET /api/publico/dias-disponibles` | 🔓 | — | `["2026-10-16", …]` (de lunes a viernes, desde mañana hasta dentro de 30 días, con plazas) |
 | `POST /api/publico/citas` | 🔓 | `{matricula, fecha, motivo, vehiculo?: {marca, modelo}, cliente?: {nombre, telefono, email}}`. Si la matrícula es nueva, `vehiculo` y `cliente` son obligatorios. Si ya existe, se **ignoran**: nunca se modifican el vehículo ni su propietario | 201 `{fecha, motivo, matricula}` · 409 «Este vehículo ya tiene una cita pendiente.» · 409 «Ese día ya está completo» · 422 con el primer campo incorrecto (tabla de abajo) |
-| `GET /api/citas?fecha=YYYY-MM-DD` | recepcion | `fecha` opcional (si falta, hoy en Europe/Madrid) | `[{id, matricula, marca, modelo, motivo, cliente: {nombre, telefono}, orden_id|null}]`, en el orden en que se pidieron. **Nunca** devuelve el correo · 400 «La fecha no es válida» si `fecha` no es YYYY-MM-DD · 401 sin sesión · 403 otros roles |
+| `GET /api/citas?fecha=YYYY-MM-DD` | recepcion | `fecha` opcional (si falta, hoy en Europe/Madrid) | `[{id, matricula, marca, modelo, motivo, cliente: {nombre, telefono}, orden_id|null, orden_numero|null}]`, en el orden en que se pidieron. **Nunca** devuelve el correo · 400 «La fecha no es válida» si `fecha` no es YYYY-MM-DD · 401 sin sesión · 403 otros roles |
 
 Validación de spec-001 (422). Esta tabla es la **fuente única** de las reglas de los campos; los
 demás documentos remiten a ella. El servidor comprueba en este orden y responde el primer error
@@ -80,9 +80,35 @@ como `{"error": "<mensaje>", "detalle": {"campo": "<campo>"}}`. Los campos de `v
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `POST /api/ordenes` | recepcion | `{cita_id, km, danos, mecanico_id, fecha_entrega_prometida}` | 201 `Orden` · 422 `{"error":"El kilometraje no puede ser menor que el de la visita anterior (85.000 km)","detalle":{"km_anterior":85000}}` · 409 si la cita ya tiene orden |
-| `GET /api/ordenes?mias=true` | recepcion, mecanico | — | `[OrdenResumen]` (con `mias` solo las del mecánico que ha entrado) |
-| `GET /api/ordenes/{id}` | todos | — | `Orden` = OrdenResumen + `{cita:{fecha,motivo}, vehiculo:{marca,modelo}, km, danos, diagnostico, total_presupuestado, coste_acumulado, presupuestos:[PresupuestoResumen], imputaciones:[Linea], pedidos:[Pedido], factura_id}` |
+| `POST /api/ordenes` | recepcion | `{cita_id, km, danos, mecanico_id, fecha_entrega_prometida}` | 201 `Orden` · 404 «No existe la cita» · 422 con el primer campo incorrecto (tabla de abajo) · 409 «Solo se puede abrir la orden el día de la cita» · 409 «Esta cita ya tiene una orden (Nº 42)» con `detalle: {orden_id, numero}`. Ningún error consume número |
+| `GET /api/ordenes?mias=true` | recepcion, mecanico | — | `[OrdenResumen]`, de la más reciente a la más antigua (con `mias` solo las del mecánico que ha entrado) |
+| `GET /api/ordenes/{id}` | todos | — | `Orden` = OrdenResumen + `{cita:{fecha,motivo}, vehiculo:{marca,modelo}, km, danos, diagnostico, total_presupuestado, coste_acumulado, presupuestos:[PresupuestoResumen], imputaciones:[Linea], pedidos:[Pedido], factura_id}` · 404 «No existe la orden» |
+
+Validación de `POST /api/ordenes`. Esta tabla es la **fuente única** de las reglas y los textos;
+los demás documentos remiten a ella. El servidor comprueba primero que la cita existe (404),
+después las filas de esta tabla en este orden, y responde el primer error como `{"error":
+"<mensaje>", "detalle": {"campo": "<campo>"}}`. **Todos los 422 llegan antes que cualquier 409**:
+después de la tabla, la cita de otro día (409) y por último, con la cita bloqueada, la cita que ya
+tiene orden (409). El número de la orden solo se pide cuando todo ha pasado.
+
+| Campo | Regla | Mensaje |
+|---|---|---|
+| `km` | número entero de 0 a 2.147.483.647 (vacío, negativo, con decimales o con letras no vale) | «El kilometraje debe ser un número entero igual o mayor que 0» |
+| `danos` | no vacío tras quitar los espacios del principio y del final (si no hay daños, «Sin daños visibles») | «Describe los daños visibles o escribe “Sin daños visibles”» |
+| `mecanico_id` | un usuario con rol `mecanico` y activo | «Elige un mecánico de la lista» |
+| `fecha_entrega_prometida` | presente y con formato de fecha | «Indica la fecha de entrega prometida» |
+| `fecha_entrega_prometida` | igual o posterior a hoy (Europe/Madrid) | «La fecha de entrega prometida no puede ser anterior a hoy» |
+| `km` | ≥ km de la visita anterior: la orden más reciente del mismo vehículo para otra cita (sin visitas anteriores, cualquier km válido) | «El kilometraje no puede ser menor que el de la visita anterior (85.000 km)», con `detalle: {campo: "km", km_anterior: 85000}` |
+
+Partes de `Orden` y quién las da: spec-002 da los campos de `OrdenResumen`, `cita`, `vehiculo`,
+`km`, `danos`, `diagnostico` (columna que escribe spec-003) y `factura_id`; spec-003, `presupuestos`
+(`presupuestos::presupuestos_de_orden`); spec-005, `total_presupuestado`, `coste_acumulado` e
+`imputaciones` (`imputaciones::resumen_imputaciones`); spec-006, `pedidos`
+(`almacen::pedidos_de_orden`). Sin datos, las listas van vacías, los importes a `"0.00"` y
+`factura_id` a `null`.
+
+Abrir una orden publica en `GET /api/eventos` el evento `{id, estado: "recibida"}`, después del
+`commit`.
 
 ## spec-003 · Diagnóstico y presupuesto (y ampliaciones de spec-005)
 
