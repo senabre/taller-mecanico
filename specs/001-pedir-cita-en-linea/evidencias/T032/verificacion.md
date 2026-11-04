@@ -63,8 +63,15 @@ tras corregirlo en T041 se repitió y **se supera** (ver [Repetición tras T041]
 
 Los tiempos medidos (≈1,3 s) son **de máquina** y no sirven para validar SC-001 (< 1 min) ni
 SC-002 (< 3 min), que hablan de una persona. Lo que sí queda comprobado es el recorrido: un vehículo
-conocido solo necesita **3 datos** (matrícula, día y motivo) y uno nuevo **8**. **Pendiente**: que una
-persona cronometre los dos recorridos del paso 10 y anote aquí los tiempos.
+conocido solo necesita **3 datos** (matrícula, día y motivo) y uno nuevo **8**.
+
+**Cronometraje humano (2026-11-04)**, hecho a mano por la responsable, en Chrome en español y con los
+datos demo del día:
+
+| Criterio | Recorrido | Límite | Tiempo | ✓ |
+|----------|-----------|--------|--------|---|
+| SC-001 | Cita de `2222CCC` (vehículo conocido) | < 1 min | **47 s** | ✅ |
+| SC-002 | Cita de `9012DFG` (vehículo nuevo, 8 datos) | < 3 min | **1 min 27 s** | ✅ |
 
 ### Sobre T037 (paso e)
 
@@ -102,7 +109,7 @@ H1 queda verificado en el navegador: el paso (c) de T032 y el mensaje de T030 se
 ## Qué queda pendiente
 
 1. ~~Corregir H1 (nueva tarea correctora) y repetir el paso (c).~~ Hecho: T041 y repetición del 2026-11-02.
-2. Que una persona cronometre el paso 10 (SC-001 y SC-002).
+2. ~~Que una persona cronometre el paso 10 (SC-001 y SC-002).~~ Hecho el 2026-11-04: ver «Sobre SC-001 y SC-002 (paso 10)».
 3. ~~T034, segunda parte: abrir la orden de `9999LLL` con 100.000 km cuando exista spec-002.~~
    Trasladada a spec-002 (2026-11-03): con su Q2 la orden solo se abre el día de la cita, así que
    la regla del km la comprueba el quickstart común §2.6 con la cita demo de hoy de `8888KKK`.

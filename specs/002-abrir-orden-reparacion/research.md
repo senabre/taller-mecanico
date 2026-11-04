@@ -191,7 +191,7 @@ Europe/Madrid, errores, contador sin huecos, eventos del tablero) está en
   que viaja al servidor es siempre AAAA-MM-DD, sea cual sea el idioma, y el resto de las fechas de
   la aplicación se escriben con `formato.ts`, que no depende del navegador.
 - **Consecuencia**: en un navegador en otro idioma, como el navegador automático de las
-  verificaciones (en inglés), el campo sale en el formato de ese idioma. La comprobación en un
-  navegador en español es T035.
+  verificaciones (en inglés), el campo sale en el formato de ese idioma.
+- **Comprobado en Chrome en español**: el campo de entrega, en T035 (2026-11-04), y el selector de día de `/citas` también se comprobó: en la prueba manual de US1 del 2026-10-24, en Chrome en español, mostraba «26/10/2026» y «27/10/2026».
 - **Alternativas descartadas**: un selector de fecha propio o una librería, porque añaden código o
   una dependencia para un caso que no se da en el taller.

@@ -31,7 +31,7 @@ rellena los campos y lee la pantalla.
 | 7 | §2.3 Error de km (US1-8, FR-003, FR-006) | «El kilometraje debe ser un número entero igual o mayor que 0» bajo su campo y no se guarda | mensaje=«El kilometraje debe ser un número entero igual o mayor que 0»; página=/ordenes/nueva | ✅ | [07-p3-km-negativo.png](07-p3-km-negativo.png) |
 | 8 | §2.3 Error de entrega (US1-8, FR-003, FR-006) | «La fecha de entrega prometida no puede ser anterior a hoy» bajo su campo y no se guarda | mensaje=«La fecha de entrega prometida no puede ser anterior a hoy»; página=/ordenes/nueva | ✅ | [08-p3-entrega-ayer.png](08-p3-entrega-ayer.png) |
 | 9 | §2.4 Ficha de la orden (US1-2, US1-3, SC-002) | Orden Nº 10, «Recibida», 85.000 km, cita, matrícula y mecánico | Orden Nº 10; Recibida=true; 85.000 km=true; url=/ordenes/10 | ✅ | [09-p4-ficha-orden-10.png](09-p4-ficha-orden-10.png) |
-| 10 | §2.4 SC-001 (tiempo de máquina) | Recorrido desde la lista hasta la ficha | 5.1 s de máquina con 3 errores intermedios; el cronometraje humano queda pendiente | ✅ | [09-p4-ficha-orden-10.png](09-p4-ficha-orden-10.png) |
+| 10 | §2.4 SC-001 (tiempo de máquina) | Recorrido desde la lista hasta la ficha | 5.1 s de máquina con 3 errores intermedios; el cronometraje humano está en «Comprobación humana» | ✅ | [09-p4-ficha-orden-10.png](09-p4-ficha-orden-10.png) |
 | 11 | §2.4 Enlace en Citas (US1-4, Q5) | 1313MMM muestra «Orden Nº 10» y lleva a la ficha | Orden Nº 10; tras pulsar=/ordenes/10 | ✅ | [10-p4-citas-orden-10.png](10-p4-citas-orden-10.png) |
 | 12 | §2.5 Primera pestaña (SC-002, US1-9) | Orden Nº 11 (consecutiva) | Orden Nº 11 | ✅ | [11-p5-pestana-1-orden-11.png](11-p5-pestana-1-orden-11.png) |
 | 13 | §2.5 Segunda pestaña (US1-4, FR-008) | «Esta cita ya tiene una orden (Nº 11)» con enlace a la orden | mensaje=true; enlace=/ordenes/11 | ✅ | [12-p5-pestana-2-ya-tiene-orden.png](12-p5-pestana-2-ya-tiene-orden.png) |
@@ -48,8 +48,8 @@ rellena los campos y lee la pantalla.
 
 ### Notas
 
-- **SC-001**: el tiempo medido es de máquina y no sirve; queda pendiente cronometrarlo una persona
-  (menos de 2 minutos desde la lista de citas hasta la ficha).
+- **SC-001**: el tiempo medido aquí es de máquina y no sirve; el de una persona está en
+  «Comprobación humana».
 - **Lista de órdenes**: se ordena por fecha de apertura, como dice el contrato. En los datos demo
   de la base común los números no siguen el orden de las fechas (la orden 1 es de ayer y la 9 del
   15/10), así que la lista no sale ordenada por número. No afecta a ningún criterio; con datos
@@ -93,9 +93,18 @@ con «85.000», «23.500», «30.000» y «40.000»).
 El «antes» de F1 está acreditado por la prueba 7 de `spec002_ordenes.rs`, que falló en rojo con
 `km: "85.000"` antes de T032 (ver T032 en tasks.md).
 
+## Comprobación humana (2026-11-04, T035)
+
+Hecha a mano por la responsable, en **Chrome en español**, con los datos demo del día.
+
+| Comprobación | Esperado | Observado | ✓ |
+|--------------|----------|-----------|---|
+| SC-001: de la lista de citas a la ficha de la Orden Nº 10 (1313MMM, «85.000» km) | Menos de 2 minutos | **31 s** | ✅ |
+| Campo de la fecha de entrega del formulario (principio II, research D9) | dd/mm/aaaa | dd/mm/aaaa | ✅ |
+
 ## Pendiente
 
 1. ~~Paso 6 del §2, cuando esté T028 (US2).~~ Hecho: ver «US2 y ancho de móvil».
-2. Cronometraje humano de SC-001 y comprobar en un navegador en español que el campo de entrega sale
-   en dd/mm/aaaa (T035; el navegador automático va en inglés). Escribir «85.000» ya está comprobado.
+2. ~~Cronometraje humano de SC-001 y comprobar en un navegador en español que el campo de entrega
+   sale en dd/mm/aaaa (T035).~~ Hecho: ver «Comprobación humana».
 3. Revisión de la Persona B (T031).
