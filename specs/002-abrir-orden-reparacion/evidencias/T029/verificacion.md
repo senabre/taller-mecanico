@@ -18,7 +18,7 @@ rellena los campos y lee la pantalla.
   sin implementar.
 - Guion reproducible: [t029.mjs](t029.mjs) (`node t029.mjs <carpeta> <día de la cita de 1234BCD>`).
 
-## Resultado: 23/23
+## Resultado: 23/23 (US1) + 3/3 (US2 y móvil)
 
 | # | Paso | Esperado | Observado | ✓ | Captura |
 |---|------|----------|-----------|---|---------|
@@ -58,8 +58,24 @@ rellena los campos y lee la pantalla.
   por número y buscaba «€» tras un espacio normal en vez del no separable). Se corrigió el guion y se
   repitió todo sobre una base de datos limpia.
 
+## US2 y ancho de móvil (2026-11-04, tras T027–T028)
+
+**Código verificado**: rama `spec-002` en `c9d868e` + `backend/src/rutas/ordenes.rs` con T028, todavía
+sin commit (copiado del equipo de la autora). Base de datos recién cargada con `demo.sql`. Guion:
+[t029b.mjs](t029b.mjs) (`node t029b.mjs <carpeta> <número esperado>`).
+
+| Paso | Esperado | Observado | ✓ | Captura |
+|------|----------|-----------|---|---------|
+| §2.6 8888KKK con 30.000 km (US2, FR-004) | «El kilometraje no puede ser menor que el de la visita anterior (39.800 km)» bajo Kilómetros y no se guarda | mensaje=«El kilometraje no puede ser menor que el de la visita anterior (39.800 km)»; página=/ordenes/nueva | ✅ | [b01-p6-km-menor.png](b01-p6-km-menor.png) |
+| §2.6 Corregido a 40.000 km (US2, SC-002) | Se guarda como Orden Nº 10: el rechazo no gastó número | Orden Nº 10; 40.000 km=true | ✅ | [b02-p6-km-mayor-se-guarda.png](b02-p6-km-mayor-se-guarda.png) |
+| /ordenes/nueva en móvil (390 px) | Todos los campos visibles y sin desplazamiento horizontal | ancho=390px; campos visibles=true,true,true,true | ✅ | [b03-movil-ordenes-nueva.png](b03-movil-ordenes-nueva.png) |
+
+**Regresión de US1** con T028: el guion [t029.mjs](t029.mjs) repetido sobre otra base de datos
+limpia da **23/23**.
+
 ## Pendiente
 
-1. Paso 6 del §2, cuando esté T028 (US2).
-2. Cronometraje humano de SC-001.
+1. ~~Paso 6 del §2, cuando esté T028 (US2).~~ Hecho: ver «US2 y ancho de móvil».
+2. Cronometraje humano de SC-001 (y ver que el campo de entrega sale en dd/mm/aaaa en un navegador en
+   español: el navegador automático lo muestra en formato estadounidense por ir en inglés).
 3. Revisión de la Persona B (T031).
