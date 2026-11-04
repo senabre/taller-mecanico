@@ -19,6 +19,7 @@ use crate::contador;
 use crate::error::{ErrorApi, Json, Resultado};
 use crate::estados::{CambioEstado, Estado};
 use crate::fechas;
+use crate::formato;
 use crate::lineas::Linea;
 use crate::rutas::almacen::{self, Pedido};
 use crate::rutas::imputaciones;
@@ -314,7 +315,25 @@ async fn abrir_orden(
             "La fecha de entrega prometida no puede ser anterior a hoy",
         ));
     }
-    // Hueco de T028 (US2): km frente a la visita anterior, última fila de la tabla.
+    // Última fila de la tabla: el km frente a la visita anterior, que es la orden más reciente del
+    // vehículo para otra cita; la orden de esta misma cita es la misma visita (research D3).
+    let km_anterior: Option<i32> = sqlx::query_scalar(
+        "SELECT km FROM orden WHERE vehiculo_id = $1 AND cita_id <> $2
+          ORDER BY abierta_en DESC, id DESC LIMIT 1",
+    )
+    .bind(vehiculo_id)
+    .bind(cita_id)
+    .fetch_optional(&estado.db)
+    .await?;
+    if let Some(anterior) = km_anterior.filter(|anterior| km < *anterior) {
+        return Err(ErrorApi::Validacion {
+            mensaje: format!(
+                "El kilometraje no puede ser menor que el de la visita anterior ({} km)",
+                formato::numero(i64::from(anterior))
+            ),
+            detalle: Some(json!({ "campo": "km", "km_anterior": anterior })),
+        });
+    }
 
     // 3. Solo el día de la cita (409, research D1).
     if fecha_cita != hoy {

@@ -547,3 +547,93 @@ async fn prueba_12_lista_de_ordenes(pool: PgPool) {
     let (codigo, _) = get(&app, Some(&pepe), "/api/ordenes").await;
     assert_eq!(codigo, StatusCode::FORBIDDEN);
 }
+
+// ---------------------------------------------------------------------------------------------
+// US2 · Control del kilometraje
+// ---------------------------------------------------------------------------------------------
+
+/// Otra cita de un vehículo que ya existe.
+async fn otra_cita(pool: &PgPool, vehiculo_id: i64, fecha: NaiveDate) -> i64 {
+    sqlx::query_scalar(
+        "INSERT INTO cita (vehiculo_id, fecha, motivo) VALUES ($1, $2, 'Revisión') RETURNING id",
+    )
+    .bind(vehiculo_id)
+    .bind(fecha)
+    .fetch_one(pool)
+    .await
+    .unwrap()
+}
+
+/// `peticion` con los kilómetros indicados.
+fn con_km(cita_id: i64, mecanico_id: i64, km: i64) -> Value {
+    let mut cuerpo = peticion(cita_id, mecanico_id);
+    cuerpo["km"] = json!(km);
+    cuerpo
+}
+
+/// Prueba 6 (FR-004, US2-1, US2-2, US2-3, SC-003; research D3).
+#[sqlx::test]
+async fn prueba_6_kilometraje(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let luis = mecanico(&pool, "luis", true).await;
+    let ana = recepcion(&app, &pool, "ana").await;
+    let hace = |dias| hoy() - Days::new(dias);
+
+    // Dos visitas anteriores: 70.000 km y después 85.000 km.
+    let (de_hoy, vehiculo) = cita(&pool, "1000AAA", hoy()).await;
+    let vieja = otra_cita(&pool, vehiculo, hace(20)).await;
+    orden_previa(&pool, vieja, vehiculo, luis, 70_000, 1001).await;
+    let reciente = otra_cita(&pool, vehiculo, hace(10)).await;
+    orden_previa(&pool, reciente, vehiculo, luis, 85_000, 1002).await;
+
+    // US2-1: menor que el anterior, sin crear orden ni gastar número.
+    let antes = contador(&pool).await;
+    let (codigo, cuerpo) = abrir(&app, &ana, con_km(de_hoy, luis, 80_000)).await;
+    assert_eq!(codigo, StatusCode::UNPROCESSABLE_ENTITY, "{cuerpo}");
+    assert_eq!(
+        cuerpo["error"],
+        "El kilometraje no puede ser menor que el de la visita anterior (85.000 km)"
+    );
+    assert_eq!(cuerpo["detalle"], json!({ "campo": "km", "km_anterior": 85000 }));
+    assert_eq!(ordenes(&pool).await, 2);
+    assert_eq!(contador(&pool).await, antes);
+
+    // Va después de las demás filas de la tabla: con otro campo mal, sale ese error.
+    let mut cuerpo = con_km(de_hoy, luis, 80_000);
+    cuerpo["danos"] = json!("");
+    let (_, respuesta) = abrir(&app, &ana, cuerpo).await;
+    assert_eq!(respuesta["detalle"]["campo"], "danos");
+
+    // Todos los 422 antes que cualquier 409: una cita de mañana con km menor da el 422.
+    let manana = otra_cita(&pool, vehiculo, hoy() + Days::new(1)).await;
+    let (codigo, cuerpo) = abrir(&app, &ana, con_km(manana, luis, 80_000)).await;
+    assert_eq!(codigo, StatusCode::UNPROCESSABLE_ENTITY, "{cuerpo}");
+    assert_eq!(cuerpo["detalle"]["km_anterior"], 85000);
+
+    // US2-2: igual que el anterior.
+    let (codigo, cuerpo) = abrir(&app, &ana, con_km(de_hoy, luis, 85_000)).await;
+    assert_eq!(codigo, StatusCode::CREATED, "{cuerpo}");
+
+    // US2-3: vehículo sin visitas anteriores, con 0 km.
+    let (sin_visitas, _) = cita(&pool, "2000AAA", hoy()).await;
+    let (codigo, cuerpo) = abrir(&app, &ana, con_km(sin_visitas, luis, 0)).await;
+    assert_eq!(codigo, StatusCode::CREATED, "{cuerpo}");
+
+    // La visita anterior es la más reciente, no la de más km.
+    let (de_hoy, vehiculo) = cita(&pool, "3000AAA", hoy()).await;
+    let vieja = otra_cita(&pool, vehiculo, hace(20)).await;
+    orden_previa(&pool, vieja, vehiculo, luis, 90_000, 1003).await;
+    let reciente = otra_cita(&pool, vehiculo, hace(10)).await;
+    orden_previa(&pool, reciente, vehiculo, luis, 85_000, 1004).await;
+    let (codigo, cuerpo) = abrir(&app, &ana, con_km(de_hoy, luis, 86_000)).await;
+    assert_eq!(codigo, StatusCode::CREATED, "{cuerpo}");
+
+    // Segunda pestaña con menos km en un vehículo sin otras visitas: la orden de la propia cita
+    // no es una visita anterior, así que da el 409 de Q5 y no el 422 del km.
+    let (misma, _) = cita(&pool, "4000AAA", hoy()).await;
+    let (codigo, orden) = abrir(&app, &ana, con_km(misma, luis, 85_000)).await;
+    assert_eq!(codigo, StatusCode::CREATED, "{orden}");
+    let (codigo, cuerpo) = abrir(&app, &ana, con_km(misma, luis, 80_000)).await;
+    assert_eq!(codigo, StatusCode::CONFLICT, "{cuerpo}");
+    assert_eq!(cuerpo["error"], format!("{YA_TIENE_ORDEN} (Nº {})", orden["numero"]));
+}
