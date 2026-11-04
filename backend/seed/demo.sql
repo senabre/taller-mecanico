@@ -78,7 +78,7 @@ SELECT ve.id, current_date - d.dias, d.motivo
         ('4444FFF',  2, 'Testigo del motor encendido'),
         ('5555GGG',  3, 'Ruido al frenar'),
         ('6666HHH',  6, 'Tirones al acelerar'),
-        ('7777JJJ',  8, 'Pastillas de freno gastadas'),
+        ('7777JJJ', 18, 'Pastillas de freno gastadas'),
         ('8888KKK',  7, 'Chirrido al frenar'),
         ('9999LLL', 20, 'Cambio de pastillas')
        ) AS d (matricula, dias, motivo)
@@ -234,5 +234,30 @@ SELECT ve.id, (now() AT TIME ZONE 'Europe/Madrid')::date - d.dias, d.motivo
         ('1515PPP', 1, 'Ruido en la suspensión')
        ) AS d (matricula, dias, motivo)
   JOIN vehiculo ve USING (matricula);
+
+-- ---------------------------------------------------------------------------------------------
+-- Parte 6 · Ampliación caducada de la orden 7 (spec-004, research D7; quickstart §4.6 y §4.8)
+--   Sin ella no se podría comprobar en la aplicación un presupuesto caducado (spec-004 US3 y
+--   SC-003): habría que esperar 15 días. El token es ficticio y solo sirve para la demostración
+--   (constitución, principio V). Fechas de Madrid (research R12): emitida hace 16 días y, 15 días
+--   después, caducada ayer. La cita de 7777JJJ es de hace 18 días (parte 3) para que se haya
+--   emitido después de abrir la orden.
+--   Va al final para que no le alcance el CROSS JOIN de la parte 4, y lleva su propia línea.
+-- ---------------------------------------------------------------------------------------------
+
+INSERT INTO presupuesto (orden_id, tipo, estado, token, iva_porcentaje, base, iva, total,
+                         emitido_en, caduca_el)
+SELECT o.id, 'ampliacion', 'emitido', 'demo-presupuesto-caducado',
+       21.00, 40.00, 8.40, 48.40,
+       ((now() AT TIME ZONE 'Europe/Madrid')::date - 16 + time '10:00') AT TIME ZONE 'Europe/Madrid',
+       (now() AT TIME ZONE 'Europe/Madrid')::date - 1
+  FROM orden o
+ WHERE o.numero = 7;
+
+INSERT INTO linea_presupuesto (presupuesto_id, tipo, concepto, pieza_id, cantidad,
+                               precio_unitario, importe)
+SELECT p.id, 'mano_obra', 'Sustitución de discos', NULL, 1.00, 40.00, 40.00
+  FROM presupuesto p
+ WHERE p.token = 'demo-presupuesto-caducado';
 
 COMMIT;
