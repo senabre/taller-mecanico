@@ -708,7 +708,6 @@ async fn pedidos_de_una_orden_sin_los_de_otras(pool: PgPool) {
 /// El campo `pedidos` de la ficha de la orden. El endpoint es de spec-002; quitar el `#[ignore]`
 /// cuando exista (T031).
 #[sqlx::test]
-#[ignore = "necesita GET /api/ordenes/{id} de spec-002"]
 async fn la_ficha_de_la_orden_trae_sus_pedidos(pool: PgPool) {
     let e = escenario(&pool).await;
     let (_, pedido) = pedir(&e, e.pf123, json!(2), 42).await;
