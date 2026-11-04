@@ -5,6 +5,7 @@ pub mod citas;
 pub mod imputaciones;
 pub mod ordenes;
 pub mod presupuestos;
+pub mod publico_presupuesto;
 pub mod sesion;
 
 use axum::Router;
@@ -20,4 +21,5 @@ pub fn api() -> Router<EstadoApp> {
         .merge(citas::rutas())
         .merge(imputaciones::rutas())
         .merge(ordenes::rutas())
+        .merge(publico_presupuesto::rutas())
 }
