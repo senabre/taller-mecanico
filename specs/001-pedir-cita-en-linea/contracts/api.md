@@ -55,6 +55,7 @@ propios del formulario son:
 |---|---|---|---|
 | Al abrir | `GET /api/citas?fecha=…` con la fecha de hoy (calculada en Europe/Madrid, research D5), que el selector muestra | las citas de hoy | FR-009 |
 | Al elegir otro día | `GET /api/citas?fecha=…` | matrícula, marca, modelo, motivo, nombre y teléfono, en el orden en que se pidieron; con lista vacía, «No hay citas para este día» | FR-009 |
+| En cada cita (spec-002) | los campos `orden_id` y `orden_numero` de la misma llamada | columna «Orden»: «Orden Nº N» con enlace a la orden; «Abrir orden» si no tiene orden y el día es hoy; vacía en otro caso | spec-002 FR-001, FR-008 |
 | Otro rol | la llamada da **403** | solo el mensaje común «No tienes permiso para hacer esto», sin título, selector ni lista | FR-009 |
 
 `orden_id` y `orden_numero` los añade spec-002 para la columna «Orden» de la lista: «Orden Nº N» con

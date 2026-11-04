@@ -78,6 +78,7 @@
 							<th>Motivo</th>
 							<th>Nombre</th>
 							<th>Teléfono</th>
+							<th>Orden</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -89,7 +90,16 @@
 								<td>{cita.motivo}</td>
 								<td>{cita.cliente.nombre}</td>
 								<td>{cita.cliente.telefono}</td>
-								<!-- spec-002 añade aquí el botón «Abrir orden» (usa cita.orden_id). -->
+								<!-- La orden solo se abre el día de la cita (spec-002 FR-001, FR-008). -->
+								<td>
+									{#if cita.orden_id !== null}
+										<a class="anchor" href={`/ordenes/${cita.orden_id}`}>Orden Nº {cita.orden_numero}</a>
+									{:else if dia === hoy}
+										<a class="btn btn-sm preset-filled-primary-500" href={`/ordenes/nueva?cita=${cita.id}`}>
+											Abrir orden
+										</a>
+									{/if}
+								</td>
 							</tr>
 						{/each}
 					</tbody>
