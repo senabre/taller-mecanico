@@ -45,6 +45,12 @@ o se asignan).
 | N3 | I5 · specs 003 y 004 | LOW | La asignación de I5 solo consta en el registro de spec-002: spec-003 no tiene `hallazgos.md` y spec-004 aún no ha pasado por el clarify. | Asignado: la Persona A lo lleva al clarify de spec-004 (§4.3); la Persona B lo ve en T031, que revisa el §4 del quickstart (§4.5). | Persona A (spec-004) y Persona B (T031) | Asignado a spec-004 y a T031 |
 | N4 | SC-002 · US1-9 · quickstart común §2 (pasos 3–6) · T008 | LOW | En la app, solo el rechazo del paso 3 va seguido de una orden nueva (la Nº 10); los de la segunda pestaña y del km menor van después de la última orden, así que en pantalla no se ve que tampoco gastan número. | Justificado: el paso 3 ya muestra en la app que un rechazo no gasta número, SC-002 no exige más, y T008 (prueba 2) lo comprueba con todos los tipos de rechazo. | Persona A | Cerrado (justificado) |
 
+## Hallazgos encontrados durante la implementación
+
+| ID | Historia o criterio | Gravedad | Evidencia | Decisión | Responsable | Estado |
+|----|---------------------|----------|-----------|----------|-------------|--------|
+| V1 | Lista de órdenes (`GET /api/ordenes`, `/ordenes`) · datos demo · [verificación de US1](evidencias/T029/verificacion.md), fila 14 | LOW | La lista se ordena por fecha de apertura, como dice el contrato, y en los datos demo los números no siguen el orden de las fechas (la orden 1 es de ayer y la 9 de hace 20 días): el navegador vio 11, 10, 1, 4, 5, 2, 3, 6, 8, 7, 9. | Justificado (2026-11-04): no afecta a ningún criterio. Es una propiedad de los datos demo, cuyas fechas se eligieron por otros motivos; con datos reales, número y fecha avanzan juntos. No se cambian ni la lista ni los datos demo. | Persona A | Cerrado (justificado) |
+
 ## Resumen
 
 - **Verificados en analyze-2**: 8 (C1, I1, I2, A2, O1, E2, I4; E1, justificado)
@@ -52,5 +58,6 @@ o se asignan).
 - **Verificado en las tareas** (se aplica al hacerlas): 1 (I3)
 - **Asignados**: I5 (spec-004 y spec-003), N1 (spec-008), N3 (spec-004 y T031)
 - **Nuevos de analyze-2, justificados**: 2 (N2, N4)
+- **Encontrados durante la implementación, justificados**: 1 (V1)
 - Ninguno queda abierto ni bloquea `/speckit-implement` de spec-002. Antes de fusionar hay que
   completar T031 (revisión de la Persona B de lo compartido, incluidos G1 y A1).

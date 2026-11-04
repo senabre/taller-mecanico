@@ -27,12 +27,21 @@ Persona B):
 
 | Momento | Llamada | Qué muestra | Requisito |
 |---|---|---|---|
-| Al abrir | `GET /api/citas?fecha=<hoy>` y `GET /api/mecanicos` | Matrícula, marca, modelo y motivo de la cita; en el selector, solo mecánicos activos. Si la cita no está en la lista de hoy: «Solo se puede abrir la orden el día de la cita», sin formulario | FR-001, FR-005 (Q2, Q3) |
+| Al abrir | `GET /api/citas` sin `fecha` (el servidor da las de hoy en Europe/Madrid; solo se abren citas de hoy) y `GET /api/mecanicos` | Matrícula, marca, modelo y motivo de la cita; en el selector, solo mecánicos activos. Si la cita no está en la lista de hoy: «Solo se puede abrir la orden el día de la cita», sin formulario | FR-001, FR-005 (Q2, Q3) |
 | Al guardar | `POST /api/ordenes` | **201**: va a la ficha de la orden · **422**: el mensaje bajo el campo de `detalle.campo` (`km`, `danos`, `mecanico_id`, `fecha_entrega_prometida`) · **409** cita con orden: el mensaje y un enlace a la orden de `detalle.orden_id` · **409** otro día: el mensaje como error general | FR-002–FR-008 |
 
-El formulario usa `novalidate`: todos los mensajes de error salen del servidor. Además de las
-etiquetas de los campos y los botones, sus únicos textos propios son el título «Abrir orden» y el
-mensaje de una cita que no es de hoy, que es el mismo texto del 409.
+El formulario usa `novalidate`: todos los mensajes de error de los campos salen del servidor. Se
+consideran **etiquetas**, y no se enumeran aquí, los nombres de los campos (Kilómetros, Daños
+visibles, Mecánico, Fecha de entrega prometida), los textos de los botones («Guardar»,
+«Guardando…»), la opción vacía del selector («Elige un mecánico») y el rótulo «Motivo:». Aparte de
+las etiquetas, los únicos textos propios del formulario son:
+
+- «Abrir orden» (título de la página);
+- «Solo se puede abrir la orden el día de la cita» (la cita no está en la lista de hoy; es el mismo
+  texto del 409);
+- «Ver la orden» (enlace junto al 409 de la cita que ya tiene orden);
+- «No se pudo cargar la cita» y «Ha ocurrido un error inesperado» (solo si falla la conexión o el
+  servidor responde sin el mensaje de error del contrato).
 
 ### `/ordenes/[id]` (todos los roles)
 
@@ -40,11 +49,15 @@ mensaje de una cita que no es de hoy, que es el mismo texto del 409.
 |---|---|---|---|
 | Al abrir y tras cada cambio de una sección | `GET /api/ordenes/{id}` | Sección «Datos» (spec-002): número, estado, matrícula, marca, modelo, fecha y motivo de la cita, km, daños, mecánico, entrega prometida y «Retrasada» si lo está. Debajo, las secciones de spec-003, 005 y 006 con los campos que les pasa la ficha ([research](../research.md) D6) · **404**: «No existe la orden» | US1-3, SC-004 |
 
+Si falla la conexión, la ficha muestra «No se pudo cargar la orden».
+
 ### `/ordenes` (recepción y jefe: «Órdenes»; mecánicos: «Mis órdenes»)
 
 | Momento | Llamada | Qué muestra | Requisito |
 |---|---|---|---|
-| Al abrir | `GET /api/ordenes` (recepción, jefe) o `GET /api/ordenes?mias=true` (mecánico) | Número (enlace a la ficha), matrícula, estado, mecánico y entrega prometida, de la más reciente a la más antigua | US1-3 |
+| Al abrir | `GET /api/ordenes` (recepción, jefe) o `GET /api/ordenes?mias=true` (mecánico) | Número (enlace a la ficha), matrícula, estado, mecánico y entrega prometida, de la más reciente a la más antigua | Menú común (escenario 1 de la US1 de la base común y quickstart §0.4) y quickstart §3 (hallazgo E1) |
+
+Con la lista vacía, «No hay órdenes»; si falla la conexión, «No se pudo cargar la lista de órdenes».
 
 `GET /api/ordenes` y el evento `{id, estado: "recibida"}` de `GET /api/eventos` los usa también el
 tablero de spec-008.

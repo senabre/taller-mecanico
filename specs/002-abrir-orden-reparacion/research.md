@@ -132,7 +132,7 @@ Europe/Madrid, errores, contador sin huecos, eventos del tablero) está en
   con `orden_id` → enlace «Orden Nº 42» a `/ordenes/{id}`; sin orden y con el día de hoy elegido
   → botón «Abrir orden» a `/ordenes/nueva?cita={id}`; otro día → nada.
 - **Formulario** `/ordenes/nueva?cita=…`: muestra la cita (matrícula, marca, modelo y motivo, de
-  `GET /api/citas?fecha=<hoy>`), y los campos Kilómetros, Daños visibles, Mecánico (de `GET
+  `GET /api/citas` sin `fecha`, que da las de hoy en Madrid), y los campos Kilómetros, Daños visibles, Mecánico (de `GET
   /api/mecanicos`) y Fecha de entrega prometida. Usa `novalidate`, como `/cita`: los mensajes
   salen del servidor y se muestran bajo el campo de `detalle.campo`. Con el 409 de Q5 muestra el
   mensaje y el enlace a la orden existente (`detalle.orden_id`). Con un 201 lleva a la ficha.
