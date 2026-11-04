@@ -147,8 +147,7 @@ async fn responder(
 ) -> Resultado<Response> {
     let nuevo_estado = match respuesta.decision.as_deref() {
         Some("aceptar") => "aceptado",
-        // Provisional: rechazar llega con T021.
-        Some("rechazar") => return Ok(StatusCode::NOT_IMPLEMENTED.into_response()),
+        Some("rechazar") => "rechazado",
         _ => {
             return Err(ErrorApi::Validacion {
                 mensaje: "Elija aceptar o rechazar".to_string(),
@@ -172,34 +171,41 @@ async fn responder(
     .await?;
 
     let Some(respondido) = respondido else {
-        let existe: bool =
-            sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM presupuesto WHERE token = $1)")
+        // El motivo (research R9): si sigue emitido y el `UPDATE` no lo ha tocado, es que ha caducado.
+        let motivo: Option<(String, NaiveDate)> =
+            sqlx::query_as("SELECT estado::text, caduca_el FROM presupuesto WHERE token = $1")
                 .bind(&token)
-                .fetch_one(&mut *tx)
+                .fetch_optional(&mut *tx)
                 .await?;
-        return Err(if existe {
-            // Provisional: el 409 de caducidad llega con T025.
-            ErrorApi::Conflicto("Este presupuesto ya fue respondido".to_string())
-        } else {
-            ErrorApi::NoEncontrado(ENLACE_NO_VALIDO.to_string())
+        return Err(match motivo {
+            None => ErrorApi::NoEncontrado(ENLACE_NO_VALIDO.to_string()),
+            Some((estado, _)) if estado != "emitido" => {
+                ErrorApi::Conflicto("Este presupuesto ya fue respondido".to_string())
+            }
+            Some((_, caduca_el)) => ErrorApi::Conflicto(format!(
+                "Este presupuesto caducó el {}. Contacte con el taller",
+                caduca_el.format("%d/%m/%Y")
+            )),
         });
     };
 
-    // Provisional: aceptar una ampliación llega con T021. Sin `commit` no se guarda nada.
-    if respondido.tipo != "inicial" {
-        return Ok(StatusCode::NOT_IMPLEMENTED.into_response());
-    }
-    let cambio = cambiar_estado(
-        &mut tx,
-        respondido.orden_id,
-        &[Estado::EnDiagnostico],
-        Estado::EnReparacion,
-    )
-    .await?;
+    // Rechazar no cambia el estado de la orden (Q2). Aceptar solo cambia el estado de origen.
+    let cambio = if nuevo_estado == "aceptado" {
+        let desde = if respondido.tipo == "inicial" {
+            Estado::EnDiagnostico
+        } else {
+            Estado::PendienteConformidad
+        };
+        Some(cambiar_estado(&mut tx, respondido.orden_id, &[desde], Estado::EnReparacion).await?)
+    } else {
+        None
+    };
     let presupuesto = presupuesto_publico(&mut tx, &token, &estado.config).await?;
     tx.commit().await?;
 
     // Después del commit, para que el tablero nunca lea un estado sin confirmar (R11, R14).
-    cambio.publicar(&estado.eventos);
+    if let Some(cambio) = cambio {
+        cambio.publicar(&estado.eventos);
+    }
     Ok(Json(presupuesto).into_response())
 }
