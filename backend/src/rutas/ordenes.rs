@@ -233,13 +233,24 @@ struct PeticionOrden {
     fecha_entrega_prometida: Option<Value>,
 }
 
-/// Entero de 0 a `i32::MAX`, como número JSON o como texto con solo cifras.
+/// Las cifras de «85.000»: sin puntos, o con punto de miles en grupos de tres («1.234.567»).
+/// Cualquier otra cosa («85.00», «8.5000», «85,5») no es un kilometraje (hallazgo F1).
+fn sin_punto_de_miles(texto: &str) -> Option<String> {
+    let solo_cifras = |t: &str| !t.is_empty() && t.chars().all(|c| c.is_ascii_digit());
+    let mut grupos = texto.split('.');
+    let primero = grupos.next()?;
+    let resto: Vec<&str> = grupos.collect();
+    let valido = solo_cifras(primero)
+        && (resto.is_empty() || primero.len() <= 3)
+        && resto.iter().all(|g| g.len() == 3 && solo_cifras(g));
+    valido.then(|| resto.iter().fold(primero.to_string(), |km, g| km + g))
+}
+
+/// Entero de 0 a `i32::MAX`, como número JSON o como texto con cifras y punto de miles opcional.
 fn leer_km(valor: Option<&Value>) -> Option<i32> {
     let km = match valor? {
         Value::Number(n) => n.as_i64(),
-        Value::String(t) if !t.is_empty() && t.chars().all(|c| c.is_ascii_digit()) => {
-            t.parse().ok()
-        }
+        Value::String(t) => sin_punto_de_miles(t)?.parse().ok(),
         _ => None,
     }?;
     i32::try_from(km).ok().filter(|km| *km >= 0)

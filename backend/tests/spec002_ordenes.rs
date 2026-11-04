@@ -358,6 +358,19 @@ async fn prueba_7_campos(pool: PgPool) {
         ("km", Some(json!(1.5)), KM, "km"),
         ("km", Some(json!("")), KM, "km"),
         ("km", Some(json!("abc")), KM, "km"),
+        // Punto de miles mal puesto o decimales (T032).
+        ("km", Some(json!("85.00")), KM, "km"),
+        ("km", Some(json!("8.5000")), KM, "km"),
+        ("km", Some(json!("85.5")), KM, "km"),
+        ("km", Some(json!("85.")), KM, "km"),
+        ("km", Some(json!(".000")), KM, "km"),
+        ("km", Some(json!("1234.567")), KM, "km"),
+        ("km", Some(json!("85,000")), KM, "km"),
+        ("km", Some(json!("85.000,5")), KM, "km"),
+        // Por encima del límite del contrato (T034).
+        ("km", Some(json!(2_147_483_648_i64)), KM, "km"),
+        ("km", Some(json!("2147483648")), KM, "km"),
+        ("km", Some(json!("2.147.483.648")), KM, "km"),
         ("danos", None, DANOS, "danos"),
         ("danos", Some(json!("")), DANOS, "danos"),
         ("danos", Some(json!("   ")), DANOS, "danos"),
@@ -397,6 +410,10 @@ async fn prueba_7_campos(pool: PgPool) {
     // Válidos: km como texto, entrega hoy, daños con espacios, «Sin daños visibles».
     let validos: Vec<(&str, Value, Value)> = vec![
         ("km", json!("85000"), json!(85000)),
+        ("km", json!("85.000"), json!(85000)),
+        ("km", json!("1.234.567"), json!(1_234_567)),
+        ("km", json!(2_147_483_647), json!(2_147_483_647)),
+        ("km", json!("2.147.483.647"), json!(2_147_483_647)),
         ("fecha_entrega_prometida", json!(hoy().to_string()), json!(hoy().to_string())),
         ("danos", json!("  Rayón  "), json!("Rayón")),
         ("danos", json!("Sin daños visibles"), json!("Sin daños visibles")),
@@ -546,6 +563,22 @@ async fn prueba_12_lista_de_ordenes(pool: PgPool) {
     let pepe = comun::entrar(&app, "pepe", &contrasena).await;
     let (codigo, _) = get(&app, Some(&pepe), "/api/ordenes").await;
     assert_eq!(codigo, StatusCode::FORBIDDEN);
+
+    // Una orden facturada con la entrega pasada no está retrasada (data-model común; hallazgo I1).
+    sqlx::query(
+        "UPDATE orden SET estado = 'facturada', fecha_entrega_prometida = $2 WHERE id = $1",
+    )
+    .bind(ids[1])
+    .bind(hoy() - Days::new(1))
+    .execute(&pool)
+    .await
+    .unwrap();
+    let (_, lista) = get(&app, Some(&ana), "/api/ordenes").await;
+    let facturada = lista.as_array().unwrap().iter().find(|o| o["id"] == ids[1]).unwrap();
+    assert_eq!(facturada["estado"], "facturada");
+    assert_eq!(facturada["retrasada"], false, "en la lista");
+    let (_, ficha) = get(&app, Some(&ana), &format!("/api/ordenes/{}", ids[1])).await;
+    assert_eq!(ficha["retrasada"], false, "en la ficha");
 }
 
 // ---------------------------------------------------------------------------------------------
