@@ -73,9 +73,29 @@ sin commit (copiado del equipo de la autora). Base de datos recién cargada con 
 **Regresión de US1** con T028: el guion [t029.mjs](t029.mjs) repetido sobre otra base de datos
 limpia da **23/23**.
 
+## Kilómetros con punto de miles (2026-11-04, tras T032)
+
+El converge-1 (hallazgo F1) detectó que las pasadas anteriores escribían los km sin punto
+(«85000»), mientras que el quickstart dice «85.000 km», que es como lo escribiría una persona; con
+ese texto el servidor daba el error genérico del km. Tras T032 (punto de miles en grupos de tres)
+se repitieron los dos recorridos **escribiendo los km con punto**.
+
+**Código verificado**: rama `spec-002` en `990c343` + `backend/src/rutas/ordenes.rs` con T032–T034,
+todavía sin commit. Base de datos limpia con `demo.sql` para cada recorrido. Guiones:
+[t029-punto.mjs](t029-punto.mjs) y [t029b-punto.mjs](t029b-punto.mjs) (los mismos que t029 y t029b,
+con «85.000», «23.500», «30.000» y «40.000»).
+
+| Recorrido | Resultado | Capturas |
+|-----------|-----------|----------|
+| US1 (pasos 1–5 y 7, ficha) con «85.000» y «23.500» | **23/23** ✅: Orden Nº 10 con «85.000 km»; Orden Nº 11 con 23.500 km | [c01-punto-85000-ficha.png](c01-punto-85000-ficha.png), [c02-punto-23500-orden-11.png](c02-punto-23500-orden-11.png) |
+| US2 (paso 6) con «30.000» y después «40.000», y móvil | **3/3** ✅: «…visita anterior (39.800 km)» y luego Orden Nº 10 con 40.000 km | [c03-punto-30000-rechazado.png](c03-punto-30000-rechazado.png), [c04-punto-40000-guardado.png](c04-punto-40000-guardado.png) |
+
+El «antes» de F1 está acreditado por la prueba 7 de `spec002_ordenes.rs`, que falló en rojo con
+`km: "85.000"` antes de T032 (ver T032 en tasks.md).
+
 ## Pendiente
 
 1. ~~Paso 6 del §2, cuando esté T028 (US2).~~ Hecho: ver «US2 y ancho de móvil».
-2. Cronometraje humano de SC-001 (y ver que el campo de entrega sale en dd/mm/aaaa en un navegador en
-   español: el navegador automático lo muestra en formato estadounidense por ir en inglés).
+2. Cronometraje humano de SC-001 y comprobar en un navegador en español que el campo de entrega sale
+   en dd/mm/aaaa (T035; el navegador automático va en inglés). Escribir «85.000» ya está comprobado.
 3. Revisión de la Persona B (T031).

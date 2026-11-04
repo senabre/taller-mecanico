@@ -72,8 +72,10 @@ Europe/Madrid, errores, contador sin huecos, eventos del tablero) está en
     lista del formulario y la comprobación no pueden discrepar.
   - **Daños (Q4)**: obligatorios tras `trim`; se guardan tal como se escribieron, sin los espacios
     del principio y del final. Un campo vacío nunca se convierte en «Sin daños visibles».
-  - **Kilometraje**: entero de 0 a 2.147.483.647 (`INTEGER` de la tabla). Vacío, negativo, con
-    decimales o con letras → el mismo mensaje.
+  - **Kilometraje**: entero de 0 a 2.147.483.647 (`INTEGER` de la tabla), con punto de miles
+    opcional en grupos de tres («85.000»), que es como la app muestra los km y como los escribe el
+    quickstart (hallazgo F1 de converge-1). Vacío, negativo, con decimales, con el punto mal puesto
+    («85.00», «8.5000») o con letras → el mismo mensaje.
   - **Fecha de entrega prometida**: ≥ `fechas::hoy()`; hoy se acepta (el caso límite solo prohíbe
     «anterior a hoy»). Sin límite superior, porque la spec no lo pide.
 - **Carrera aceptada**: si un mecánico se da de baja entre la comprobación y el `INSERT`
@@ -177,3 +179,19 @@ Europe/Madrid, errores, contador sin huecos, eventos del tablero) está en
 - **Alternativas descartadas**: usar `9999LLL` para el §2.3, porque el §1 y T034 ya lo usan y su
   cita la pide la página pública (desde mañana); crear órdenes demo nuevas para el km, porque
   cambiaría la numeración y las cuentas del tablero del §8.
+
+## D9. La fecha de entrega usa el control de fecha nativo del navegador
+
+- **Decisión**: el campo «Fecha de entrega prometida» de `/ordenes/nueva` sigue siendo un
+  `<input type="date">` nativo, igual que el selector de día de `/citas` (spec-001), al que esta
+  decisión también afecta (hallazgo F3 de converge-1).
+- **Motivo**: el control muestra la fecha en el idioma del navegador, no en el `lang="es"` de la
+  página. En un navegador en español muestra dd/mm/aaaa (principio II), que es el caso de quienes
+  usan la aplicación. Un control propio añadiría complejidad sin necesidad (principio I). El valor
+  que viaja al servidor es siempre AAAA-MM-DD, sea cual sea el idioma, y el resto de las fechas de
+  la aplicación se escriben con `formato.ts`, que no depende del navegador.
+- **Consecuencia**: en un navegador en otro idioma, como el navegador automático de las
+  verificaciones (en inglés), el campo sale en el formato de ese idioma. La comprobación en un
+  navegador en español es T035.
+- **Alternativas descartadas**: un selector de fecha propio o una librería, porque añaden código o
+  una dependencia para un caso que no se da en el taller.

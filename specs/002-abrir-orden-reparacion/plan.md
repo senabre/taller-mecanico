@@ -6,7 +6,7 @@
 
 **Note**: Lo común (pila, arquitectura, autenticación, fechas, errores, contador, eventos,
 estructura) está en el **plan maestro** [000-base-comun/plan.md](../000-base-comun/plan.md). Este
-plan solo recoge lo propio de la spec. Decisiones: [research.md](research.md) (D1–D8). El modelo
+plan solo recoge lo propio de la spec. Decisiones: [research.md](research.md) (D1–D9). El modelo
 de datos, el contrato y la guía de validación son los comunes; [data-model.md](data-model.md),
 [contracts/api.md](contracts/api.md) y [quickstart.md](quickstart.md) solo explican cómo los usa
 esta historia.
@@ -76,7 +76,7 @@ revisión de la Persona B (ver abajo). ✅
 specs/002-abrir-orden-reparacion/
 ├── spec.md
 ├── plan.md                 # este fichero
-├── research.md             # decisiones D1–D8
+├── research.md             # decisiones D1–D9
 ├── data-model.md           # cómo usa esta historia el modelo común
 ├── contracts/api.md        # qué pantalla usa cada endpoint del contrato común
 ├── quickstart.md           # escenarios de la spec ↔ pasos del quickstart común §2
