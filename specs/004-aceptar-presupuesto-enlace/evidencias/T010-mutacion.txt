@@ -1,0 +1,28 @@
+T010 · Prueba 4 · Comprobación por mutación (spec-004, FR-003, US1-4, Q4)
+Fecha: 04/11/2026 16:11 · Rama: spec-004 · Fichero: backend/src/rutas/publico_presupuesto.rs
+Prueba: dos_respuestas_a_la_vez_solo_cuenta_una (20 vueltas, aceptar y aceptar a la vez)
+
+== 1. Antes de la mutación ==
+test dos_respuestas_a_la_vez_solo_cuenta_una ... ok
+test result: ok. 1 passed; 0 failed
+
+== 2. Mutación: se quita la condición estado = 'emitido' del UPDATE ==
+165c165
+<           WHERE token = $1 AND estado = 'emitido' AND caduca_el >= $2
+---
+>           WHERE token = $1 AND caduca_el >= $2
+
+== 3. Con la mutación (debe fallar) ==
+test dos_respuestas_a_la_vez_solo_cuenta_una ... FAILED
+thread 'dos_respuestas_a_la_vez_solo_cuenta_una' panicked at tests/spec004_respuesta.rs:283:9:
+assertion `left == right` failed: vuelta 1
+  left: String("La orden está en reparación; no se puede pasar a en reparación")
+ right: "Este presupuesto ya fue respondido"
+test result: FAILED. 0 passed; 1 failed
+
+== 4. Restaurado y comprobado con cmp ==
+cmp: el fichero es idéntico al original (salida 0)
+
+== 5. Después de restaurar ==
+test dos_respuestas_a_la_vez_solo_cuenta_una ... ok
+test result: ok. 1 passed; 0 failed

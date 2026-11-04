@@ -48,3 +48,10 @@ de la Persona B)* = los documentos están corregidos y B está avisada, pero fal
 | N1 | I1 · T016 · plan maestro | LOW | El aviso previo a B solo estaba escrito para `presupuestos.rs`, pero T016 toca `Presupuesto.svelte`, que también es suyo. | Corregido (2026-11-04): `Presupuesto.svelte` entra en el aviso a la Persona B, en el plan y en T016. | Persona A | Cerrado (corregido) |
 | N2 | I1 · T014 | LOW | Para ver T008 en rojo, `respondido_en` va después de T013, así que el commit que B revisa «pronto» no existe hasta tener hecho el `POST`. | Justificado (2026-11-04): se acepta tal como está, porque sigue siendo mucho antes de T031. Anotado en el plan. | Persona A | Cerrado (justificado) |
 | A5 | SC-001 · quickstart común §4.2 · T028 | LOW | Con la segunda pestaña al principio del §4.2, no quedaba claro si abrirla contaba para SC-001. | Corregido (2026-11-04): la segunda pestaña no cuenta. El cronómetro empieza al abrir el enlace en la primera pestaña y para con el mensaje de confirmación. Como una segunda pestaña debe estar abierta antes de confirmar para tener botones, y cada presupuesto solo se responde una vez, la comprobación de las dos pestañas pasa al §4.7, con la ampliación. Actualizados T028, T031 y la correspondencia de 004. | Persona A (quickstart común: revisa Persona B) | Cerrado (corregido; revisión de B en T031) |
+
+## Cambio de orden durante la implementación
+
+**2026-11-04 · T013 antes que T012**: T012 necesita `caducado()` en `pub(crate)` (T014, I2), y T014
+espera el acuerdo de la Persona B (I1). Por eso se hizo antes T013, que no toca ningún fichero de B.
+Hasta T012, el `GET` público responde 501 con un presupuesto sin responder, sin copiar la regla de
+`caducado()`, y T005 y T008 siguen en rojo. Decisión de la Persona A.
