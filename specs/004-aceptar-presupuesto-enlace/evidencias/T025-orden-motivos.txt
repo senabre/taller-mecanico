@@ -1,0 +1,26 @@
+T024 y T025 · Orden de los motivos del 409: un respondido da «ya respondido», no «caducó» (R9)
+Fecha: 04/11/2026 19:45 · Prueba: un_respondido_no_caduca
+
+== 1. Antes ==
+test un_respondido_no_caduca ... ok
+test result: ok. 1 passed; 0 failed
+
+== 2. Mutación: se anula la comprobación de que ya tiene respuesta ==
+182c182
+<             Some((estado, _)) if estado != "emitido" => {
+---
+>             Some((estado, _)) if estado != "emitido" && false => {
+
+== 3. Con la mutación (debe fallar) ==
+test un_respondido_no_caduca ... FAILED
+thread 'un_respondido_no_caduca' panicked at tests/spec004_respuesta.rs:568:5:
+  left: String("Este presupuesto caducó el 03/11/2026. Contacte con el taller")
+ right: "Este presupuesto ya fue respondido"
+test result: FAILED. 0 passed; 1 failed
+
+== 4. Restaurado ==
+cmp: idéntico (salida 0)
+
+== 5. Después ==
+test un_respondido_no_caduca ... ok
+test result: ok. 1 passed; 0 failed
