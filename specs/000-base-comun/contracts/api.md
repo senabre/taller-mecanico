@@ -96,7 +96,7 @@ o que llega con otro tipo JSON no da el 400 de «JSON mal formado», sino el err
 
 | Campo | Regla | Mensaje |
 |---|---|---|
-| `km` | número entero de 0 a 2.147.483.647, como número JSON o como texto con solo cifras (`85000` o `"85000"`); vacío, negativo, con decimales o con letras no vale | «El kilometraje debe ser un número entero igual o mayor que 0» |
+| `km` | número entero de 0 a 2.147.483.647, como número JSON o como texto con cifras y punto de miles opcional en grupos de tres (`85000`, `"85000"` o `"85.000"`); vacío, negativo, con decimales, con el punto mal puesto (`"85.00"`, `"8.5000"`) o con letras no vale | «El kilometraje debe ser un número entero igual o mayor que 0» |
 | `danos` | no vacío tras quitar los espacios del principio y del final (si no hay daños, «Sin daños visibles») | «Describe los daños visibles o escribe “Sin daños visibles”» |
 | `mecanico_id` | un usuario con rol `mecanico` y activo | «Elige un mecánico de la lista» |
 | `fecha_entrega_prometida` | presente y con formato de fecha | «Indica la fecha de entrega prometida» |
