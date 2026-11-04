@@ -241,3 +241,15 @@ Task: "T025 Lista en frontend/src/routes/ordenes/+page.svelte"
   B» va en su propio commit.
 - Si al implementar aparece algo que no está en la spec, se anota y se propone; no se construye
   (principio III).
+
+---
+
+## Phase 6: Convergence
+
+Tareas que salen de [converge-1.md](converge-1.md) (2026-11-04). **Responsable**: Persona A ·
+**Revisor**: Persona B.
+
+- [ ] T032 Resolver que lo que el quickstart común §2 manda escribir («85.000 km», «23.500 km», «30.000 km») se rechaza: `leer_km` en `backend/src/rutas/ordenes.rs` solo acepta cifras y «85.000» da 422. **Primero decidir** entre (a) recomendada: aceptar el punto de miles («85.000» → 85000; solo grupos de tres cifras: «85.0» y «8.5000» siguen siendo inválidos), con la regla en la tabla de validación del contrato común y casos en la prueba 7 (`backend/tests/spec002_ordenes.rs`), escritos antes y comprobando que fallan; o (b) escribir `85000`, `23500` y `30000` en `specs/000-base-comun/quickstart.md` y añadir un ejemplo sin punto al campo Kilómetros de `frontend/src/routes/ordenes/nueva/+page.svelte`. Repetir el paso 4 en el navegador tecleando lo que diga el quickstart. Si cambia el contrato común, revisa la Persona B (converge-1 F1; Persona A, revisa Persona B) per US1-1, US2-1, FR-003, Constitución IV (partial)
+- [ ] T033 En `backend/tests/spec002_ordenes.rs`, añadir a la prueba 12 una orden en estado `facturada` con la entrega de ayer → `retrasada: false` en `GET /api/ordenes` y en `GET /api/ordenes/{id}`; comprobar que la prueba falla quitando temporalmente `o.estado <> 'facturada'` de `COLUMNAS_RESUMEN` en `backend/src/rutas/ordenes.rs`, restaurar el código y verificar que es idéntico (converge-1 F2; Persona A, revisa Persona B) per data-model común (`retrasada`), hallazgo I1 (partial)
+- [ ] T034 En `backend/tests/spec002_ordenes.rs`, añadir a la prueba 7 el límite superior del contrato: `km: 2147483647` → 201; `km: 2147483648`, como número y como texto → 422 «El kilometraje debe ser un número entero igual o mayor que 0» (converge-1 F4; Persona A, revisa Persona B) per contrato común (tabla de validación, `km`), FR-003 (partial)
+- [ ] T035 Verificación humana pendiente de T029: (a) una persona cronometra el paso 4 del quickstart común §2 desde la lista de citas hasta ver la ficha (menos de 2 minutos); (b) comprobar en un navegador en español que el campo «Fecha de entrega prometida» de `/ordenes/nueva` sale en dd/mm/aaaa, y decidir si el control nativo `type="date"`, que depende del idioma del navegador y no del `lang="es"` de la página, basta para el principio II (afecta también al selector de `/citas`). Anotar los resultados en `evidencias/T029/verificacion.md` (converge-1 F3; Persona A, revisa Persona B) per SC-001, Constitución II y IV (partial)
