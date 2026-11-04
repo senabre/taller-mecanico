@@ -318,3 +318,267 @@ async fn tras_responder_la_api_sigue_enviando_el_enlace(pool: PgPool) {
         "http://localhost:3000/presupuesto/enlace-prueba"
     );
 }
+
+/// Prueba 5 · FR-003, FR-004, US2-1 (Q2): rechazar guarda la decisión y nada más: la orden sigue en
+/// diagnóstico y el tablero no recibe nada.
+#[sqlx::test]
+async fn rechazar_el_inicial_no_cambia_la_orden(pool: PgPool) {
+    let estado = comun::estado_prueba(pool.clone());
+    let mut tablero = estado.eventos.suscribir();
+    let app = taller::app(estado);
+    let luis = comun::insertar_usuario(&pool, "luis", "mecanico").await;
+    let (orden, id) = inicial_vigente(&pool, 1, luis, "enlace-prueba").await;
+
+    let (codigo, cuerpo) = responder(&app, "enlace-prueba", "rechazar").await;
+
+    assert_eq!(codigo, StatusCode::OK);
+    assert_eq!(cuerpo["decision"], "rechazado");
+    assert!(cuerpo["respondido_en"].is_string());
+    assert_eq!(guardado(&pool, id).await.0, "rechazado");
+    assert_eq!(estado_orden(&pool, orden).await, Estado::EnDiagnostico);
+    assert_eq!(tablero.try_recv(), Err(TryRecvError::Empty));
+}
+
+/// Prueba 6 · FR-006, FR-009, US2-2: el mismo mecanismo sirve para las ampliaciones.
+#[sqlx::test]
+async fn la_ampliacion_se_acepta_y_se_rechaza_igual(pool: PgPool) {
+    let estado = comun::estado_prueba(pool.clone());
+    let mut tablero = estado.eventos.suscribir();
+    let app = taller::app(estado);
+    let luis = comun::insertar_usuario(&pool, "luis", "mecanico").await;
+
+    let aceptada = comun::crear_orden(&pool, 1, Estado::PendienteConformidad, luis).await;
+    presupuesto(
+        &pool,
+        aceptada,
+        "ampliacion",
+        "emitido",
+        vigente(),
+        "enlace-a",
+    )
+    .await;
+    let (codigo, cuerpo) = responder(&app, "enlace-a", "aceptar").await;
+    assert_eq!(codigo, StatusCode::OK);
+    assert_eq!(cuerpo["decision"], "aceptado");
+    assert_eq!(cuerpo["tipo"], "ampliacion");
+    assert_eq!(estado_orden(&pool, aceptada).await, Estado::EnReparacion);
+    assert_eq!(
+        tablero.try_recv().unwrap(),
+        CambioEstado {
+            id: aceptada,
+            estado: Estado::EnReparacion
+        }
+    );
+
+    let rechazada = comun::crear_orden(&pool, 2, Estado::PendienteConformidad, luis).await;
+    presupuesto(
+        &pool,
+        rechazada,
+        "ampliacion",
+        "emitido",
+        vigente(),
+        "enlace-b",
+    )
+    .await;
+    let (codigo, cuerpo) = responder(&app, "enlace-b", "rechazar").await;
+    assert_eq!(codigo, StatusCode::OK);
+    assert_eq!(cuerpo["decision"], "rechazado");
+    assert_eq!(
+        estado_orden(&pool, rechazada).await,
+        Estado::PendienteConformidad
+    );
+    assert_eq!(tablero.try_recv(), Err(TryRecvError::Empty));
+}
+
+/// Prueba 10 · FR-004, US2-3, SC-002 (Q1): la ficha trae todas las respuestas, no solo la última.
+#[sqlx::test]
+async fn la_ficha_trae_todas_las_respuestas(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let luis = comun::insertar_usuario(&pool, "luis", "mecanico").await;
+    let (orden, _) = inicial_vigente(&pool, 1, luis, "enlace-a").await;
+
+    let (codigo, rechazo) = responder(&app, "enlace-a", "rechazar").await;
+    assert_eq!(codigo, StatusCode::OK);
+    presupuesto(&pool, orden, "inicial", "emitido", vigente(), "enlace-b").await;
+    let (codigo, aceptacion) = responder(&app, "enlace-b", "aceptar").await;
+    assert_eq!(codigo, StatusCode::OK);
+
+    let (_, contrasena) = comun::crear_usuario(&pool, "ana", "recepcion", true).await;
+    let ana = comun::entrar(&app, "ana", &contrasena).await;
+    let ruta = format!("/api/ordenes/{orden}");
+    let (codigo, ficha, _) = comun::peticion(&app, "GET", &ruta, Some(&ana), None).await;
+    assert_eq!(codigo, StatusCode::OK);
+    let presupuestos = ficha["presupuestos"].as_array().unwrap();
+    assert_eq!(presupuestos.len(), 2);
+    assert_eq!(presupuestos[0]["estado"], "rechazado");
+    assert_eq!(presupuestos[1]["estado"], "aceptado");
+    assert_eq!(presupuestos[0]["respondido_en"], rechazo["respondido_en"]);
+    assert_eq!(
+        presupuestos[1]["respondido_en"],
+        aceptacion["respondido_en"]
+    );
+}
+
+/// Prueba 4, variante · FR-003, US1-4 (Q4): aceptar y rechazar a la vez. Es el caso grave: un rechazo
+/// no puede sobrescribir una aceptación. El orden de la pareja se alterna en cada vuelta.
+#[sqlx::test]
+async fn aceptar_y_rechazar_a_la_vez_solo_cuenta_una(pool: PgPool) {
+    let estado = comun::estado_prueba(pool.clone());
+    let mut tablero = estado.eventos.suscribir();
+    let app = taller::app(estado);
+    let luis = comun::insertar_usuario(&pool, "luis", "mecanico").await;
+
+    for vuelta in 1..=20 {
+        let token = format!("enlace-prueba-{vuelta}");
+        let (orden, id) = inicial_vigente(&pool, vuelta, luis, &token).await;
+        let (primera, segunda) = if vuelta % 2 == 0 {
+            ("aceptar", "rechazar")
+        } else {
+            ("rechazar", "aceptar")
+        };
+
+        let (a, b) = tokio::join!(
+            responder(&app, &token, primera),
+            responder(&app, &token, segunda)
+        );
+
+        let (ganadora, perdedora) = if a.0 == StatusCode::OK {
+            (a, b)
+        } else {
+            (b, a)
+        };
+        assert_eq!(ganadora.0, StatusCode::OK, "vuelta {vuelta}");
+        assert_eq!(perdedora.0, StatusCode::CONFLICT, "vuelta {vuelta}");
+        assert_eq!(perdedora.1["error"], YA_RESPONDIDO, "vuelta {vuelta}");
+        let decision = ganadora.1["decision"].as_str().unwrap();
+        assert_eq!(guardado(&pool, id).await.0, decision, "vuelta {vuelta}");
+        if decision == "aceptado" {
+            assert_eq!(estado_orden(&pool, orden).await, Estado::EnReparacion);
+            assert_eq!(
+                tablero.try_recv().unwrap(),
+                CambioEstado {
+                    id: orden,
+                    estado: Estado::EnReparacion
+                }
+            );
+        } else {
+            assert_eq!(estado_orden(&pool, orden).await, Estado::EnDiagnostico);
+        }
+        assert_eq!(
+            tablero.try_recv(),
+            Err(TryRecvError::Empty),
+            "vuelta {vuelta}"
+        );
+    }
+}
+
+fn ayer() -> NaiveDate {
+    fechas::hoy() - Days::new(1)
+}
+
+fn aviso_de_caducidad(fecha: NaiveDate) -> String {
+    format!(
+        "Este presupuesto caducó el {}. Contacte con el taller",
+        fecha.format("%d/%m/%Y")
+    )
+}
+
+/// Prueba 7 · FR-005, FR-009, US3-1, US3-2, SC-003 (Q3): un caducado no admite ninguna respuesta,
+/// ni en el inicial ni en una ampliación, y no se guarda nada.
+#[sqlx::test]
+async fn un_caducado_no_admite_ninguna_respuesta(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let luis = comun::insertar_usuario(&pool, "luis", "mecanico").await;
+    let casos = [
+        (1, Estado::EnDiagnostico, "inicial", "enlace-a"),
+        (2, Estado::PendienteConformidad, "ampliacion", "enlace-b"),
+    ];
+
+    for (numero, estado, tipo, token) in casos {
+        let orden = comun::crear_orden(&pool, numero, estado, luis).await;
+        let id = presupuesto(&pool, orden, tipo, "emitido", ayer(), token).await;
+
+        for decision in ["aceptar", "rechazar"] {
+            let (codigo, cuerpo) = responder(&app, token, decision).await;
+            assert_eq!(codigo, StatusCode::CONFLICT, "{tipo}, {decision}");
+            assert_eq!(
+                cuerpo["error"],
+                aviso_de_caducidad(ayer()),
+                "{tipo}, {decision}"
+            );
+            assert_eq!(guardado(&pool, id).await, ("emitido".to_string(), None));
+            assert_eq!(estado_orden(&pool, orden).await, estado);
+        }
+    }
+}
+
+/// Prueba 7 · FR-005: el último día de validez todavía se puede responder.
+#[sqlx::test]
+async fn el_dia_de_la_caducidad_aun_se_puede_responder(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let luis = comun::insertar_usuario(&pool, "luis", "mecanico").await;
+    let casos = [
+        (1, Estado::EnDiagnostico, "inicial", "aceptar", "enlace-a"),
+        (2, Estado::EnDiagnostico, "inicial", "rechazar", "enlace-b"),
+        (
+            3,
+            Estado::PendienteConformidad,
+            "ampliacion",
+            "aceptar",
+            "enlace-c",
+        ),
+        (
+            4,
+            Estado::PendienteConformidad,
+            "ampliacion",
+            "rechazar",
+            "enlace-d",
+        ),
+    ];
+
+    for (numero, estado, tipo, decision, token) in casos {
+        let orden = comun::crear_orden(&pool, numero, estado, luis).await;
+        presupuesto(&pool, orden, tipo, "emitido", fechas::hoy(), token).await;
+        let (codigo, _) = responder(&app, token, decision).await;
+        assert_eq!(codigo, StatusCode::OK, "{tipo}, {decision}");
+    }
+}
+
+/// Prueba 7 · FR-008, US1-3: una respuesta no caduca. Pasada la fecha se sigue viendo la decisión, y
+/// responder otra vez dice que ya está respondido, no que ha caducado.
+#[sqlx::test]
+async fn un_respondido_no_caduca(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let luis = comun::insertar_usuario(&pool, "luis", "mecanico").await;
+    let orden = comun::crear_orden(&pool, 1, Estado::EnReparacion, luis).await;
+    let id = presupuesto(&pool, orden, "inicial", "aceptado", ayer(), "enlace-prueba").await;
+    sqlx::query("UPDATE presupuesto SET respondido_en = now() WHERE id = $1")
+        .bind(id)
+        .execute(&pool)
+        .await
+        .unwrap();
+
+    let (codigo, cuerpo) = ver(&app, "enlace-prueba").await;
+    assert_eq!(codigo, StatusCode::OK);
+    assert_eq!(cuerpo["decision"], "aceptado");
+    assert_eq!(cuerpo["caducado"], false);
+
+    let (codigo, cuerpo) = responder(&app, "enlace-prueba", "rechazar").await;
+    assert_eq!(codigo, StatusCode::CONFLICT);
+    assert_eq!(cuerpo["error"], YA_RESPONDIDO);
+}
+
+/// Prueba 7 · FR-005, US3-1: la página sabe que está caducado. Necesita `caducado()` (T012).
+#[sqlx::test]
+async fn el_get_marca_el_caducado(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let luis = comun::insertar_usuario(&pool, "luis", "mecanico").await;
+    let orden = comun::crear_orden(&pool, 1, Estado::EnDiagnostico, luis).await;
+    presupuesto(&pool, orden, "inicial", "emitido", ayer(), "enlace-prueba").await;
+
+    let (codigo, cuerpo) = ver(&app, "enlace-prueba").await;
+
+    assert_eq!(codigo, StatusCode::OK);
+    assert_eq!(cuerpo["caducado"], true);
+    assert_eq!(cuerpo["decision"], Value::Null);
+}
