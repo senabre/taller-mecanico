@@ -133,8 +133,8 @@ Abrir una orden publica en `GET /api/eventos` el evento `{id, estado: "recibida"
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `GET /api/publico/presupuestos/{token}` | 🔓 | — | `{taller:{nombre}, matricula, marca, modelo, diagnostico, tipo, lineas, …Totales, caduca_el, caducado, decision: null|"aceptado"|"rechazado", respondido_en}` · 404 si el token no existe |
-| `POST /api/publico/presupuestos/{token}/respuesta` | 🔓 | `{decision: "aceptar"|"rechazar"}` | 200 (igual que el GET) · 409 «Este presupuesto ya fue respondido» · 409 «Este presupuesto caducó el dd/mm/aaaa. Contacte con el taller» (a las dos decisiones, en el presupuesto inicial y en las ampliaciones) |
+| `GET /api/publico/presupuestos/{token}` | 🔓 | — | `{taller:{nombre}, matricula, marca, modelo, diagnostico, tipo, lineas, …Totales, caduca_el, caducado, decision: null|"aceptado"|"rechazado", respondido_en}`. Nunca lleva datos del cliente · 404 «Este enlace no es válido» |
+| `POST /api/publico/presupuestos/{token}/respuesta` | 🔓 | `{decision: "aceptar"|"rechazar"}` | 200 (igual que el GET) · 404 «Este enlace no es válido» · 422 «Elige aceptar o rechazar» · 409 «Este presupuesto ya fue respondido» · 409 «Este presupuesto caducó el dd/mm/aaaa. Contacte con el taller» (a las dos decisiones, en el presupuesto inicial y en las ampliaciones) |
 
 Efectos (en transacción): ver la máquina de estados en [data-model.md](../data-model.md).
 

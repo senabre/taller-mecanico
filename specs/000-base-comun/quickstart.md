@@ -30,7 +30,8 @@ cd ../backend && cargo run                 # app en http://localhost:3000
 - Pieza demo: `PF-123 Pastillas freno`, 25,00 €, stock 4. (`BJ-7 Bujía`, stock 0, solo está para el
   pedido demo pendiente de la orden en espera de piezas.)
 - Presupuesto demo emitido (token ficticio, solo para demostración; constitución, principio V):
-  `/presupuesto/demo-presupuesto-emitido`.
+  `/presupuesto/demo-presupuesto-emitido`. Ampliación demo caducada de la orden 7, también con token
+  ficticio: `/presupuesto/demo-presupuesto-caducado`.
 - Proveedores demo (precargados): «Recambios Sur» y «Autopartes Norte». En producción, los
   proveedores reales los inserta el equipo con `psql` (la app no los gestiona).
 
@@ -112,12 +113,27 @@ las pruebas automáticas (`cargo test`).
    diagnóstico no se puede cambiar».
 
 ## §4 spec-004 · Respuesta del cliente
-1. En Mailpit, abrir el correo del presupuesto y pulsar el enlace → se ve el presupuesto completo.
-2. Aceptar y confirmar → se ve la fecha y la hora. Volver a abrir el enlace → ya no hay botones.
-3. Como `luis`, la orden de 1313MMM está «En reparación» con «Aceptado el … a las …».
-4. Comprobar en otra orden con presupuesto sin responder que **no** aparece la opción de imputar.
+1. En Mailpit, abrir el correo del presupuesto y pulsar el enlace → se ven el vehículo, el
+   diagnóstico, las líneas, la base, el IVA, el total y la caducidad, sin el nombre, el teléfono ni
+   el correo del cliente. Con el ancho de un móvil (390 px) se lee sin desplazar la página de lado.
+2. Pulsar «Aceptar» → «¿Acepta este presupuesto por 133,10 €? Una vez confirmado, no se podrá
+   cambiar.»; «Volver» deja la página como estaba. Aceptar otra vez y pulsar «Sí, aceptar» → se ve
+   la fecha y la hora. **Cronometrar** desde abrir el enlace hasta ver la respuesta: **menos de 1
+   minuto** (spec-004 SC-001). Volver a abrir el enlace → ya no hay botones. Con el enlace abierto
+   antes en otra pestaña, confirmar allí → «Este presupuesto ya fue respondido».
+3. Como `luis`, la orden de 1313MMM está «En reparación» con «Aceptado el … a las …», y ya no se ve
+   el enlace.
+4. Como `ana`, en la orden demo 5 (presupuesto sin responder) se ven el enlace y «Copiar enlace», que
+   lo copia. Como `marta`, su mecánica, comprobar que en esa orden **no** aparece la opción de imputar.
 5. (Rechazo) Emitir un presupuesto en la orden de 1414NNN y rechazarlo desde el enlace → la orden sigue
-   «En diagnóstico».
+   «En diagnóstico», con «Rechazado el … a las …».
+6. (Ampliación rechazada) Como `luis`, en la orden demo 7 («Pendiente de conformidad») crear una
+   ampliación de 1 h, emitirla y rechazarla desde el enlace de Mailpit → la orden sigue «Pendiente
+   de conformidad» y muestra las dos respuestas: «Inicial · Aceptado el …» y «Ampliación · Rechazado
+   el …».
+7. (Caducado) Abrir `/presupuesto/demo-presupuesto-caducado` → «Este presupuesto caducó el dd/mm/aaaa.
+   Contacte con el taller», sin botones.
+8. (Enlace modificado) Abrir `/presupuesto/enlace-inventado` → solo «Este enlace no es válido».
 
 ## §5 spec-005 · Imputar
 1. Orden de 1313MMM, intentar terminarla sin imputar nada → «Primero hay que imputar el trabajo
