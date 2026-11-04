@@ -116,7 +116,7 @@ las pruebas automáticas (`cargo test`).
 2. Aceptar y confirmar → se ve la fecha y la hora. Volver a abrir el enlace → ya no hay botones.
 3. Como `luis`, la orden de 1313MMM está «En reparación» con «Aceptado el … a las …».
 4. Comprobar en otra orden con presupuesto sin responder que **no** aparece la opción de imputar.
-5. (Rechazo) Emitir un presupuesto en la orden de 1414NNN y rechazarlo desde el enlace → la orden vuelve a
+5. (Rechazo) Emitir un presupuesto en la orden de 1414NNN y rechazarlo desde el enlace → la orden sigue
    «En diagnóstico».
 
 ## §5 spec-005 · Imputar

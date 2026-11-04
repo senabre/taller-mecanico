@@ -33,7 +33,8 @@ Fecha: 2026-10-22.
   - Diagnóstico vacío o solo espacios → 422.
 - **Motivo**: aclaración del 22/10 (FR-001a). «Algún presupuesto emitido» incluye los rechazados y
   caducados: lo que se envió al cliente no debe cambiar de diagnóstico. La transición
-  `en_diagnostico → en_diagnostico` de `estados.rs` es de spec-004 (rechazo) y aquí no se usa.
+  `en_diagnostico → en_diagnostico` que tenía `estados.rs` se quitó en spec-004 (Q2): el rechazo no
+  cambia el estado de la orden.
 - **Respuesta**: 200 `{id, numero, estado, diagnostico}`. El `Orden` completo es de spec-002, que
   aún no existe; la pantalla recarga la orden después de guardar.
 

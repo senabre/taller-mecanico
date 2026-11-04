@@ -125,7 +125,8 @@ Abrir una orden publica en `GET /api/eventos` el evento `{id, estado: "recibida"
 | `POST /api/presupuestos/{id}/emitir` | mecanico asignado | — | 200 `Presupuesto` + `aviso_enviado` (fija totales, `caduca_el` = hoy + 15 y token, y después envía el correo con el enlace; si falla, `aviso_enviado: false`) · 409 si ya está emitido · 422 «El presupuesto no tiene líneas» |
 
 `PresupuestoResumen` (campo `presupuestos` de `GET /api/ordenes/{id}`; lo da
-`presupuestos::presupuestos_de_orden`): `{id, tipo, estado, caducado, total, emitido_en, caduca_el}`.
+`presupuestos::presupuestos_de_orden`): `{id, tipo, estado, caducado, total, emitido_en, caduca_el, respondido_en}`
+(`respondido_en` lo añade spec-004: su FR-004 pide ver en la orden todas las respuestas).
 | `GET /api/piezas?q=texto` | todos | — | `[{id, referencia, descripcion, precio_venta, stock}]` (búsqueda por referencia o descripción) |
 
 ## spec-004 · Respuesta del cliente
@@ -133,7 +134,7 @@ Abrir una orden publica en `GET /api/eventos` el evento `{id, estado: "recibida"
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
 | `GET /api/publico/presupuestos/{token}` | 🔓 | — | `{taller:{nombre}, matricula, marca, modelo, diagnostico, tipo, lineas, …Totales, caduca_el, caducado, decision: null|"aceptado"|"rechazado", respondido_en}` · 404 si el token no existe |
-| `POST /api/publico/presupuestos/{token}/respuesta` | 🔓 | `{decision: "aceptar"|"rechazar"}` | 200 (igual que el GET) · 409 «Este presupuesto ya fue respondido» · 409 «Este presupuesto caducó el dd/mm/aaaa» |
+| `POST /api/publico/presupuestos/{token}/respuesta` | 🔓 | `{decision: "aceptar"|"rechazar"}` | 200 (igual que el GET) · 409 «Este presupuesto ya fue respondido» · 409 «Este presupuesto caducó el dd/mm/aaaa. Contacte con el taller» (a las dos decisiones, en el presupuesto inicial y en las ampliaciones) |
 
 Efectos (en transacción): ver la máquina de estados en [data-model.md](../data-model.md).
 

@@ -195,7 +195,6 @@ estado, pero también publica su evento después del `commit`.
 | — | recibida | recepción abre la orden | 002 |
 | recibida | en_diagnostico | el mecánico guarda el diagnóstico | 003 |
 | en_diagnostico | en_reparacion | el cliente acepta el presupuesto inicial | 004 |
-| en_diagnostico | en_diagnostico | el cliente rechaza el presupuesto inicial (se puede emitir otro) | 004 |
 | en_reparacion | pendiente_conformidad | coste acumulado > 110 % del total presupuestado | 005 |
 | pendiente_conformidad | en_reparacion | el cliente acepta la ampliación | 004/005 |
 | en_reparacion | en_espera_piezas | almacén registra un pedido para la orden | 006 |
@@ -204,6 +203,8 @@ estado, pero también publica su evento después del `commit`.
 | terminada | facturada | recepción emite la factura | 007 |
 
 Reglas transversales:
+- Que el cliente rechace un presupuesto no cambia el estado de la orden: la inicial sigue
+  `en_diagnostico` y la ampliación, `pendiente_conformidad`, y se puede emitir otro (spec-004).
 - Solo se imputa en `en_reparacion`, así que sin presupuesto aceptado no se trabaja (spec-004
   FR-007).
 - No hay ningún cambio de estado manual. En concreto, una orden `en_espera_piezas` solo sale de

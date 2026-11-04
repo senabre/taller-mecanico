@@ -113,7 +113,13 @@ editando este archivo y la spec afectada.
 
 - **Decisión**: cada presupuesto emitido lleva un `token` aleatorio de 32 bytes en base64url, único
   e imposible de adivinar. La URL es `{URL_PUBLICA}/presupuesto/{token}`. La respuesta se guarda
-  con `UPDATE ... WHERE id = $1 AND respondido_en IS NULL`, de modo que solo cuenta la primera.
+  con una sola sentencia, que es la **única versión** de esta regla (spec-004 remite aquí):
+  `UPDATE presupuesto SET estado = $decision, respondido_en = now() WHERE token = $1 AND estado =
+  'emitido' AND caduca_el >= $hoy RETURNING …`, con `$hoy` = `fechas::hoy()`. Así solo cuenta la
+  primera respuesta, también con dos a la vez, y nadie responde a uno caducado. Si no actualiza
+  ninguna fila, se averigua el motivo con el mismo `$hoy`: token inexistente → 404; ya tiene
+  respuesta → 409 «Este presupuesto ya fue respondido»; si no, → 409 «Este presupuesto caducó el
+  dd/mm/aaaa. Contacte con el taller». El cambio de estado de la orden va en la misma transacción.
 - **Motivo**: cumple «una sola vez» y «solo su presupuesto» (spec-004) sin que el cliente tenga
   que crear una cuenta.
 

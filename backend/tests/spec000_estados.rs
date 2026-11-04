@@ -64,6 +64,19 @@ async fn transicion_que_no_esta_en_la_tabla_da_error(pool: PgPool) {
     assert_eq!(estado_de(&pool, id).await, Estado::EnEsperaPiezas);
 }
 
+/// Rechazar el presupuesto inicial no cambia el estado de la orden, así que `en_diagnostico` no
+/// tiene transición a sí mismo (spec-004 Q2; hallazgo I5 de la base común).
+#[sqlx::test]
+async fn en_diagnostico_no_tiene_transicion_a_si_mismo(pool: PgPool) {
+    let id = orden(&pool, Estado::EnDiagnostico).await;
+
+    let mut tx = pool.begin().await.unwrap();
+    let r = cambiar_estado(&mut tx, id, &[Estado::EnDiagnostico], Estado::EnDiagnostico).await;
+    tx.commit().await.unwrap();
+
+    assert!(matches!(r, Err(ErrorApi::Interno(_))), "{r:?}");
+}
+
 #[sqlx::test]
 async fn orden_inexistente_da_404(pool: PgPool) {
     let mut tx = pool.begin().await.unwrap();

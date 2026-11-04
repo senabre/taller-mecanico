@@ -161,6 +161,8 @@ export interface PresupuestoResumen {
 	total: Importe;
 	emitido_en: Instante | null;
 	caduca_el: Fecha | null;
+	/** Cuándo respondió el cliente (spec-004 FR-004): null si aún no ha respondido. */
+	respondido_en: Instante | null;
 }
 
 // --- spec-005 · Imputaciones ---

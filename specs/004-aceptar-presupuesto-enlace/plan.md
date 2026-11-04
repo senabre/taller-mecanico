@@ -38,23 +38,27 @@ Igual que el plan maestro.
 
 ```text
 backend/src/rutas/publico_presupuesto.rs
-backend/tests/spec004_respuesta.rs     # una sola vez (doble envío), caducado, token inválido, transiciones inicial/ampliación
+backend/tests/spec004_respuesta.rs     # una sola vez (dos respuestas a la vez, con mutación: debe fallar sin `estado = 'emitido'`), caducado, token inválido, transiciones inicial/ampliación
 frontend/src/routes/presupuesto/[token]/+page.svelte
 ```
 
 **Reglas clave** (en una transacción):
 
-1. `UPDATE presupuesto SET estado = $decision, respondido_en = now() WHERE token = $1 AND
-   estado = 'emitido' AND caduca_el >= hoy RETURNING …`.
-2. Si no se actualiza ninguna fila, se averigua el motivo y se devuelve 409 («ya respondido» o
-   «caducó el …»).
-3. Efecto en la orden:
+1. El `UPDATE` de la respuesta es el de [research R9](../000-base-comun/research.md), que es la
+   única versión (spec-004 Q4; D1 de la base común).
+2. Si no se actualiza ninguna fila, el motivo se averigua como dice R9, con el mismo `$hoy`: 404,
+   409 «ya respondido» o 409 «caducó el …».
+3. Efecto en la orden, en la misma transacción:
 
    | Respuesta | Presupuesto inicial | Ampliación |
    |---|---|---|
    | Aceptar | `en_diagnostico → en_reparacion` | `pendiente_conformidad → en_reparacion` |
-   | Rechazar | `en_diagnostico` (se queda; sin transición) | `pendiente_conformidad` (se queda) |
+   | Rechazar | `en_diagnostico` (se queda; sin transición, Q2) | `pendiente_conformidad` (se queda) |
 
+- El enlace en la orden (FR-008, Q5): la sección Presupuesto muestra el enlace y «Copiar enlace»
+  solo con el presupuesto emitido y vigente. Se oculta **solo en la pantalla**: `GET
+  /api/presupuestos/{id}` sigue enviando `enlace`, porque tras la respuesta o la caducidad ya no
+  permite cambiar nada (la respuesta da 409). El enlace sigue funcionando para el cliente (US1-3).
 - La regla «sin presupuesto aceptado no se imputa» (FR-007) se cumple porque spec-005 solo admite
   imputaciones en `en_reparacion`. Aquí se añade una prueba que lo comprueba.
 
