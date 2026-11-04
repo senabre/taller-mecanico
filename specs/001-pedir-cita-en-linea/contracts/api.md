@@ -57,4 +57,6 @@ propios del formulario son:
 | Al elegir otro día | `GET /api/citas?fecha=…` | matrícula, marca, modelo, motivo, nombre y teléfono, en el orden en que se pidieron; con lista vacía, «No hay citas para este día» | FR-009 |
 | Otro rol | la llamada da **403** | solo el mensaje común «No tienes permiso para hacer esto», sin título, selector ni lista | FR-009 |
 
-`orden_id` no se muestra como dato. Lo usa spec-002 para el botón «Abrir orden».
+`orden_id` y `orden_numero` los añade spec-002 para la columna «Orden» de la lista: «Orden Nº N» con
+un enlace a la orden, o «Abrir orden» si la cita es de hoy y aún no tiene orden (spec-002 FR-008; ver el
+[contrato común](../../000-base-comun/contracts/api.md#spec-001--citas)).

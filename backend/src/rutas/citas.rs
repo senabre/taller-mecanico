@@ -343,6 +343,7 @@ struct FilaCita {
     nombre: String,
     telefono: String,
     orden_id: Option<i64>,
+    orden_numero: Option<i64>,
 }
 
 #[derive(Serialize)]
@@ -361,6 +362,8 @@ struct CitaDelDia {
     motivo: String,
     cliente: ClienteDeCita,
     orden_id: Option<i64>,
+    /// Lo añade spec-002 para la columna «Orden» («Orden Nº N»; su FR-008).
+    orden_numero: Option<i64>,
 }
 
 /// Citas de un día (hoy si no se indica), en el orden en que se pidieron. Recepción y jefe.
@@ -378,7 +381,7 @@ async fn citas_del_dia(
     };
     let filas: Vec<FilaCita> = sqlx::query_as(
         "SELECT c.id, v.matricula, v.marca, v.modelo, c.motivo, cl.nombre, cl.telefono,
-                o.id AS orden_id
+                o.id AS orden_id, o.numero AS orden_numero
            FROM cita c
            JOIN vehiculo v ON v.id = c.vehiculo_id
            JOIN cliente cl ON cl.id = v.cliente_id
@@ -402,6 +405,7 @@ async fn citas_del_dia(
                 telefono: f.telefono,
             },
             orden_id: f.orden_id,
+            orden_numero: f.orden_numero,
         })
         .collect();
     Ok(Json(citas))
