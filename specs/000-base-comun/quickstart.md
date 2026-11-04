@@ -118,22 +118,24 @@ las pruebas automáticas (`cargo test`).
    el correo del cliente. Con el ancho de un móvil (390 px) se lee sin desplazar la página de lado.
 2. Pulsar «Aceptar» → «¿Acepta este presupuesto por 133,10 €? Una vez confirmado, no se podrá
    cambiar.»; «Volver» deja la página como estaba. Aceptar otra vez y pulsar «Sí, aceptar» → se ve
-   la fecha y la hora. **Cronometrar** desde abrir el enlace hasta ver la respuesta: **menos de 1
-   minuto** (spec-004 SC-001). Volver a abrir el enlace → ya no hay botones. Con el enlace abierto
-   antes en otra pestaña, confirmar allí → «Este presupuesto ya fue respondido».
+   la fecha y la hora. **Cronometrar** desde abrir el enlace hasta ver ese mensaje: **menos de 1
+   minuto** (spec-004 SC-001). Volver a abrir el enlace → ya no hay botones.
 3. Como `luis`, la orden de 1313MMM está «En reparación» con «Aceptado el … a las …», y ya no se ve
    el enlace.
 4. Como `ana`, en la orden demo 5 (presupuesto sin responder) se ven el enlace y «Copiar enlace», que
    lo copia. Como `marta`, su mecánica, comprobar que en esa orden **no** aparece la opción de imputar.
 5. (Rechazo) Emitir un presupuesto en la orden de 1414NNN y rechazarlo desde el enlace → la orden sigue
    «En diagnóstico», con «Rechazado el … a las …».
-6. (Ampliación rechazada) Como `luis`, en la orden demo 7 («Pendiente de conformidad») crear una
-   ampliación de 1 h, emitirla y rechazarla desde el enlace de Mailpit → la orden sigue «Pendiente
-   de conformidad» y muestra las dos respuestas: «Inicial · Aceptado el …» y «Ampliación · Rechazado
-   el …».
-7. (Caducado) Abrir `/presupuesto/demo-presupuesto-caducado` → «Este presupuesto caducó el dd/mm/aaaa.
+6. (Enlace de un caducado) Como `luis`, abrir la orden demo 7 («Pendiente de conformidad») → su
+   ampliación sale «Caducado el …», y **no** aparecen el enlace ni «Copiar enlace».
+7. (Ampliación rechazada) Como `luis`, en la orden demo 7 («Pendiente de conformidad») crear una
+   ampliación de 1 h y emitirla. Abrir el enlace de Mailpit en **dos pestañas**. Rechazarla en la
+   primera → la orden sigue «Pendiente de conformidad» y muestra las dos respuestas: «Inicial ·
+   Aceptado el …» y «Ampliación · Rechazado el …». En la segunda, pulsar «Aceptar» y confirmar →
+   «Este presupuesto ya fue respondido», y la orden no cambia.
+8. (Caducado) Abrir `/presupuesto/demo-presupuesto-caducado` → «Este presupuesto caducó el dd/mm/aaaa.
    Contacte con el taller», sin botones.
-8. (Enlace modificado) Abrir `/presupuesto/enlace-inventado` → solo «Este enlace no es válido».
+9. (Enlace modificado) Abrir `/presupuesto/enlace-inventado` → solo «Este enlace no es válido».
 
 ## §5 spec-005 · Imputar
 1. Orden de 1313MMM, intentar terminarla sin imputar nada → «Primero hay que imputar el trabajo

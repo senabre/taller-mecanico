@@ -160,8 +160,8 @@ las opciones de imputar tiempo y piezas no están disponibles.
   presupuesto para reenviarlo, mientras esté emitido y vigente. Después de la respuesta o de la
   caducidad, la orden MUST NOT mostrarlo; el enlace MUST seguir funcionando para el cliente, que ve
   su decisión o el aviso de caducidad sin poder cambiar nada.
-- **FR-009**: Este mismo mecanismo de enlace MUST usarse para que el cliente acepte las
-  ampliaciones de presupuesto (spec-005).
+- **FR-009**: Este mismo mecanismo de enlace MUST usarse para que el cliente acepte o rechace
+  las ampliaciones de presupuesto (spec-005).
 
 ### Key Entities
 
@@ -177,7 +177,7 @@ las opciones de imputar tiempo y piezas no están disponibles.
 - **SC-001**: El cliente acepta o rechaza un presupuesto en menos de 1 minuto desde que abre el
   enlace, sin crear ninguna cuenta.
 - **SC-002**: El 100 % de las respuestas quedan registradas con fecha y hora visibles en la orden.
-- **SC-003**: Ningún presupuesto caducado puede aceptarse (comprobable abriendo el enlace de un
+- **SC-003**: Ningún presupuesto caducado puede aceptarse ni rechazarse (comprobable abriendo el enlace de un
   presupuesto caducado).
 - **SC-004**: Ninguna orden sin presupuesto aceptado permite imputar tiempo ni piezas.
 

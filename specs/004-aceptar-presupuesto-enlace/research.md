@@ -11,8 +11,8 @@ errores, correo, eventos del tablero) está en
 - **Decisión**: `GET /api/publico/presupuestos/{token}`, en `backend/src/rutas/publico_presupuesto.rs`,
   sin sesión, devuelve `{taller: {nombre}, matricula, marca, modelo, diagnostico, tipo, lineas,
   …Totales, caduca_el, caducado, decision, respondido_en}`. `decision` sale del estado del
-  presupuesto: `null` si está emitido, `"aceptado"` o `"rechazado"` si no. `caducado` usa la misma
-  regla que `caducado()` de spec-003.
+  presupuesto: `null` si está emitido, `"aceptado"` o `"rechazado"` si no. `caducado` llama a
+  `caducado()` de spec-003, que pasa a `pub(crate)`: una sola definición (principio I).
 - **Motivo**: FR-002 y principio V: ningún dato del cliente (ni nombre, ni teléfono, ni correo) y
   ningún otro dato del taller. La consulta no une con `cliente`, así que no puede devolverlos.
 - **Alternativas descartadas**: reutilizar `GET /api/presupuestos/{id}`, porque exige sesión y
@@ -27,7 +27,8 @@ errores, correo, eventos del tablero) está en
 - **Motivo**: Q4. Dos respuestas a la vez no pueden pasar las dos: la segunda espera al bloqueo de
   la fila y, al seguir, `estado` ya no es `emitido`. Y una respuesta nunca queda guardada sin su
   efecto en la orden.
-- **Prueba**: dos respuestas a la vez, con mutación: debe fallar si se quita `estado = 'emitido'`.
+- **Prueba**: dos respuestas a la vez, con mutación en las dos variantes (aceptar y aceptar; aceptar y
+  rechazar): debe fallar si se quita `estado = 'emitido'`.
 
 ## D3. Efecto en la orden
 
@@ -111,17 +112,18 @@ errores, correo, eventos del tablero) está en
 
   | Lo que depende de la orden 7 | Resultado |
   |---|---|
-  | Quickstart §5 y §8 | No usan la orden 7: el §5 trabaja con la de `1313MMM` y el §8 no nombra ninguna. Solo la usa el §4.6, de esta spec |
+  | Quickstart §5 y §8 | No usan la orden 7: el §5 trabaja con la de `1313MMM` y el §8 no nombra ninguna. Solo la usan el §4.6 y el §4.7, de esta spec |
   | Lo presupuestado | Sigue en **110,00 €**: `acumulado_y_presupuestado` solo suma los `aceptado` |
   | El 110 % | Imputado 130,00 € > 121,00 €: sigue `pendiente_conformidad`, sin cambio de estado |
   | Emitir otra ampliación | Se puede: spec-003 solo bloquea con `estado = 'emitido' AND caduca_el >= hoy`; la consulta da `false`. `Presupuesto.svelte` no la cuenta como abierta |
   | Tarjeta del tablero | No cambia: `OrdenResumen` no lee `presupuesto`, y la entrega sigue igual, así que no pasa a «Retrasada» |
   | Numeración | Sin cambios: no se crea ninguna orden, y la primera real sigue siendo la Nº 10 |
   | Lista de órdenes | Mismo orden: la 7 sigue siendo la segunda más antigua, después de la 9 (hallazgo V1 de spec-002) |
-  | Respuestas en la ficha (§4.6) | La ampliación caducada no tiene `respondido_en`, así que no sale en la lista de respuestas |
+  | Respuestas en la ficha (§4.7) | La ampliación caducada no tiene `respondido_en`, así que no sale en la lista de respuestas |
 
   La ficha de la orden 7 enseña esa ampliación como el presupuesto más reciente, con «Caducado el …»,
-  hasta que se crea otra. Es lo esperado.
+  hasta que se crea otra. Es lo esperado, y por eso el §4.6, que comprueba que no se ve el enlace, va
+  antes del §4.7, que crea otra.
 - **Por qué no otra orden**: la 1 aún no tiene diagnóstico; la 2 y la 3 están `en_reparacion` y la 6,
   `en_espera_piezas`, y una ampliación solo existe en `pendiente_conformidad`; la 4 quedaría con el
   diagnóstico bloqueado y la usa spec-003; la 5 ya tiene un presupuesto vigente; la 8 y la 9 están

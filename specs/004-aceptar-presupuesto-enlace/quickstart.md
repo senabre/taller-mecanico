@@ -22,20 +22,20 @@ se ha quedado ninguno sin probar.
 | US1-1 · el enlace muestra el presupuesto completo | 1 |
 | US1-2 · aceptar: fecha y hora en la orden, y «En reparación» | 2, 3 |
 | US1-3 · volver a abrir el enlace: la decisión, sin botones | 2 |
-| US1-4 · dos pestañas: solo cuenta la primera | 2; a la vez de verdad, en las pruebas automáticas |
-| US1-5 · el enlace en la orden, solo mientras está vigente | 3, 4 |
+| US1-4 · dos pestañas: solo cuenta la primera | 7; a la vez de verdad, en las pruebas automáticas |
+| US1-5 · el enlace en la orden, solo mientras está vigente | 3, 4, 6 |
 | US2-1 · rechazar: la orden sigue «En diagnóstico» | 5 |
-| US2-2 · rechazar una ampliación: sigue «Pendiente de conformidad» | 6 |
-| US2-3 · la ficha muestra todas las respuestas | 6 |
-| US3-1 · presupuesto caducado: aviso, sin botones | 7 |
+| US2-2 · rechazar una ampliación: sigue «Pendiente de conformidad» | 7 |
+| US2-3 · la ficha muestra todas las respuestas | 7 |
+| US3-1 · presupuesto caducado: aviso, sin botones | 8 |
 | US3-2 · caduca con la página abierta | pruebas automáticas (`spec004_respuesta.rs`) |
 | US4-1 · sin presupuesto aceptado no se imputa | 4 |
-| Caso límite · enlace modificado a mano | 8 |
+| Caso límite · enlace modificado a mano | 9 |
 | Caso límite · el correo no llega | 4 |
 | FR-002 y principio V · sin datos del cliente | 1 |
 | SC-001 · responder en menos de 1 minuto | 2 (cronometrado) |
-| SC-002 · las respuestas se ven en la orden | 3, 6 |
-| SC-003 · ningún caducado se acepta | 7 |
+| SC-002 · las respuestas se ven en la orden | 3, 7 |
+| SC-003 · ningún caducado se acepta ni se rechaza | 8 |
 | SC-004 · sin presupuesto aceptado no se imputa | 4 |
 | Móvil · `/presupuesto/[token]` a 390 px | 1 |
 

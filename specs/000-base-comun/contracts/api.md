@@ -123,18 +123,18 @@ Abrir una orden publica en `GET /api/eventos` el evento `{id, estado: "recibida"
 | `POST /api/presupuestos/{id}/lineas` | mecanico asignado | `{tipo:"mano_obra", concepto, cantidad}` o `{tipo:"pieza", pieza_id, cantidad}` (`cantidad` como string decimal: horas en múltiplos de 0,25, piezas enteras; el concepto de una pieza lo pone el servidor) | 201 `Presupuesto` · 409 «El presupuesto ya está emitido; no se puede modificar» · 422 (cantidad no válida, concepto vacío, pieza inexistente) |
 | `DELETE /api/presupuestos/{id}/lineas/{linea_id}` | mecanico asignado | — | 200 `Presupuesto` · 409 si no está en borrador · 404 si la línea no es de ese presupuesto |
 | `POST /api/presupuestos/{id}/emitir` | mecanico asignado | — | 200 `Presupuesto` + `aviso_enviado` (fija totales, `caduca_el` = hoy + 15 y token, y después envía el correo con el enlace; si falla, `aviso_enviado: false`) · 409 si ya está emitido · 422 «El presupuesto no tiene líneas» |
+| `GET /api/piezas?q=texto` | todos | — | `[{id, referencia, descripcion, precio_venta, stock}]` (búsqueda por referencia o descripción) |
 
 `PresupuestoResumen` (campo `presupuestos` de `GET /api/ordenes/{id}`; lo da
 `presupuestos::presupuestos_de_orden`): `{id, tipo, estado, caducado, total, emitido_en, caduca_el, respondido_en}`
 (`respondido_en` lo añade spec-004: su FR-004 pide ver en la orden todas las respuestas).
-| `GET /api/piezas?q=texto` | todos | — | `[{id, referencia, descripcion, precio_venta, stock}]` (búsqueda por referencia o descripción) |
 
 ## spec-004 · Respuesta del cliente
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
 | `GET /api/publico/presupuestos/{token}` | 🔓 | — | `{taller:{nombre}, matricula, marca, modelo, diagnostico, tipo, lineas, …Totales, caduca_el, caducado, decision: null|"aceptado"|"rechazado", respondido_en}`. Nunca lleva datos del cliente · 404 «Este enlace no es válido» |
-| `POST /api/publico/presupuestos/{token}/respuesta` | 🔓 | `{decision: "aceptar"|"rechazar"}` | 200 (igual que el GET) · 404 «Este enlace no es válido» · 422 «Elige aceptar o rechazar» · 409 «Este presupuesto ya fue respondido» · 409 «Este presupuesto caducó el dd/mm/aaaa. Contacte con el taller» (a las dos decisiones, en el presupuesto inicial y en las ampliaciones) |
+| `POST /api/publico/presupuestos/{token}/respuesta` | 🔓 | `{decision: "aceptar"|"rechazar"}` | 200 (igual que el GET) · 404 «Este enlace no es válido» · 422 «Elija aceptar o rechazar» · 409 «Este presupuesto ya fue respondido» · 409 «Este presupuesto caducó el dd/mm/aaaa. Contacte con el taller» (a las dos decisiones, en el presupuesto inicial y en las ampliaciones) |
 
 Efectos (en transacción): ver la máquina de estados en [data-model.md](../data-model.md).
 

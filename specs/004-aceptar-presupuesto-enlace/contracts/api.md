@@ -8,7 +8,7 @@ hecho estos cambios en el contrato común (los revisa la Persona B):
 
 - `GET` y `POST /api/publico/presupuestos/{token}…`: 404 «Este enlace no es válido» (research D4).
 - `POST /api/publico/presupuestos/{token}/respuesta`: 409 de caducidad con el texto completo y para
-  las dos decisiones (Q3); 422 «Elige aceptar o rechazar».
+  las dos decisiones (Q3); 422 «Elija aceptar o rechazar».
 - `PresupuestoResumen`: añade `respondido_en` (Q1).
 
 ## Uso desde las pantallas
@@ -19,12 +19,12 @@ hecho estos cambios en el contrato común (los revisa la Persona B):
 |---|---|---|---|
 | Al abrir | `GET /api/publico/presupuestos/{token}` | **200**: taller, matrícula, marca, modelo, diagnóstico, líneas, base, IVA, total y caducidad. Según el caso: vigente, «Aceptar» y «Rechazar»; con `decision`, «Aceptado el 16/10/2026 a las 10:32» o «Rechazado el …», sin botones; con `caducado`, «Este presupuesto caducó el dd/mm/aaaa. Contacte con el taller», sin botones · **404**: solo «Este enlace no es válido» | FR-002, FR-005, US1-1, US1-3, US3-1 |
 | Al pulsar «Aceptar» o «Rechazar» | ninguna | La confirmación de [research D5](../research.md), con el total en € | FR-003 |
-| Al confirmar | `POST /api/publico/presupuestos/{token}/respuesta` con `{decision}` | **200**: la decisión con su fecha y hora, sin botones · **409** ya respondido o caducado: el mensaje, y vuelve a pedir el presupuesto, que queda sin botones | FR-003, FR-004, FR-005, US1-4, US3-2 |
+| Al confirmar | `POST /api/publico/presupuestos/{token}/respuesta` con `{decision}` | **200**: la decisión con su fecha y hora, sin botones · **409** ya respondido o caducado: el mensaje, y vuelve a pedir el presupuesto, que queda sin botones; el aviso de caducidad se ve una sola vez | FR-003, FR-004, FR-005, US1-4, US3-2 |
 
 Además de las etiquetas de los datos y los botones («Aceptar», «Rechazar», «Sí, aceptar», «Sí,
 rechazar», «Volver»), los únicos textos propios de la página son las dos preguntas de confirmación,
-«Aceptado el …», «Rechazado el …» y «No se pudo cargar el presupuesto» o «Ha ocurrido un error
-inesperado» (solo si falla la conexión). Los demás mensajes salen del servidor. La página nunca
+«Aceptado el …», «Rechazado el …» y, solo si falla la conexión, «No se pudo cargar el presupuesto» (al
+abrir) o «Ha ocurrido un error inesperado» (al responder). Los demás mensajes salen del servidor. La página nunca
 muestra el nombre, el teléfono ni el correo del cliente (principio V).
 
 ### `/ordenes/[id]`, sección Presupuesto (spec-003; personal con sesión)

@@ -24,11 +24,11 @@ la única versión del `UPDATE`. La tabla dice dónde se comprueba cada una.
 | Regla | Requisito | Dónde se comprueba |
 |---|---|---|
 | Una sola respuesta por presupuesto | FR-003 (Q4) | el `UPDATE` de R9 (`estado = 'emitido'`), también con dos a la vez (research D2) |
-| Un presupuesto caducado no admite respuesta | FR-005 (Q3) | el `UPDATE` de R9 (`caduca_el >= $hoy`); el mismo criterio que `caducado()` de spec-003 |
+| Un presupuesto caducado no admite respuesta | FR-005 (Q3) | el `UPDATE` de R9 (`caduca_el >= $hoy`), lo contrario de `caducado()` de spec-003, que es la única definición para mostrarlo (`pub(crate)`) |
 | `respondido_en` es la hora exacta de la respuesta | FR-004 | `now()` en el `UPDATE`; se muestra en hora de Madrid (R12) |
 | Aceptar cambia la orden en la misma transacción | FR-006, FR-009 | `POST` (research D3) |
 | Rechazar no cambia el estado de la orden | Q2 | `POST`: sin `cambiar_estado`; máquina de estados del data-model común |
-| Sin presupuesto aceptado no se imputa | FR-007 | spec-005: solo imputa en `en_reparacion` |
+| Sin presupuesto aceptado no se imputa | FR-007 | spec-005, con dos barreras en `imputar`: el estado (solo `en_reparacion`) y que haya un presupuesto aceptado |
 
 ## Estados
 

@@ -80,7 +80,7 @@ specs/004-aceptar-presupuesto-enlace/
 ```text
 backend/src/rutas/publico_presupuesto.rs           # GET y POST públicos
 backend/src/rutas/mod.rs                           # COMPARTIDO: pub mod y .merge(...)
-backend/src/rutas/presupuestos.rs                  # DE B (spec-003): respondido_en en PresupuestoResumen
+backend/src/rutas/presupuestos.rs                  # DE B (spec-003): respondido_en en PresupuestoResumen y caducado() pub(crate)
 backend/tests/spec004_respuesta.rs                 # pruebas de reglas (ver abajo)
 backend/seed/demo.sql                              # COMPARTIDO: parte 6 y cita de 7777JJJ (D7)
 frontend/src/lib/tipos.ts                          # COMPARTIDO: PresupuestoPublico
@@ -95,24 +95,31 @@ y una pantalla, y toca los ficheros compartidos de la tabla.
 
 | Fichero | Cambio | Por qué | Estado |
 |---|---|---|---|
-| `backend/src/rutas/presupuestos.rs` (spec-003) | `respondido_en` en `PresupuestoResumen` | Q1 | Pendiente, con su prueba antes |
+| `backend/src/rutas/presupuestos.rs` (spec-003) | `respondido_en` en `PresupuestoResumen`; `caducado()` pasa a `pub(crate)`, para que haya una sola definición (principio I) | Q1, I2 | Pendiente, con su prueba antes; commit propio (T014), que B revisa pronto |
 | `frontend/src/routes/ordenes/[id]/Presupuesto.svelte` (spec-003) | Respuestas con fecha y hora, enlace y «Copiar enlace» (D6) | Q1, Q5, FR-008 | Pendiente |
 | `backend/src/rutas/mod.rs` | `pub mod publico_presupuesto;` y `.merge(publico_presupuesto::rutas())` | Registrar el módulo | Pendiente |
 | `frontend/src/lib/tipos.ts` | `respondido_en` en `PresupuestoResumen` (hecho) y `PresupuestoPublico` (pendiente) | Q1, tipos del contrato | Parcial |
 | `backend/seed/demo.sql` | Parte 6, al final: ampliación caducada en la orden 7, con su propio `INSERT` de línea por token (no le alcanza el `CROSS JOIN` de la parte 4). Parte 3: cita de `7777JJJ` de hace 8 a hace 18 días (D7) | US3 verificable en la app, con fechas coherentes | Pendiente |
 | `backend/src/estados.rs` y `backend/tests/spec000_estados.rs` | Sin la autotransición: 8 transiciones | Q2 | Hecho en el clarify |
-| `specs/000-base-comun/contracts/api.md` | `PresupuestoResumen`, textos del 404, del 409 y del 422 de spec-004 | Q1, Q3, D4 | Hecho |
+| `specs/000-base-comun/contracts/api.md` | `PresupuestoResumen`, textos del 404, del 409 y del 422 de spec-004; la fila de `GET /api/piezas` vuelve a su tabla | Q1, Q3, D4, G2 | Hecho |
 | `specs/000-base-comun/data-model.md` | Sin la fila de la autotransición; regla sobre el rechazo | Q2 | Hecho en el clarify |
-| `specs/000-base-comun/quickstart.md` | §0 (token demo caducado) y §4 (confirmación, enlace, cronometraje de SC-001, ampliación rechazada, caducado y enlace inválido) | Principio IV | Hecho |
-| `specs/000-base-comun/research.md` | R9: única versión del `UPDATE` | Q4 | Hecho en el clarify |
+| `specs/000-base-comun/quickstart.md` | §0 (token demo caducado) y §4 (confirmación, segunda pestaña, enlace, cronometraje de SC-001, enlace oculto en un caducado, ampliación rechazada, caducado y enlace inválido) | Principio IV | Hecho |
+| `specs/000-base-comun/research.md` | R9: única versión del `UPDATE`; Q1 de la tabla inicial dice «sigue» | Q4, Q2 | Hecho |
 | `specs/003-diagnostico-presupuesto/research.md` | Nota de la autotransición | Q2 | Hecho en el clarify |
+
+`presupuestos.rs` y `Presupuesto.svelte` son de la Persona B, y el plan maestro dice que A no modifica
+el primero y pide acordar antes de tocar. Por eso la Persona A lo habla con B antes de implementar y
+**le avisa antes de tocar esos ficheros**. T014 va en un commit propio para que B lo revise pronto, sin
+esperar a la tarea final. Ese commit no existe hasta tener hecho el `POST` (T013): `respondido_en` se
+añade después, para ver antes su prueba en rojo. Se acepta así (N2): sigue siendo mucho antes de la
+tarea final.
 
 ### Reglas clave
 
 - **`GET /api/publico/presupuestos/{token}`** (sin sesión): D1. Token inexistente → 404 «Este enlace
   no es válido» (D4). Sirve también después de responder o de caducar (US1-3, Q5).
 - **`POST /api/publico/presupuestos/{token}/respuesta`** (sin sesión), en este orden (D2):
-  1. `decision` es `aceptar` o `rechazar` → si no, 422 «Elige aceptar o rechazar».
+  1. `decision` es `aceptar` o `rechazar` → si no, 422 «Elija aceptar o rechazar».
   2. Transacción: el `UPDATE` de [research R9](../000-base-comun/research.md), que es la única versión
      (spec-004 Q4; D1 de la base común).
   3. Si no se actualiza ninguna fila, el motivo se averigua como dice R9, con el mismo `$hoy`: 404,
@@ -136,8 +143,9 @@ y una pantalla, y toca los ficheros compartidos de la tabla.
   botones; o el aviso de caducidad, sin botones. Con un 409, muestra el mensaje y vuelve a pedir el
   presupuesto. Con un 404, solo «Este enlace no es válido». Sin datos del cliente (principio V) y
   usable a 390 px (D8).
-- La regla «sin presupuesto aceptado no se imputa» (FR-007) se cumple porque spec-005 solo admite
-  imputaciones en `en_reparacion`. Aquí se añade una prueba que lo comprueba.
+- La regla «sin presupuesto aceptado no se imputa» (FR-007) se cumple con las dos barreras de `imputar`
+  (spec-005): primero el estado, que solo admite `en_reparacion`, y después que la orden tenga un
+  presupuesto aceptado. Aquí se añade una prueba que comprueba la primera.
 
 ### Pruebas
 
@@ -150,25 +158,30 @@ demo, principio V):
    publica el evento después del `commit` (US1-2, FR-004, FR-006).
 3. Volver a abrir tras responder: el `GET` da la decisión y su fecha; un segundo `POST` → 409 «Este
    presupuesto ya fue respondido» y `respondido_en` no cambia (US1-3, FR-003).
-4. Concurrencia: dos respuestas a la vez (aceptar y aceptar; aceptar y rechazar) → un 200 y un 409,
-   la orden cambia una sola vez. Repetir 20 veces. **Se comprueba que falla quitando `estado =
-   'emitido'` del `UPDATE`** (US1-4, FR-003, Q4).
+4. Concurrencia: dos respuestas a la vez (aceptar y aceptar; aceptar y rechazar) → un 200 y un 409
+   «Este presupuesto ya fue respondido» (texto exacto), la orden cambia una sola vez y un rechazo no
+   sobrescribe una aceptación. Repetir 20 veces. **Se comprueba, en las dos variantes, que falla
+   quitando `estado = 'emitido'` del `UPDATE`** (US1-4, FR-003, Q4).
 5. Rechazar el inicial → «rechazado» con `respondido_en`; la orden sigue `en_diagnostico` y no se
    publica ningún evento (US2-1, Q2).
 6. Ampliación: aceptar → `en_reparacion`; rechazar → sigue `pendiente_conformidad` (US2-2, FR-009).
 7. Caducidad, en el presupuesto inicial y en una ampliación: `caduca_el` ayer → `caducado: true`, y
-   aceptar y rechazar dan 409 con el aviso, sin guardar nada; `caduca_el` hoy → se puede responder
+   aceptar y rechazar dan 409 con el aviso, sin guardar nada; `caduca_el` hoy → se puede responder;
+   uno ya respondido con `caduca_el` pasado sigue con su decisión y da 409 «ya fue respondido»
    (US3-1, US3-2, FR-005, SC-003, Q3).
 8. Token inexistente → 404 «Este enlace no es válido», igual en el `GET` y en el `POST` (FR-002, D4).
-9. `decision` que no sea `aceptar` ni `rechazar`, o ausente → 422 «Elige aceptar o rechazar».
+9. `decision` que no sea `aceptar` ni `rechazar`, o ausente en `{}` → 422 «Elija aceptar o rechazar».
 10. Ficha: con un inicial rechazado y otro aceptado, `GET /api/ordenes/{id}` trae los dos con su
     `respondido_en` (US2-3, FR-004, SC-002, Q1).
 11. Sin presupuesto aceptado no se imputa: con uno emitido, rechazado o caducado, `POST
-    /api/ordenes/{id}/imputaciones` → 409 (US4-1, FR-007, SC-004).
+    /api/ordenes/{id}/imputaciones` → 409 con el texto exacto del estado: «La orden está en diagnóstico;
+    solo se puede imputar en órdenes en reparación». Se comprueba por mutación quitando esa condición
+    (US4-1, FR-007, SC-004).
 12. Enlace: tras responder, `GET /api/presupuestos/{id}` sigue trayendo `enlace` (Q5).
 
-**Dependencias**: base común; spec-003 (presupuesto emitido, token y correo) y spec-002 (ficha de la
-orden), ya en `main`; spec-005 (imputaciones). El correo con el enlace (FR-001) ya lo envía spec-003
+**Dependencias**: base común; spec-003 (presupuesto emitido, token y correo) y spec-005 (imputaciones),
+ya en `main`; spec-002 (ficha de la orden), que **no** está en `main`: `spec-004` la lleva dentro, y el
+orden de fusión es 001 → 002 → 004. El correo con el enlace (FR-001) ya lo envía spec-003
 al emitir: aquí no se cambia.
 
 **Cambios en documentos compartidos** (los revisa la Persona B antes de fusionar, en la tarea final):

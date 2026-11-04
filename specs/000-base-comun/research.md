@@ -7,7 +7,7 @@ Alternativas descartadas. Fecha: 2026-10-15.
 
 | Pregunta | Decisión | Motivo |
 |---|---|---|
-| Q1 · Rechazo de presupuesto (spec-004/005) | Presupuesto inicial rechazado → la orden vuelve a «en diagnóstico». Ampliación rechazada → sigue «pendiente de conformidad». | Es la opción más simple y no necesita estados nuevos (principio I). |
+| Q1 · Rechazo de presupuesto (spec-004/005) | Presupuesto inicial rechazado → la orden sigue «en diagnóstico» (sin transición: spec-004 Q2). Ampliación rechazada → sigue «pendiente de conformidad». | Es la opción más simple y no necesita estados nuevos (principio I). |
 | Q2 · Datos fiscales de la factura (spec-007) | Factura simplificada: datos del taller, nombre del cliente y matrícula. | Así no se piden más datos al cliente (principio V). ⚠️ Antes de usarla de verdad, el taller debe confirmar con su gestoría que la factura simplificada le sirve. |
 | Q3 · Acceso del personal (spec-008 y todas) | Usuario y contraseña por empleado, cada uno con un rol. | Las specs exigen saber quién es «el mecánico asignado» y quién imputa. |
 
