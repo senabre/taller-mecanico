@@ -165,6 +165,23 @@ export interface PresupuestoResumen {
 	respondido_en: Instante | null;
 }
 
+// --- spec-004 · Respuesta del cliente ---
+
+/** GET /api/publico/presupuestos/{token}: nunca trae datos del cliente (FR-002, principio V). */
+export interface PresupuestoPublico extends Totales {
+	taller: { nombre: string };
+	matricula: string;
+	marca: string;
+	modelo: string;
+	diagnostico: string | null;
+	tipo: TipoPresupuesto;
+	lineas: Linea[];
+	caduca_el: Fecha;
+	caducado: boolean;
+	decision: null | 'aceptado' | 'rechazado';
+	respondido_en: Instante | null;
+}
+
 // --- spec-005 · Imputaciones ---
 
 /** Imputaciones de una orden con su acumulado y lo presupuestado (suma de los aceptados). */
