@@ -1,0 +1,79 @@
+# T014 y T012 · rojo y verde (2026-11-05)
+
+== Paso 0 · antes de tocar nada: cargo test --test spec004_respuesta
+test el_dia_de_la_caducidad_aun_se_puede_responder ... ok
+test aceptar_y_rechazar_a_la_vez_solo_cuenta_una ... ok
+test dos_respuestas_a_la_vez_solo_cuenta_una ... ok
+test el_get_marca_el_caducado ... FAILED
+test aceptar_el_inicial_pasa_la_orden_a_reparacion ... FAILED
+test la_ampliacion_se_acepta_y_se_rechaza_igual ... ok
+test rechazar_el_inicial_no_cambia_la_orden ... ok
+test solo_se_responde_una_vez ... ok
+test un_caducado_no_admite_ninguna_respuesta ... ok
+test un_respondido_no_caduca ... ok
+test la_ficha_trae_todas_las_respuestas ... FAILED
+test sin_presupuesto_aceptado_no_se_imputa ... ok
+test un_token_inexistente_da_el_mismo_404 ... ok
+test una_decision_no_valida_da_422 ... ok
+test tras_responder_la_api_sigue_enviando_el_enlace ... ok
+test ver_el_presupuesto_sin_datos_del_cliente ... FAILED
+thread 'el_get_marca_el_caducado' (162914) panicked at tests/spec004_respuesta.rs:581:5:
+  left: 501
+ right: 200
+thread 'aceptar_el_inicial_pasa_la_orden_a_reparacion' (162888) panicked at tests/spec004_respuesta.rs:229:5:
+  left: Null
+ right: String("2026-11-05T16:45:05.758115Z")
+thread 'la_ficha_trae_todas_las_respuestas' (162939) panicked at tests/spec004_respuesta.rs:415:5:
+  left: Null
+ right: String("2026-11-05T16:45:10.180303Z")
+thread 'ver_el_presupuesto_sin_datos_del_cliente' (163049) panicked at tests/spec004_respuesta.rs:114:5:
+  left: 501
+ right: 200
+test result: FAILED. 12 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.72s
+
+== Paso 1 · rojo de T014 (a): con la llamada de T012 puesta a prueba y caducado() aún privada, cargo check
+error[E0603]: function `caducado` is private
+   --> src/rutas/publico_presupuesto.rs:113:47
+   --> src/rutas/presupuestos.rs:121:1
+error: could not compile `taller` (lib) due to 1 previous error
+(llamada retirada; publico_presupuesto.rs restaurado, cmp OK)
+
+== Paso 2 · T014 (a) y (b) hechos: cargo test --test spec004_respuesta (T008 y T019 pasan; T005 y T024 siguen en rojo)
+test el_dia_de_la_caducidad_aun_se_puede_responder ... ok
+test aceptar_y_rechazar_a_la_vez_solo_cuenta_una ... ok
+test dos_respuestas_a_la_vez_solo_cuenta_una ... ok
+test el_get_marca_el_caducado ... FAILED
+test la_ampliacion_se_acepta_y_se_rechaza_igual ... ok
+test rechazar_el_inicial_no_cambia_la_orden ... ok
+test aceptar_el_inicial_pasa_la_orden_a_reparacion ... ok
+test solo_se_responde_una_vez ... ok
+test un_caducado_no_admite_ninguna_respuesta ... ok
+test un_respondido_no_caduca ... ok
+test la_ficha_trae_todas_las_respuestas ... ok
+test un_token_inexistente_da_el_mismo_404 ... ok
+test sin_presupuesto_aceptado_no_se_imputa ... ok
+test una_decision_no_valida_da_422 ... ok
+test tras_responder_la_api_sigue_enviando_el_enlace ... ok
+test ver_el_presupuesto_sin_datos_del_cliente ... FAILED
+test result: FAILED. 14 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.32s
+error: test failed, to rerun pass `--test spec004_respuesta`
+error: 1 target failed:
+
+== Paso 3 · T012 hecho: cargo test --test spec004_respuesta (T005 y T024 pasan)
+test el_dia_de_la_caducidad_aun_se_puede_responder ... ok
+test aceptar_y_rechazar_a_la_vez_solo_cuenta_una ... ok
+test dos_respuestas_a_la_vez_solo_cuenta_una ... ok
+test el_get_marca_el_caducado ... ok
+test la_ampliacion_se_acepta_y_se_rechaza_igual ... ok
+test rechazar_el_inicial_no_cambia_la_orden ... ok
+test aceptar_el_inicial_pasa_la_orden_a_reparacion ... ok
+test solo_se_responde_una_vez ... ok
+test un_caducado_no_admite_ninguna_respuesta ... ok
+test la_ficha_trae_todas_las_respuestas ... ok
+test un_respondido_no_caduca ... ok
+test sin_presupuesto_aceptado_no_se_imputa ... ok
+test un_token_inexistente_da_el_mismo_404 ... ok
+test tras_responder_la_api_sigue_enviando_el_enlace ... ok
+test una_decision_no_valida_da_422 ... ok
+test ver_el_presupuesto_sin_datos_del_cliente ... ok
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.75s
