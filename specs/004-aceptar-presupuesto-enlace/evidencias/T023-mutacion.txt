@@ -1,0 +1,29 @@
+T023 · Prueba 11 · Comprobación por mutación (spec-004, FR-007, US4-1, SC-004)
+Fecha: 04/11/2026 19:55 · Rama: spec-004 · Fichero: backend/src/rutas/imputaciones.rs (función imputar, línea 110)
+Prueba: sin_presupuesto_aceptado_no_se_imputa (presupuesto emitido, rechazado y caducado, cada uno en su orden en diagnóstico)
+
+== 1. Antes de la mutación (la regla ya existe: pasa al escribirla) ==
+test sin_presupuesto_aceptado_no_se_imputa ... ok
+test result: ok. 1 passed; 0 failed
+
+== 2. Mutación: se anula la condición de estado de imputar, no la de terminar ==
+110c110
+<     if estado_orden != Estado::EnReparacion {
+---
+>     if false && estado_orden != Estado::EnReparacion {
+
+== 3. Con la mutación (debe fallar por el texto) ==
+test sin_presupuesto_aceptado_no_se_imputa ... FAILED
+thread 'sin_presupuesto_aceptado_no_se_imputa' panicked at tests/spec004_respuesta.rs:609:9:
+assertion `left == right` failed: enlace-a
+  left: String("La orden no tiene un presupuesto aceptado")
+ right: "La orden está en diagnóstico; solo se puede imputar en órdenes en reparación"
+test result: FAILED. 0 passed; 1 failed
+error: test failed, to rerun pass `--test spec004_respuesta`
+
+== 4. Restaurado y comprobado con cmp ==
+cmp: el fichero es idéntico al original (salida 0)
+
+== 5. Después de restaurar ==
+test sin_presupuesto_aceptado_no_se_imputa ... ok
+test result: ok. 1 passed; 0 failed

@@ -1,0 +1,61 @@
+OK    escritorio aceptado: sin desplazamiento horizontal
+OK    escritorio aceptado: sin datos del cliente
+OK    escritorio aceptado: sin menú del personal
+OK    escritorio aceptado: decisión con fecha y hora
+OK    escritorio aceptado: total en euros
+OK    escritorio aceptado: sin botones
+OK    escritorio rechazado: sin desplazamiento horizontal
+OK    escritorio rechazado: sin datos del cliente
+OK    escritorio rechazado: sin menú del personal
+OK    escritorio rechazado: decisión con fecha y hora
+OK    escritorio rechazado: total en euros
+OK    escritorio rechazado: sin botones
+OK    escritorio enlace inválido: sin desplazamiento horizontal
+OK    escritorio enlace inválido: sin datos del cliente
+OK    escritorio enlace inválido: sin menú del personal
+OK    escritorio enlace inválido: solo ese texto
+INFO  escritorio presupuesto sin responder antes de T012: «No se pudo cargar el presupuesto»
+OK    escritorio: sin errores de JavaScript 
+OK    movil aceptado: sin desplazamiento horizontal
+OK    movil aceptado: sin datos del cliente
+OK    movil aceptado: sin menú del personal
+OK    movil aceptado: decisión con fecha y hora
+OK    movil aceptado: total en euros
+OK    movil aceptado: sin botones
+OK    movil rechazado: sin desplazamiento horizontal
+OK    movil rechazado: sin datos del cliente
+OK    movil rechazado: sin menú del personal
+OK    movil rechazado: decisión con fecha y hora
+OK    movil rechazado: total en euros
+OK    movil rechazado: sin botones
+OK    movil enlace inválido: sin desplazamiento horizontal
+OK    movil enlace inválido: sin datos del cliente
+OK    movil enlace inválido: sin menú del personal
+OK    movil enlace inválido: solo ese texto
+INFO  movil presupuesto sin responder antes de T012: «No se pudo cargar el presupuesto»
+OK    movil: sin errores de JavaScript 
+OK    SIM escritorio vigente: sin desplazamiento horizontal
+OK    SIM escritorio vigente: sin datos del cliente
+OK    SIM escritorio vigente: sin menú del personal
+OK    SIM escritorio: pregunta de aceptar
+OK    SIM escritorio: Volver no llama al servidor
+OK    SIM escritorio: pregunta de rechazar
+OK    SIM escritorio: envía aceptar
+OK    SIM escritorio: hora de Madrid
+OK    SIM escritorio: 409 respondido, mensaje y decisión sin botones
+OK    SIM escritorio: 409 caducado, aviso una sola vez y sin botones
+OK    SIM escritorio: error al responder
+OK    SIM escritorio: sin confirm()
+OK    SIM movil vigente: sin desplazamiento horizontal
+OK    SIM movil vigente: sin datos del cliente
+OK    SIM movil vigente: sin menú del personal
+OK    SIM movil: pregunta de aceptar
+OK    SIM movil: Volver no llama al servidor
+OK    SIM movil: pregunta de rechazar
+OK    SIM movil: envía aceptar
+OK    SIM movil: hora de Madrid
+OK    SIM movil: 409 respondido, mensaje y decisión sin botones
+OK    SIM movil: 409 caducado, aviso una sola vez y sin botones
+OK    SIM movil: error al responder
+OK    SIM movil: sin confirm()
+FALLOS: 0
