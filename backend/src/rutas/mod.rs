@@ -2,6 +2,7 @@
 
 pub mod almacen;
 pub mod citas;
+pub mod facturas;
 pub mod imputaciones;
 pub mod ordenes;
 pub mod presupuestos;
@@ -20,4 +21,5 @@ pub fn api() -> Router<EstadoApp> {
         .merge(citas::rutas())
         .merge(imputaciones::rutas())
         .merge(ordenes::rutas())
+        .merge(facturas::rutas())
 }

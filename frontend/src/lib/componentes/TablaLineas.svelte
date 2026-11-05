@@ -1,16 +1,19 @@
 <script lang="ts">
 	// Líneas de un presupuesto, de las imputaciones o de una factura (compartido: 003, 004, 005,
-	// 007). Con `onquitar`, cada fila tiene el botón «Quitar».
+	// 007). Con `onquitar`, cada fila tiene el botón «Quitar». Las líneas de factura no tienen tipo
+	// ni id (spec-007 D6): su cantidad sale sin «h» ni «uds».
 	import { euros, numero } from '$lib/formato';
-	import type { Linea } from '$lib/tipos';
+	import type { Linea, LineaFactura } from '$lib/tipos';
 
 	let {
 		lineas,
 		onquitar
-	}: { lineas: Linea[]; onquitar?: (linea: Linea) => void } = $props();
+	}: { lineas: (Linea | LineaFactura)[]; onquitar?: (linea: Linea) => void } = $props();
 
-	const cantidad = (l: Linea) =>
-		l.tipo === 'mano_obra' ? `${numero(l.cantidad)} h` : `${numero(l.cantidad)} uds`;
+	const cantidad = (l: Linea | LineaFactura) => {
+		if (!('tipo' in l)) return numero(l.cantidad);
+		return l.tipo === 'mano_obra' ? `${numero(l.cantidad)} h` : `${numero(l.cantidad)} uds`;
+	};
 </script>
 
 {#if lineas.length === 0}
@@ -28,7 +31,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each lineas as linea (linea.id)}
+				{#each lineas as linea, i ('id' in linea ? linea.id : i)}
 					<tr>
 						<td>{linea.concepto}</td>
 						<td class="text-right">{cantidad(linea)}</td>
@@ -39,7 +42,7 @@
 								<button
 									type="button"
 									class="btn preset-tonal-error btn-sm"
-									onclick={() => onquitar(linea)}
+									onclick={() => onquitar(linea as Linea)}
 								>
 									Quitar
 								</button>

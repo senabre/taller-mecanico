@@ -32,6 +32,7 @@ pub fn estado_prueba(pool: PgPool) -> EstadoApp {
         taller_nombre: "Talleres Rueda".to_string(),
         taller_nif: "B00000000".to_string(),
         taller_direccion: "Calle Ejemplo 1, 03001 Alicante".to_string(),
+        taller_logo: None,
     };
     let correo = Correo::desde_config(&config).expect("configuración de correo de prueba");
     EstadoApp {
