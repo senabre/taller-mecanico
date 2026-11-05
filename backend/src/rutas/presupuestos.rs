@@ -118,7 +118,7 @@ const SELECT_PRESUPUESTO: &str = "
       FROM presupuesto";
 
 /// Un emitido pasada su fecha de caducidad se considera caducado; no es un estado guardado.
-fn caducado(estado: &str, caduca_el: Option<NaiveDate>) -> bool {
+pub(crate) fn caducado(estado: &str, caduca_el: Option<NaiveDate>) -> bool {
     estado == "emitido" && caduca_el.is_some_and(|c| c < fechas::hoy())
 }
 
