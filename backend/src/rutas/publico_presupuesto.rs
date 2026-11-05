@@ -3,8 +3,6 @@
 
 use axum::Router;
 use axum::extract::{Path, State};
-use axum::http::StatusCode;
-use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
 use chrono::{DateTime, NaiveDate, Utc};
 use rust_decimal::Decimal;
@@ -18,6 +16,7 @@ use crate::error::{ErrorApi, Json, Resultado};
 use crate::estados::{Estado, cambiar_estado};
 use crate::fechas;
 use crate::lineas::Linea;
+use crate::rutas::presupuestos::caducado;
 
 const ENLACE_NO_VALIDO: &str = "Este enlace no es válido";
 
@@ -110,22 +109,19 @@ async fn presupuesto_publico(
             total: fila.total,
         },
         caduca_el: fila.caduca_el,
-        // Provisional hasta T012, que llamará a `presupuestos::caducado()`. Solo llega aquí un
-        // presupuesto ya respondido, y uno respondido nunca está caducado.
-        caducado: false,
+        caducado: caducado(&fila.estado, Some(fila.caduca_el)),
         decision: (fila.estado != "emitido").then_some(fila.estado),
         respondido_en: fila.respondido_en,
     })
 }
 
-async fn ver(State(estado): State<EstadoApp>, Path(token): Path<String>) -> Resultado<Response> {
+async fn ver(
+    State(estado): State<EstadoApp>,
+    Path(token): Path<String>,
+) -> Resultado<Json<PresupuestoPublico>> {
     let mut conexion = estado.db.acquire().await?;
     let presupuesto = presupuesto_publico(&mut conexion, &token, &estado.config).await?;
-    // Provisional: un presupuesto sin responder necesita `caducado()`, que llega con T012.
-    if presupuesto.decision.is_none() {
-        return Ok(StatusCode::NOT_IMPLEMENTED.into_response());
-    }
-    Ok(Json(presupuesto).into_response())
+    Ok(Json(presupuesto))
 }
 
 #[derive(Deserialize)]
@@ -144,7 +140,7 @@ async fn responder(
     State(estado): State<EstadoApp>,
     Path(token): Path<String>,
     Json(respuesta): Json<Respuesta>,
-) -> Resultado<Response> {
+) -> Resultado<Json<PresupuestoPublico>> {
     let nuevo_estado = match respuesta.decision.as_deref() {
         Some("aceptar") => "aceptado",
         Some("rechazar") => "rechazado",
@@ -207,5 +203,5 @@ async fn responder(
     if let Some(cambio) = cambio {
         cambio.publicar(&estado.eventos);
     }
-    Ok(Json(presupuesto).into_response())
+    Ok(Json(presupuesto))
 }
