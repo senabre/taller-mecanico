@@ -582,3 +582,40 @@ async fn el_get_marca_el_caducado(pool: PgPool) {
     assert_eq!(cuerpo["caducado"], true);
     assert_eq!(cuerpo["decision"], Value::Null);
 }
+
+/// Prueba 11 · FR-007, US4-1, SC-004: sin presupuesto aceptado no se imputa. Se compara el texto
+/// exacto del estado: `imputar` tiene una segunda barrera que también da 409, con otro texto.
+#[sqlx::test]
+async fn sin_presupuesto_aceptado_no_se_imputa(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let (luis, contrasena) = comun::crear_usuario(&pool, "luis", "mecanico", true).await;
+    let sesion = comun::entrar(&app, "luis", &contrasena).await;
+    let casos = [
+        (1, "emitido", vigente(), "enlace-a"),
+        (2, "rechazado", vigente(), "enlace-b"),
+        (3, "emitido", ayer(), "enlace-c"),
+    ];
+
+    for (numero, estado, caduca_el, token) in casos {
+        let orden = comun::crear_orden(&pool, numero, Estado::EnDiagnostico, luis).await;
+        presupuesto(&pool, orden, "inicial", estado, caduca_el, token).await;
+
+        let ruta = format!("/api/ordenes/{orden}/imputaciones");
+        let linea = json!({ "tipo": "mano_obra", "concepto": "Prueba", "cantidad": "1" });
+        let (codigo, cuerpo, _) =
+            comun::peticion(&app, "POST", &ruta, Some(&sesion), Some(linea)).await;
+
+        assert_eq!(codigo, StatusCode::CONFLICT, "{token}");
+        assert_eq!(
+            cuerpo["error"],
+            "La orden está en diagnóstico; solo se puede imputar en órdenes en reparación",
+            "{token}"
+        );
+    }
+
+    let imputaciones: i64 = sqlx::query_scalar("SELECT count(*) FROM imputacion")
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(imputaciones, 0);
+}
