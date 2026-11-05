@@ -2,6 +2,7 @@
 //! `.env`; ningún valor de negocio ni secreto se escribe en el código (principio V, FR-004).
 
 use std::env;
+use std::path::PathBuf;
 use std::str::FromStr;
 
 use rust_decimal::Decimal;
@@ -18,6 +19,8 @@ pub struct Config {
     pub taller_nombre: String,
     pub taller_nif: String,
     pub taller_direccion: String,
+    /// Imagen del logo para las facturas (opcional, spec-007 FR-009).
+    pub taller_logo: Option<PathBuf>,
 }
 
 impl Config {
@@ -34,6 +37,7 @@ impl Config {
             taller_nombre: texto("TALLER_NOMBRE")?,
             taller_nif: texto("TALLER_NIF")?,
             taller_direccion: texto("TALLER_DIRECCION")?,
+            taller_logo: texto("TALLER_LOGO").ok().map(PathBuf::from),
         })
     }
 
