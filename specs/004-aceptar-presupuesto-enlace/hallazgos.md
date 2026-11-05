@@ -59,3 +59,16 @@ Hasta T012, el `GET` público responde 501 con un presupuesto sin responder, sin
 **2026-11-05 · T014 en dos commits**: `tasks.md` pedía uno solo. La Persona A decide separar
 `caducado()` en `pub(crate)` y `respondido_en`, para ver T008 y T019 pasar de rojo a verde en el
 segundo. Con el OK de la Persona B (I1), T014, T012 y T016 quedan hechos.
+
+**2026-11-05 · Cambio en un fichero de spec-007 · revisa Persona B** (avisada el 05/11/2026):
+`cargo clippy --all-targets -- -D warnings` fallaba en `backend/src/rutas/facturas.rs:378` (la tupla
+de 7 campos del historial, `clippy::type_complexity`), también sobre una copia limpia del commit,
+sin el trabajo de spec-004. La tupla pasa a una struct privada, `FilaReparacion`, con
+`#[derive(sqlx::FromRow)]`. La consulta y lo que devuelve la función no cambian.
+
+**Desviación**: se pidió una struct con campos con nombre, pero es una **struct de tupla**. La consulta
+trae dos columnas `numero` (`o.numero` y `f.numero`), y `FromRow` con campos con nombre busca por nombre
+de columna. Se probó: con campos con nombre y el mismo SQL fallan 2 de las 11 pruebas de
+`spec007_facturas`, las dos del historial. Para usar campos con nombre habría que poner alias en la
+consulta, algo que la Persona A excluyó. Los nombres claros están en el bucle que la desestructura.
+Salida en [evidencias/facturas-clippy.txt](evidencias/facturas-clippy.txt).
