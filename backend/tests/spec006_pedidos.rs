@@ -705,8 +705,7 @@ async fn pedidos_de_una_orden_sin_los_de_otras(pool: PgPool) {
     assert_eq!(pedidos[1]["estado"], "pendiente");
 }
 
-/// El campo `pedidos` de la ficha de la orden. El endpoint es de spec-002; quitar el `#[ignore]`
-/// cuando exista (T031).
+/// El campo `pedidos` de la ficha de la orden (`GET /api/ordenes/{id}`, de spec-002).
 #[sqlx::test]
 async fn la_ficha_de_la_orden_trae_sus_pedidos(pool: PgPool) {
     let e = escenario(&pool).await;

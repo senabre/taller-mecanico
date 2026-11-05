@@ -141,8 +141,8 @@ como `luis` → aparecen los dos con su estado.
 
 ### Implementation for User Story 4
 
-- [ ] T027 *(hecha la parte de spec-006: `pedidos_de_orden` ya existe y está probada; falta la llamada desde `ordenes.rs` cuando exista spec-002)* [US4] Añadir a `backend/src/rutas/almacen.rs` una función pública `pedidos_de_orden(tx_o_pool, orden_id) -> Vec<Pedido>`, y llamarla desde `GET /api/ordenes/{id}` en `backend/src/rutas/ordenes.rs` para llenar el campo `pedidos` del contrato (punto de contacto con la Persona A: solo se añade esa llamada)
-- [ ] T028 *(componente creado; falta incluirlo en `ordenes/[id]/+page.svelte` cuando exista spec-002)* [US4] Crear `frontend/src/routes/ordenes/[id]/Pedidos.svelte` (solo lectura): tabla con proveedor, referencia y descripción, cantidad, fecha de pedido, estado («Pendiente»/«Recibido») y fecha de recepción en dd/mm/aaaa; si no hay pedidos, «Esta orden no tiene pedidos». Incluirla en `frontend/src/routes/ordenes/[id]/+page.svelte` como sección «Pedidos»
+- [X] T027 *(05/11/2026: `pedidos_de_orden` la llama `GET /api/ordenes/{id}` de spec-002, ya en `main`; la prueba `la_ficha_de_la_orden_trae_sus_pedidos` pasa)* [US4] Añadir a `backend/src/rutas/almacen.rs` una función pública `pedidos_de_orden(tx_o_pool, orden_id) -> Vec<Pedido>`, y llamarla desde `GET /api/ordenes/{id}` en `backend/src/rutas/ordenes.rs` para llenar el campo `pedidos` del contrato (punto de contacto con la Persona A: solo se añade esa llamada)
+- [X] T028 *(05/11/2026: la ficha de spec-002 incluye `<Pedidos>`; comprobado en pantalla como `luis` en la Orden Nº 2)* [US4] Crear `frontend/src/routes/ordenes/[id]/Pedidos.svelte` (solo lectura): tabla con proveedor, referencia y descripción, cantidad, fecha de pedido, estado («Pendiente»/«Recibido») y fecha de recepción en dd/mm/aaaa; si no hay pedidos, «Esta orden no tiene pedidos». Incluirla en `frontend/src/routes/ordenes/[id]/+page.svelte` como sección «Pedidos»
 
 **Checkpoint**: todas las historias funcionan (quickstart §6 paso 7).
 
@@ -152,8 +152,8 @@ como `luis` → aparecen los dos con su estado.
 
 - [x] T029 [P] Revisar que todos los mensajes de error de `backend/src/rutas/almacen.rs` y de las pantallas están en español de España y que precios y fechas usan `frontend/src/lib/formato.ts`
 - [x] T030 [P] Revisar que no existe ningún endpoint ni control de interfaz para crear proveedores ni para cambiar a mano el estado de una orden (`grep` de `proveedores` y `estado` en `backend/src/rutas/` y `frontend/src/routes/`), y que no hay ninguna conexión con catálogos de fabricantes ni dependencia nueva para ello (FR-008a, FR-010, FR-011)
-- [ ] T031 *(ejecutado: 21 pruebas en verde y `npm run check` sin errores. El `#[ignore]` de T016 se quitó en spec-005 (T027) y pasa; queda el de T026, que espera a spec-002)* Ejecutar `cd backend && cargo test spec006` y `cd frontend && npm run check`; quitar el `#[ignore]` de T016 y T026 en cuanto existan spec-002 y spec-005
-- [ ] T032 *(22/10/2026: la Persona B recorrió en pantalla como `pepe` los pasos 1–6, 8 y 9 y todo se cumple; la vuelta de la orden a «en reparación» se comprobó en la base de datos. Falta el paso 7, que necesita la ficha de la orden de spec-002)* Recorrer a mano [quickstart §6](../000-base-comun/quickstart.md) completo como `pepe`, `luis` y `paco`, y anotar que se cumplen SC-001…SC-006
+- [X] T031 *(ejecutado: 21 pruebas en verde y `npm run check` sin errores. El `#[ignore]` de T016 se quitó en spec-005 (T027) y el de T026 en spec-002 (commit 0913e16); 05/11/2026: 130 pruebas en verde con spec-002 en `main`)* Ejecutar `cd backend && cargo test spec006` y `cd frontend && npm run check`; quitar el `#[ignore]` de T016 y T026 en cuanto existan spec-002 y spec-005
+- [X] T032 *(22/10/2026: la Persona B recorrió en pantalla como `pepe` los pasos 1–6, 8 y 9 y todo se cumple; la vuelta de la orden a «en reparación» se comprobó en la base de datos. 05/11/2026: paso 7 en pantalla como `luis` en la Orden Nº 2, con los dos pedidos pendientes y sin poder imputar ni terminar. Lo de «también en el tablero de `paco`» del paso 9 es de spec-008)* Recorrer a mano [quickstart §6](../000-base-comun/quickstart.md) completo como `pepe`, `luis` y `paco`, y anotar que se cumplen SC-001…SC-006
 
 ---
 
