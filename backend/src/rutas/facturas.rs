@@ -353,6 +353,11 @@ struct Historial {
     reparaciones: Vec<Reparacion>,
 }
 
+/// Por posición, no por nombre: la consulta trae dos columnas `numero`, la de la orden y la de la
+/// factura. Orden: factura, número de orden, fecha, km, diagnóstico, número de factura y total.
+#[derive(sqlx::FromRow)]
+struct FilaReparacion(i64, i64, NaiveDate, i32, Option<String>, i64, Decimal);
+
 /// Cualquier rol con sesión.
 async fn historial(
     State(estado): State<EstadoApp>,
@@ -375,7 +380,7 @@ async fn historial(
                 ))
             })?;
 
-    let filas: Vec<(i64, i64, NaiveDate, i32, Option<String>, i64, Decimal)> = sqlx::query_as(
+    let filas: Vec<FilaReparacion> = sqlx::query_as(
         "SELECT f.id, o.numero, f.fecha, o.km, o.diagnostico, f.numero, f.total
            FROM factura f JOIN orden o ON o.id = f.orden_id
           WHERE o.vehiculo_id = $1
@@ -385,7 +390,9 @@ async fn historial(
     .fetch_all(&mut *conexion)
     .await?;
     let mut reparaciones = Vec::with_capacity(filas.len());
-    for (factura_id, orden_numero, fecha, km, diagnostico, factura_numero, total) in filas {
+    for FilaReparacion(factura_id, orden_numero, fecha, km, diagnostico, factura_numero, total) in
+        filas
+    {
         reparaciones.push(Reparacion {
             orden_numero,
             fecha,
