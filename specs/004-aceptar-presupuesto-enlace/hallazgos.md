@@ -72,3 +72,9 @@ de columna. Se probó: con campos con nombre y el mismo SQL fallan 2 de las 11 p
 `spec007_facturas`, las dos del historial. Para usar campos con nombre habría que poner alias en la
 consulta, algo que la Persona A excluyó. Los nombres claros están en el bucle que la desestructura.
 Salida en [evidencias/facturas-clippy.txt](evidencias/facturas-clippy.txt).
+
+## Hallazgos de la verificación en el navegador (T027)
+
+| ID | Historia o criterio | Gravedad | Evidencia | Decisión | Responsable | Estado |
+|----|---------------------|----------|-----------|----------|-------------|--------|
+| V1 | Q5, FR-008, US1-5 · T016 · `frontend/src/routes/ordenes/[id]/Presupuesto.svelte` | LOW | En la ficha de la orden, «Válido hasta dd/mm/aaaa» se muestra también en presupuestos ya aceptados o rechazados: basta con que no estén caducados. En la [captura 16 de T027](evidencias/T027/16-p7-orden7-dos-respuestas.png), la ampliación rechazada dice «Emitido el 05/11/2026 · Válido hasta 20/11/2026». Una vez respondido, el presupuesto ya no se puede responder, y la fecha confunde. | Hallazgo de spec-004 (2026-11-09). «Válido hasta» debe seguir la regla de Q5, la misma que el enlace: solo mientras el presupuesto está emitido y vigente. Se corrige en el converge, en `Presupuesto.svelte`, con el OK de la Persona B a T016 (05/11/2026), que ya cubre esta sección. | Persona A | Abierto (se corrige en el converge) |

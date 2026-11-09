@@ -1,0 +1,142 @@
+[
+  {
+    "paso": "Preparación §2.4, §2.5 y §3 (API)",
+    "esperado": "Órdenes Nº 10 y 11 y presupuesto de 1313MMM emitido por 133,10 €",
+    "observado": "orden 10 (201) y 11 (201); presupuesto 9 emitido, total 133.10, aviso_enviado=true",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "§4.1 Correo con el enlace (Mailpit)",
+    "esperado": "Llega al cliente un correo con el enlace del presupuesto",
+    "observado": "1793900374.089498.eml para lucia.fernandez@ejemplo.test; enlace http://localhost:3000/presupuesto/UXn96WpdhjyHiVnBM2MqMHyr9iVhcglET9zyFUKFGdA",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "§4.1 Página pública (escritorio)",
+    "esperado": "Vehículo, diagnóstico, líneas, base, IVA, total y caducidad; sin datos del cliente; sin desplazamiento lateral",
+    "observado": "faltan=[]; datos del cliente=[]; sin scroll lateral=true",
+    "ok": true,
+    "img": "01-p1-enlace-escritorio.png"
+  },
+  {
+    "paso": "§4.1 Página pública (movil)",
+    "esperado": "Vehículo, diagnóstico, líneas, base, IVA, total y caducidad; sin datos del cliente; sin desplazamiento lateral",
+    "observado": "faltan=[]; datos del cliente=[]; sin scroll lateral=true",
+    "ok": true,
+    "img": "02-p1-enlace-movil.png"
+  },
+  {
+    "paso": "§4.2 Pulsar «Aceptar»",
+    "esperado": "«¿Acepta este presupuesto por 133,10 €? Una vez confirmado, no se podrá cambiar.» con «Sí, aceptar» y «Volver», dentro de la página",
+    "observado": "pregunta=true; botones=true/true; confirm() del navegador=false",
+    "ok": true,
+    "img": "03-p2-confirmacion-movil.png"
+  },
+  {
+    "paso": "§4.2 «Volver»",
+    "esperado": "La página queda como estaba y no se guarda nada",
+    "observado": "botones de nuevo=true; estado en la base=emitido",
+    "ok": true,
+    "img": "04-p2-volver-movil.png"
+  },
+  {
+    "paso": "§4.2 «Sí, aceptar»",
+    "esperado": "Se ve «Aceptado el 05/11/2026 a las 18:39» (hora de Madrid) y se guarda en la base",
+    "observado": "mensaje=true; base=aceptado 1793900379711",
+    "ok": true,
+    "img": "05-p2-aceptado-movil.png"
+  },
+  {
+    "paso": "§4.2 Volver a abrir el enlace",
+    "esperado": "Se ve la decisión con su fecha y hora, sin botones",
+    "observado": "botones=0; mensaje=true",
+    "ok": true,
+    "img": "06-p2-reabierto-movil.png"
+  },
+  {
+    "paso": "§4.3 Orden de 1313MMM (luis)",
+    "esperado": "«En reparación», «Inicial · Aceptado el 05/11/2026 a las 18:39» y sin enlace",
+    "observado": "en reparación=true; línea=true; enlace visible=false; estado en la base=en_reparacion",
+    "ok": true,
+    "img": "07-p3-orden-1313MMM.png"
+  },
+  {
+    "paso": "§4.4 Orden demo 5, «Copiar enlace» (ana, escritorio)",
+    "esperado": "Enlace visible en un campo de solo lectura; «Copiar enlace» lo copia y pasa a «Copiado»",
+    "observado": "enlace=http://localhost:3000/presupuesto/demo-presupuesto-emitido; solo lectura=true; «Copiado»=true; portapapeles igual=true; sin scroll lateral=true",
+    "ok": true,
+    "img": "08-p4-copiar-enlace-escritorio.png"
+  },
+  {
+    "paso": "§4.4 Orden demo 5, «Copiar enlace» (ana, movil)",
+    "esperado": "Enlace visible en un campo de solo lectura; «Copiar enlace» lo copia y pasa a «Copiado»",
+    "observado": "enlace=http://localhost:3000/presupuesto/demo-presupuesto-emitido; solo lectura=true; «Copiado»=true; portapapeles igual=true; sin scroll lateral=true",
+    "ok": true,
+    "img": "09-p4-copiar-enlace-movil.png"
+  },
+  {
+    "paso": "§4.4 Orden demo 5 como marta, su mecánica",
+    "esperado": "No aparece la opción de imputar (y el servidor también lo impide)",
+    "observado": "botón «Imputar»=0; aviso=true; POST directo=409 «La orden está en diagnóstico; solo se puede imputar en órdenes en reparación»",
+    "ok": true,
+    "img": "10-p4-sin-imputar-marta.png"
+  },
+  {
+    "paso": "§4.5 Rechazar el presupuesto de 1414NNN",
+    "esperado": "Confirmación «¿Rechaza este presupuesto por 48,40 €? Una vez confirmado, no se podrá cambiar.»; «Rechazado el 05/11/2026 a las 18:39» en la página; la orden sigue «En diagnóstico» con «Inicial · Rechazado el 05/11/2026 a las 18:39»",
+    "observado": "correo=true; confirmación=true; página=true; ficha en diagnóstico=true; ficha línea=true; estado en la base=en_diagnostico",
+    "ok": true,
+    "img": "12-p5-rechazado.png"
+  },
+  {
+    "paso": "§4.6 Orden demo 7 (luis)",
+    "esperado": "«Pendiente de conformidad»; la ampliación sale «Caducado el 04/11/2026», sin enlace ni «Copiar enlace»",
+    "observado": "pendiente=true; caducado=true; enlace=0; copiar=0",
+    "ok": true,
+    "img": "14-p6-orden7-caducada.png"
+  },
+  {
+    "paso": "§4.7 Rechazar la ampliación en la primera pestaña",
+    "esperado": "La orden sigue «Pendiente de conformidad» con «Inicial · Aceptado el 18/10/2026 a las 14:30» y «Ampliación · Rechazado el 05/11/2026 a las 18:39»",
+    "observado": "correo=true; título ampliación=true; pendiente=true; inicial=true; ampliación=true",
+    "ok": true,
+    "img": "16-p7-orden7-dos-respuestas.png"
+  },
+  {
+    "paso": "§4.7 Aceptar en la segunda pestaña",
+    "esperado": "«Este presupuesto ya fue respondido» y la orden no cambia",
+    "observado": "aviso=true; orden|ampliación en la base=pendiente_conformidad|rechazado",
+    "ok": true,
+    "img": "17-p7-pestana2-ya-respondido.png"
+  },
+  {
+    "paso": "§4.8 Presupuesto caducado (escritorio)",
+    "esperado": "«Este presupuesto caducó el 04/11/2026. Contacte con el taller», sin botones",
+    "observado": "mensaje=true; botones=0; sin scroll lateral=true",
+    "ok": true,
+    "img": "18-p8-caducado-escritorio.png"
+  },
+  {
+    "paso": "§4.9 Enlace inventado (escritorio)",
+    "esperado": "Solo «Este enlace no es válido»",
+    "observado": "texto=«Este enlace no es válido»",
+    "ok": true,
+    "img": "19-p9-enlace-invalido-escritorio.png"
+  },
+  {
+    "paso": "§4.8 Presupuesto caducado (movil)",
+    "esperado": "«Este presupuesto caducó el 04/11/2026. Contacte con el taller», sin botones",
+    "observado": "mensaje=true; botones=0; sin scroll lateral=true",
+    "ok": true,
+    "img": "20-p8-caducado-movil.png"
+  },
+  {
+    "paso": "§4.9 Enlace inventado (movil)",
+    "esperado": "Solo «Este enlace no es válido»",
+    "observado": "texto=«Este enlace no es válido»",
+    "ok": true,
+    "img": "21-p9-enlace-invalido-movil.png"
+  }
+]
