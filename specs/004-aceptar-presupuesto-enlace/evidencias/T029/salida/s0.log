@@ -1,0 +1,7 @@
+OK    §0.1 Menú de luis: ve=[Mis órdenes,Historial]; no debería ver=[]
+OK    §0.2 Contraseña errónea: mensaje visible
+OK    §0.3 Menú de paco: ve=[Citas,Órdenes,Historial,Almacén,Pedidos,Tablero]
+OK    §0.4 Menú de ana: ve=[Citas,Órdenes,Historial]; Tablero=false
+OK    §0.4 Menú de pepe: ve=[Almacén,Pedidos,Historial]; Tablero=false
+
+5/5 comprobaciones superadas

@@ -1,0 +1,16 @@
+[
+  {
+    "paso": "§7.3 Al imprimir, sin menú (repetido)",
+    "esperado": "El menú de la app se ve en pantalla y no al imprimir",
+    "observado": "menú en pantalla=true; al imprimir=false; imágenes=0",
+    "ok": true,
+    "img": "s7b-factura-impresion.png"
+  },
+  {
+    "paso": "§7.4 Correo al cliente (repetido)",
+    "esperado": "«Su vehículo 1313MMM está listo para recoger», con el total",
+    "observado": "asunto=«Su vehículo 1313MMM está listo para recoger»; total=true",
+    "ok": true,
+    "img": null
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "paso": "§2.6 8888KKK con 30.000 km (US2, FR-004)",
+    "esperado": "«El kilometraje no puede ser menor que el de la visita anterior (39.800 km)» bajo Kilómetros y no se guarda",
+    "observado": "mensaje=«El kilometraje no puede ser menor que el de la visita anterior (39.800 km)»; página=/ordenes/nueva",
+    "ok": true,
+    "img": "b01-p6-km-menor.png"
+  },
+  {
+    "paso": "§2.6 Corregido a 40.000 km (US2, SC-002)",
+    "esperado": "Se guarda como Orden Nº 12: el rechazo no gastó número",
+    "observado": "Orden Nº 12; 40.000 km=true",
+    "ok": true,
+    "img": "b02-p6-km-mayor-se-guarda.png"
+  }
+]
