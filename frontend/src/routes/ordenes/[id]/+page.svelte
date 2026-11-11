@@ -7,6 +7,7 @@
 	import type { Orden, ResumenImputaciones } from '$lib/tipos';
 	import Datos from './Datos.svelte';
 	import Diagnostico from './Diagnostico.svelte';
+	import Factura from './Factura.svelte';
 	import Imputaciones from './Imputaciones.svelte';
 	import Pedidos from './Pedidos.svelte';
 	import Presupuesto from './Presupuesto.svelte';
@@ -21,6 +22,8 @@
 	const puedeEditar = $derived(
 		orden !== null && (yo?.rol === 'jefe' || yo?.id === orden.mecanico.id)
 	);
+	// La factura: recepción y el jefe.
+	const puedeFacturar = $derived(yo?.rol === 'recepcion' || yo?.rol === 'jefe');
 	const resumen: ResumenImputaciones | null = $derived(
 		orden && {
 			orden_id: orden.id,
@@ -61,5 +64,6 @@
 		<Presupuesto {orden} presupuestos={orden.presupuestos} {puedeEditar} onCambio={recargar} />
 		<Imputaciones {resumen} {puedeEditar} onCambio={recargar} />
 		<Pedidos pedidos={orden.pedidos} />
+		<Factura {orden} facturaId={orden.factura_id} {puedeFacturar} onCambio={recargar} />
 	</div>
 {/if}
