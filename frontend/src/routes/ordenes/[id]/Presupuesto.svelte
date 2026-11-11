@@ -62,10 +62,10 @@
 	);
 	const enBorrador = $derived(puedeEditar && presupuesto?.estado === 'borrador');
 	const respuestas = $derived(presupuestos.filter((p) => p.respondido_en));
-	// Solo se oculta en pantalla: la API sigue enviando `enlace` (spec-004 D6).
-	const enlace = $derived(
-		presupuesto?.estado === 'emitido' && !presupuesto.caducado ? presupuesto.enlace : null
-	);
+	// Emitido y vigente: solo entonces se puede responder (spec-004 Q5). Es la condición del enlace y
+	// de «Válido hasta». El enlace solo se oculta en pantalla: la API sigue enviándolo (D6).
+	const vigente = $derived(presupuesto?.estado === 'emitido' && !presupuesto.caducado);
+	const enlace = $derived(vigente ? presupuesto?.enlace : null);
 
 	$effect(() => {
 		const id = ultimo?.id;
@@ -158,11 +158,11 @@
 	{:else}
 		{#if presupuesto.emitido_en}
 			<p>
-				Emitido el {fechaDe(presupuesto.emitido_en)} ·
+				Emitido el {fechaDe(presupuesto.emitido_en)}
 				{#if presupuesto.caducado && presupuesto.caduca_el}
-					<strong>Caducado el {fecha(presupuesto.caduca_el)}</strong>
-				{:else if presupuesto.caduca_el}
-					Válido hasta {fecha(presupuesto.caduca_el)}
+					· <strong>Caducado el {fecha(presupuesto.caduca_el)}</strong>
+				{:else if vigente && presupuesto.caduca_el}
+					· Válido hasta {fecha(presupuesto.caduca_el)}
 				{/if}
 			</p>
 		{/if}
