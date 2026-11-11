@@ -1,0 +1,27 @@
+OK    escritorio emitido y vigente: «Emitido el … · Válido hasta …»
+OK    escritorio emitido y vigente: enlace y «Copiar enlace»
+OK    escritorio rechazado: sin «Válido hasta»
+OK    escritorio rechazado: «Emitido el dd/mm/aaaa» sin nada detrás
+OK    escritorio rechazado: su respuesta con fecha y hora
+OK    escritorio aceptado: sin «Válido hasta»
+OK    escritorio aceptado: «Emitido el dd/mm/aaaa» sin nada detrás
+OK    escritorio aceptado: su respuesta con fecha y hora
+OK    escritorio ampliación caducada: «Caducado el …», sin «Válido hasta»
+OK    escritorio ficha facturada: secciones Datos, Diagnóstico, Presupuesto, Imputaciones, Pedidos, Factura
+OK    escritorio ficha facturada: Presupuesto con su respuesta y sin «Válido hasta»
+OK    escritorio ficha facturada: sin desplazamiento horizontal
+OK    escritorio: sin errores de JavaScript 
+OK    movil emitido y vigente: «Emitido el … · Válido hasta …»
+OK    movil emitido y vigente: enlace y «Copiar enlace»
+OK    movil rechazado: sin «Válido hasta»
+OK    movil rechazado: «Emitido el dd/mm/aaaa» sin nada detrás
+OK    movil rechazado: su respuesta con fecha y hora
+OK    movil aceptado: sin «Válido hasta»
+OK    movil aceptado: «Emitido el dd/mm/aaaa» sin nada detrás
+OK    movil aceptado: su respuesta con fecha y hora
+OK    movil ampliación caducada: «Caducado el …», sin «Válido hasta»
+OK    movil ficha facturada: secciones Datos, Diagnóstico, Presupuesto, Imputaciones, Pedidos, Factura
+OK    movil ficha facturada: Presupuesto con su respuesta y sin «Válido hasta»
+OK    movil ficha facturada: sin desplazamiento horizontal
+OK    movil: sin errores de JavaScript 
+CORRECTAS: 26 · FALLOS: 0

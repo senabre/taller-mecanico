@@ -95,17 +95,18 @@ y una pantalla, y toca los ficheros compartidos de la tabla.
 
 | Fichero | Cambio | Por qué | Estado |
 |---|---|---|---|
-| `backend/src/rutas/presupuestos.rs` (spec-003) | `respondido_en` en `PresupuestoResumen`; `caducado()` pasa a `pub(crate)`, para que haya una sola definición (principio I) | Q1, I2 | Pendiente, con su prueba antes; commit propio (T014), que B revisa pronto |
-| `frontend/src/routes/ordenes/[id]/Presupuesto.svelte` (spec-003) | Respuestas con fecha y hora, enlace y «Copiar enlace» (D6) | Q1, Q5, FR-008 | Pendiente |
-| `backend/src/rutas/mod.rs` | `pub mod publico_presupuesto;` y `.merge(publico_presupuesto::rutas())` | Registrar el módulo | Pendiente |
-| `frontend/src/lib/tipos.ts` | `respondido_en` en `PresupuestoResumen` (hecho) y `PresupuestoPublico` (pendiente) | Q1, tipos del contrato | Parcial |
-| `backend/seed/demo.sql` | Parte 6, al final: ampliación caducada en la orden 7, con su propio `INSERT` de línea por token (no le alcanza el `CROSS JOIN` de la parte 4). Parte 3: cita de `7777JJJ` de hace 8 a hace 18 días (D7) | US3 verificable en la app, con fechas coherentes | Pendiente |
+| `backend/src/rutas/presupuestos.rs` (spec-003) | `respondido_en` en `PresupuestoResumen`; `caducado()` pasa a `pub(crate)`, para que haya una sola definición (principio I) | Q1, I2 | Hecho (T014): `63d3773` y `4b6e62c`, con el OK de B del 05/11/2026 (I1) |
+| `frontend/src/routes/ordenes/[id]/Presupuesto.svelte` (spec-003) | Respuestas con fecha y hora, enlace y «Copiar enlace» (D6) | Q1, Q5, FR-008 | Hecho (T016): `c5c6f25`, con el OK de B del 05/11/2026. «Válido hasta» solo con el presupuesto vigente (T032, V1): pendiente de commit |
+| `backend/src/rutas/mod.rs` | `pub mod publico_presupuesto;` y `.merge(publico_presupuesto::rutas())` | Registrar el módulo | Hecho (T003): `e090e63` |
+| `frontend/src/lib/tipos.ts` | `respondido_en` en `PresupuestoResumen` y `PresupuestoPublico` | Q1, tipos del contrato | Hecho: `respondido_en` en el clarify (`76dcdda`), `PresupuestoPublico` en T002 (`7e51997`) |
+| `backend/seed/demo.sql` | Parte 6, al final: ampliación caducada en la orden 7, con su propio `INSERT` de línea por token (no le alcanza el `CROSS JOIN` de la parte 4). Parte 3: cita de `7777JJJ` de hace 8 a hace 18 días (D7) | US3 verificable en la app, con fechas coherentes | Hecho (T001): `c56383b`; comprobado en T029 (D7) |
 | `backend/src/estados.rs` y `backend/tests/spec000_estados.rs` | Sin la autotransición: 8 transiciones | Q2 | Hecho en el clarify |
 | `specs/000-base-comun/contracts/api.md` | `PresupuestoResumen`, textos del 404, del 409 y del 422 de spec-004; la fila de `GET /api/piezas` vuelve a su tabla | Q1, Q3, D4, G2 | Hecho |
 | `specs/000-base-comun/data-model.md` | Sin la fila de la autotransición; regla sobre el rechazo | Q2 | Hecho en el clarify |
 | `specs/000-base-comun/quickstart.md` | §0 (token demo caducado) y §4 (confirmación, segunda pestaña, enlace, cronometraje de SC-001, enlace oculto en un caducado, ampliación rechazada, caducado y enlace inválido) | Principio IV | Hecho |
 | `specs/000-base-comun/research.md` | R9: única versión del `UPDATE`; Q1 de la tabla inicial dice «sigue» | Q4, Q2 | Hecho |
 | `specs/003-diagnostico-presupuesto/research.md` | Nota de la autotransición | Q2 | Hecho en el clarify |
+| `backend/src/rutas/facturas.rs` (spec-007) | La tupla del historial pasa a `FilaReparacion`, por el aviso de clippy; mismo SQL | Clippy en verde (fuera del alcance previsto; hallazgos, 05/11/2026) | Hecho: `906d5d3`, con aviso a B del 05/11/2026 |
 
 `presupuestos.rs` y `Presupuesto.svelte` son de la Persona B, y el plan maestro dice que A no modifica
 el primero y pide acordar antes de tocar. Por eso la Persona A lo habla con B antes de implementar y

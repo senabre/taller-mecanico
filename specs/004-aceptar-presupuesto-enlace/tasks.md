@@ -250,3 +250,10 @@ Task: "T015 Página pública en frontend/src/routes/presupuesto/[token]/+page.sv
 - Cada «cambio compartido · revisa Persona B» va en su propio commit.
 - Si al implementar aparece algo que no está en la spec, se anota y se propone; no se construye
   (principio III).
+
+---
+
+## Phase 8: Convergence
+
+- [X] T032 En `frontend/src/routes/ordenes/[id]/Presupuesto.svelte`, mostrar «Válido hasta dd/mm/aaaa» solo mientras el presupuesto está emitido y vigente, con la misma condición que el enlace (una sola definición, principio I). Con un aceptado o un rechazado, solo «Emitido el dd/mm/aaaa». Primero la comprobación en el navegador en rojo, y después el verde. Captura de antes y después en `evidencias/`. Cerrar V1 en `hallazgos.md`. per Q5, FR-008, US1-5, hallazgo V1 (partial) *(2026-11-11: una sola condición, `vigente`, para el enlace y para «Válido hasta». Comprobado en Chrome, a 1280 y 390 px, con el servidor real: rojo con 10 fallos, todos de V1, y verde con 26 correctas. Incluye la ficha facturada con la sección Factura de `main`. Capturas y salidas en [evidencias/T032/](evidencias/T032/informe.md).)*
+- [X] T033 En `plan.md`, actualizar la columna «Estado» de la tabla «Ficheros compartidos» con lo hecho y la tarea o commit de cada fila, para que la Persona B la use en T031. per plan: ficheros compartidos, T031 (partial) *(2026-11-11: cada fila dice qué se hizo y en qué commit. Se añade la fila de `facturas.rs` (spec-007), que no estaba en la tabla y que B debe revisar también en T031.)*
