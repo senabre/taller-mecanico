@@ -96,7 +96,7 @@ y una pantalla, y toca los ficheros compartidos de la tabla.
 | Fichero | Cambio | Por qué | Estado |
 |---|---|---|---|
 | `backend/src/rutas/presupuestos.rs` (spec-003) | `respondido_en` en `PresupuestoResumen`; `caducado()` pasa a `pub(crate)`, para que haya una sola definición (principio I) | Q1, I2 | Hecho (T014): `63d3773` y `4b6e62c`, con el OK de B del 05/11/2026 (I1) |
-| `frontend/src/routes/ordenes/[id]/Presupuesto.svelte` (spec-003) | Respuestas con fecha y hora, enlace y «Copiar enlace» (D6) | Q1, Q5, FR-008 | Hecho (T016): `c5c6f25`, con el OK de B del 05/11/2026. «Válido hasta» solo con el presupuesto vigente (T032, V1): pendiente de commit |
+| `frontend/src/routes/ordenes/[id]/Presupuesto.svelte` (spec-003) | Respuestas con fecha y hora, enlace y «Copiar enlace» (D6) | Q1, Q5, FR-008 | Hecho (T016): `c5c6f25`, con el OK de B del 05/11/2026. «Válido hasta» solo con el presupuesto vigente (T032, V1): `c839ef0` |
 | `backend/src/rutas/mod.rs` | `pub mod publico_presupuesto;` y `.merge(publico_presupuesto::rutas())` | Registrar el módulo | Hecho (T003): `e090e63` |
 | `frontend/src/lib/tipos.ts` | `respondido_en` en `PresupuestoResumen` y `PresupuestoPublico` | Q1, tipos del contrato | Hecho: `respondido_en` en el clarify (`76dcdda`), `PresupuestoPublico` en T002 (`7e51997`) |
 | `backend/seed/demo.sql` | Parte 6, al final: ampliación caducada en la orden 7, con su propio `INSERT` de línea por token (no le alcanza el `CROSS JOIN` de la parte 4). Parte 3: cita de `7777JJJ` de hace 8 a hace 18 días (D7) | US3 verificable en la app, con fechas coherentes | Hecho (T001): `c56383b`; comprobado en T029 (D7) |
