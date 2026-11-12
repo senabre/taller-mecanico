@@ -63,8 +63,8 @@ no con `+error.svelte`, que ninguna usa para eso (D4).
 | V. Datos con respeto | Las tarjetas solo muestran número, matrícula, mecánico y entrega: la consulta no une con `cliente`. Los eventos solo llevan `{id, estado}`. Las pruebas no usan valores demo. | ✅ |
 
 **Re-check post-diseño (Phase 1)**: los cambios en el contrato, el research, el quickstart y los
-datos demo comunes solo concretan reglas de la spec (Q1–Q4) y no añaden tablas. El cambio en el
-`<main>` de `+layout.svelte` afecta solo a `/tablero`. Los ficheros compartidos están en la tabla de
+datos demo comunes solo concretan reglas de la spec (Q1–Q4) y no añaden tablas. El cambio de ancho del
+`<nav>` y el `<main>` de `+layout.svelte` afecta solo a `/tablero`. Los ficheros compartidos están en la tabla de
 abajo, para la revisión de la Persona B. ✅
 
 ## Project Structure
@@ -96,8 +96,10 @@ frontend/src/lib/medianoche.ts               # msHastaMedianocheMadrid y program
 frontend/src/lib/medianoche.test.ts          # Vitest con reloj simulado y TZ de otra zona (D6)
 frontend/src/lib/recarga.ts                  # crearRecarga: una sola petición a la vez, más una (D5)
 frontend/src/lib/recarga.test.ts             # Vitest con promesas manuales y reloj simulado (D5)
+frontend/src/lib/eventos.ts                  # conectarEventos: EventSource y reconexión tras CLOSED (D5, E1)
+frontend/src/lib/eventos.test.ts             # Vitest con EventSource simulado y reloj simulado (D5, E1)
 frontend/src/routes/tablero/+page.svelte     # la pantalla (D5, D7)
-frontend/src/routes/+layout.svelte           # COMPARTIDO: <main> a todo el ancho en /tablero (D7)
+frontend/src/routes/+layout.svelte           # COMPARTIDO: <nav> y <main> a todo el ancho en /tablero (D7)
 ```
 
 **Structure Decision**: la del plan maestro. Esta spec añade su módulo de rutas, su fichero de
@@ -109,16 +111,16 @@ pruebas, una pantalla y un módulo de frontend, y toca los ficheros compartidos 
 |---|---|---|---|
 | `specs/000-base-comun/contracts/api.md` | `GET /api/tablero`: `activo` en `carga_mecanicos`, orden de la carga y de las tarjetas, la suma igual a las tarjetas, 401 y 403 con su texto; cuándo vuelve a pedirse el tablero | Q1, Q2, Q3, Q4 | Hecho (clarify y plan) |
 | `specs/000-base-comun/quickstart.md` | §8 reescrito: 11 pasos, con SC-001 y SC-002 cronometrados, dos navegadores, desconexión, 390 px y la medianoche en `npm test` | Principio IV | Hecho |
-| `specs/000-base-comun/research.md` | R13: Vitest también para `medianoche.ts` y `recarga.ts` | Q3, D5, D6 | Hecho |
+| `specs/000-base-comun/research.md` | R13: Vitest también para `medianoche.ts`, `recarga.ts` y `eventos.ts` | Q3, D5, D6, E1 | Hecho |
 | `specs/002-abrir-orden-reparacion/hallazgos.md` | N1 cerrado | N1 | Hecho en el clarify |
 | `backend/seed/demo.sql` | Parte 3: orden 3 con la entrega hoy; `fecha_entrega_prometida` con el «hoy» de Madrid; comentario de la orden 3 | D8. La orden 3 es la «R» del §6 y de la regresión T029 de spec-004: comprobado que la entrega no interviene en nada de lo que esperan (tabla en D8) | **Pendiente**: primera tarea, antes de recorrer el §8 |
 | `backend/src/rutas/ordenes.rs` (spec-002, Persona A) | `resumenes(conexion, mecanico_id, solo_abiertas)`; `listar_ordenes` pasa `false` | D3 | **Pendiente**: al implementar, con su prueba antes. Lo usan las pantallas de B (lista y ficha), así que B lo revisa |
 | `backend/src/rutas/mod.rs` | `pub mod tablero;` y `.merge(tablero::rutas())` | Registrar el módulo | **Pendiente** |
 | `frontend/src/lib/tipos.ts` | `CargaMecanico {id, nombre, activo, ordenes_abiertas}`, `ColumnaTablero {estado, ordenes: OrdenResumen[]}`, `Tablero {columnas, carga_mecanicos}` | Tipos del contrato | **Pendiente** |
-| `frontend/src/routes/+layout.svelte` | `<main>` sin `max-w-6xl` cuando la ruta es `/tablero`. **El menú no cambia**: ya enseña «Tablero» solo al jefe | D7 | **Pendiente** |
+| `frontend/src/routes/+layout.svelte` | `<nav>` y `<main>` sin `max-w-6xl` cuando la ruta empieza por `/tablero`. **Las entradas del menú no cambian** (ya enseña «Tablero» solo al jefe), y en las demás pantallas el menú y el contenido siguen con el mismo ancho | D7, I3 | **Pendiente** |
 
 `formato.ts` no cambia: ya tiene `fecha()`, `NOMBRE_ESTADO` y `ESTADOS_ABIERTOS`. `eventos.rs` y
-`estados.rs` tampoco: los 9 movimientos ya publican su evento.
+`estados.rs` tampoco: los 9 movimientos ya publican su evento, en 8 llamadas.
 
 ### Reglas clave
 
@@ -131,15 +133,21 @@ pruebas, una pantalla y un módulo de frontend, y toca los ficheros compartidos 
      ordena por `(fecha_entrega_prometida, numero)` ascendentes (Q4).
   3. La carga, con la consulta de D2: activos aunque tengan 0; cualquier usuario con órdenes
      abiertas, aunque esté inactivo; por nombre (Q1). La suma es el número de tarjetas (SC-003).
-- **Frontend `/tablero`** (D5, D7): `cargar()` pide el tablero entero al abrir, en cada `onopen` del
-  `EventSource('/api/eventos')`, con cada evento `orden` y con `programarMedianoche(cargar)`. Solo
-  una petición a la vez, más una si llega otro aviso mientras tanto (`crearRecarga`, en `recarga.ts`). `onerror` muestra «Sin
-  conexión, reintentando…». Al salir, se cierran el `EventSource` y el temporizador. Con un 403,
-  solo el mensaje.
-- **Medianoche** (D6): `programarMedianoche` salta a las 00:01 de Madrid (00:00 + 60 s de margen
+- **Frontend `/tablero`** (D5, D7): `cargar()` pide el tablero entero al abrir. Después de esa
+  primera carga, **en todos los casos salvo con un 403** (con un 403, solo el mensaje y ninguna
+  conexión, E2), la página abre `conectarEventos` (`eventos.ts`) y `programarMedianoche`. Si la
+  primera carga falló por otra causa, el primer `onopen` la repite y el tablero se recupera solo
+  (N2). El tablero se vuelve a pedir: en cada `onopen` (el primero y cada vez que la conexión se
+  abre de nuevo tras un error, reconecte el navegador solo o la cree la página tras un cierre), con
+  cada evento `orden` y a medianoche. Un error **no** lo pide, salvo una excepción: con la conexión
+  cerrada (`CLOSED`, por ejemplo un 401), se pide **una vez** antes de crear otra conexión pasados
+  5 s, y si `/api/tablero` da 401, `api.ts` lleva a `/entrar` (E1, N3). `onerror` muestra «Sin
+  conexión, reintentando…». Solo una petición a la vez, más una si llega otro aviso mientras tanto
+  (`crearRecarga`, en `recarga.ts`). Al salir, se cierran la conexión, su espera y el temporizador.
+- **Medianoche** (D6): `programarMedianoche` salta a medianoche, a las 00:01 de Madrid (00:00 + 60 s de margen
   para la diferencia de reloj con el servidor), calculadas con `Intl`, nunca con la zona del
   navegador, y se vuelve a programar en cada salto.
-- **Eventos que mueven el tablero** (comprobado en la rama spec-008): `ordenes.rs:399` (abrir →
+- **Eventos que mueven el tablero** (comprobado en la rama spec-008): 9 movimientos en 8 llamadas. `ordenes.rs:399` (abrir →
   recibida, spec-002); `presupuestos.rs:310` (recibida → en diagnóstico, 003);
   `publico_presupuesto.rs:204` (aceptar el inicial: en diagnóstico → en reparación; aceptar la
   ampliación: pendiente de conformidad → en reparación, 004); `imputaciones.rs:193` (→ pendiente de
@@ -171,11 +179,14 @@ demo, principio V). En todas las que devuelven el tablero se comprueba además q
    lista de órdenes de spec-002 no cambia (D3).
 
 `frontend/src/lib/medianoche.test.ts` (Vitest, `vi.useFakeTimers`, `process.env.TZ =
-'America/New_York'`): los 4 casos de [research](research.md) D6 (US4-4).
+'America/New_York'`): primero comprueba que la zona del proceso es de verdad otra y, si no, falla
+(A2); después, los 4 casos de [research](research.md) D6 (US4-4).
 `frontend/src/lib/recarga.test.ts` (Vitest, promesas que se resuelven a mano y reloj simulado): los
 3 casos de [research](research.md) D5 (US4-1 a US4-5, SC-002).
+`frontend/src/lib/eventos.test.ts` (Vitest, `EventSource` simulado y reloj simulado): los 5 casos
+de [research](research.md) D5, incluida la reconexión tras `CLOSED` (US4-5, E1).
 
-Lo que depende del navegador y del tiempo real (el `EventSource`, la reconexión y los 5 s) se
+Lo que depende del navegador real y del tiempo real (el `EventSource` de verdad y los 5 s) se
 comprueba en el quickstart §8 con dos navegadores (D9), no con pruebas E2E (R13).
 
 **Dependencias**: base común (`eventos`, `cambiar_estado`); spec-002 (`OrdenResumen`,

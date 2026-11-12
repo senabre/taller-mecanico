@@ -68,14 +68,11 @@ corchetes. Todos se añadieron a la spec en esta sesión.
 
 ## Cambios en ficheros compartidos (los revisa la Persona B)
 
-Igual que T031 en spec-002: se revisan antes de fusionar, con una tarea propia en el `tasks.md` de
-spec-008.
-
-| Fichero | Cambio | Decisión | Estado |
-|---------|--------|----------|--------|
-| `specs/000-base-comun/contracts/api.md` | `GET /api/tablero`: `carga_mecanicos` con `activo` (activos aunque tengan 0; inactivos solo con órdenes abiertas) y orden de las tarjetas | Q1, Q4 | Hecho |
-| `frontend/src/lib/tipos.ts` | Tipo de la respuesta del tablero con `activo` en la carga | Q1 | **Pendiente**: aún no existe el tipo del tablero; se añade al implementar |
-| `specs/002-abrir-orden-reparacion/hallazgos.md` | N1 cerrado (fila y resumen) | N1 | Hecho |
+La lista única y al día es la tabla «Ficheros compartidos» del [plan](plan.md),
+que es la que usa la tarea final de revisión de la Persona B en [tasks.md](tasks.md). Ahí están
+también los cambios que salieron de esta sesión: el contrato común (Q1, Q2, Q4), `tipos.ts` (Q1) y
+N1 en los hallazgos de spec-002. Esta sección ya no tiene tabla propia, para que no haya dos listas
+distintas (I4 de [analyze-1](analyze-1.md)).
 
 ## Comando y versión
 

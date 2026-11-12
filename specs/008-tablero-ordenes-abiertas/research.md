@@ -80,9 +80,12 @@ referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
 - **Decisión**: una sola función `cargar()` en `/tablero/+page.svelte`, que pide
   `GET /api/tablero` entero. Se llama:
   1. al abrir la página;
-  2. en cada `onopen` de `EventSource('/api/eventos')`, el primero incluido, porque así no se
-     pierde ningún evento entre la primera carga y la suscripción, y al reconectar se recupera lo
-     enviado mientras no había conexión;
+  2. en cada `onopen` de `EventSource('/api/eventos')`: el primero, porque así no se pierde ningún
+     evento entre la primera carga y la suscripción (y, si la primera carga falló, se recupera), y
+     **cada vez que la conexión se abre de nuevo después de un error**, tanto si el navegador
+     reconecta solo como si la página la vuelve a crear tras quedar cerrada, porque lo enviado
+     mientras no había conexión se ha perdido (N3 de analyze-2). Un error **no** pide el tablero:
+     se pide al volver a abrirse;
   3. con cada evento `orden`, sin mirar su contenido;
   4. al pasar la medianoche de Madrid (D6).
 
@@ -91,9 +94,42 @@ referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
   (`crearRecarga(fn): () => void`, que envuelve `cargar()`), para poder probarla con Vitest sin
   montar la página: `recarga.test.ts` comprueba, con promesas que se resuelven a mano y reloj
   simulado, que tres avisos durante una petición dan **una** sola petición más, que nunca hay dos a
-  la vez y que un fallo de la petición no bloquea las siguientes. `onerror` muestra «Sin conexión, reintentando…» y `onopen` lo
-  quita. La reconexión la hace `EventSource` solo. Al salir de la página se cierran el
-  `EventSource` y el temporizador.
+  la vez y que un fallo de la petición no bloquea las siguientes.
+
+  **La conexión de eventos** (corregido por E1 y E2 de analyze-1) va en
+  `frontend/src/lib/eventos.ts`: `conectarEventos({alAbrir, alEvento, alError, crear, espera})`
+  devuelve la función que la cierra. `crear` es `(url) => new EventSource(url)` por defecto y
+  `espera`, 5 000 ms; los dos se pueden cambiar en la prueba. Reglas:
+  - `onopen` → `alAbrir()`: la página quita el aviso y pide el tablero entero (Q3). Es la **regla
+    general**: el tablero se pide cuando la conexión se abre, la primera vez y cada vez que se
+    vuelve a abrir tras un error.
+  - cada evento `orden` → `alEvento()`: la página pide el tablero entero.
+  - `onerror` → `alError(cerrada: boolean)`: la página muestra «Sin conexión, reintentando…».
+    - Con `readyState` `CONNECTING` (`cerrada = false`), no se hace nada más: el navegador ya está
+      reintentando tras un error de red, y el tablero se pedirá en el `onopen`.
+    - Con `readyState` `CLOSED` (`cerrada = true`: la respuesta no fue un 200 con
+      `text/event-stream`, por ejemplo un 401 con la sesión caducada), el navegador **no**
+      reintenta: `eventos.ts` cierra esa conexión y crea otra pasada la `espera`, una sola vez por
+      cierre. **Única excepción** a la regla general: la página pide el tablero **una vez** antes de
+      la conexión nueva, porque si la causa es un 401 la conexión no volverá a abrirse nunca; si
+      `/api/tablero` responde 401, `api.ts` lleva a `/entrar`, como en el resto de la app (E1).
+  - la función que devuelve cierra la conexión y cancela la espera pendiente.
+
+  La página llama a `conectarEventos` y a `programarMedianoche` después de la primera carga, **en
+  todos los casos salvo con un 403**: con un 403 se queda con el mensaje y no abre ninguna conexión
+  (E2). Si la primera carga falla por otra causa (por ejemplo, el servidor se está reiniciando), la
+  conexión se abre igualmente y su primer `onopen` vuelve a pedir el tablero, así que se recupera
+  solo (N2 de analyze-2). Un 401 ya lleva a `/entrar` desde `api.ts`. Al salir de la página se
+  cierran la conexión y el temporizador.
+
+  `eventos.test.ts` lo prueba con un `EventSource` simulado (una clase con `readyState`, `onopen`,
+  `onerror`, `addEventListener` y `close`, que la prueba controla) y reloj simulado, sin
+  dependencias nuevas: (1) `onopen` llama a `alAbrir`, también tras reconectar y en la conexión
+  creada tras un cierre; (2) un evento `orden` llama a `alEvento`; (3) con `onerror` y `CONNECTING`,
+  `alError(false)` se llama y no se crea otra conexión; (4) con `onerror` y `CLOSED`, `alError(true)`
+  se llama, no se crea otra conexión antes de la `espera`, se crea una sola después, y la anterior
+  queda cerrada; (5) la función de cierre cierra la conexión y, si había una
+  espera pendiente, no se crea ninguna más.
 - **Motivo**: todo lo que cambia el tablero pasa por el mismo camino. Con una sola petición en curso,
   una respuesta antigua no puede llegar después de una nueva y pisarla, y una ráfaga de eventos (un
   pedido que cambia varias órdenes, por ejemplo) no lanza una petición por cada uno. Pedir el tablero
@@ -104,7 +140,9 @@ referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
   tablero entero.
 - **Sesión**: cada petición renueva la sesión (12 h sin actividad, `auth.rs`). Si el tablero pasa
   más de 12 horas sin ningún aviso, la petición de medianoche recibe 401 y `api.ts` lleva a
-  `/entrar`, como en cualquier pantalla. El jefe vuelve a entrar por la mañana.
+  `/entrar`, como en cualquier pantalla. El jefe vuelve a entrar por la mañana. Si la sesión caduca
+  mientras se corta la red, la conexión de eventos queda cerrada (`CLOSED`) y la petición única de
+  ese caso lleva a `/entrar` en ese momento, sin esperar a la medianoche (E1, N3).
 - **Alternativas descartadas**: aplicar cada evento sobre la lista que ya se tiene, porque el evento
   no trae la tarjeta completa y obligaría a pedirla igualmente; consultar cada minuto (Q3-C).
 
@@ -125,7 +163,10 @@ referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
   lugar de usar un `setInterval` de 24 h, sigue siendo correcto los días de 23 y 25 horas.
 - **Prueba** (`frontend/src/lib/medianoche.test.ts`, Vitest con `vi.useFakeTimers` y
   `vi.setSystemTime`, sin dependencias nuevas): con `process.env.TZ = 'America/New_York'`, para que
-  el navegador simulado esté en otra zona,
+  el navegador simulado esté en otra zona. **Antes de nada**, la prueba comprueba que la zona del
+  proceso es de verdad otra: si `new Date('2026-07-01T12:00:00Z').getTimezoneOffset()` no es el de
+  Nueva York (240) o coincide con el de Madrid (−120), falla con un mensaje claro, en lugar de dar
+  verde sin probar nada (corregido por A2 de analyze-1). Después:
   1. a las 23:59:00 de Madrid, `fn` no se llama hasta pasado 1 min + 60 s, y se llama una sola vez;
   2. después de saltar se vuelve a programar para la medianoche siguiente;
   3. empezando a las 00:01 de un día con cambio de hora (28/03/2027, de 23 h; 31/10/2027, de 25 h),
@@ -133,7 +174,8 @@ referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
      después;
   4. la función que devuelve cancela el temporizador.
 - **Cambio compartido**: [R13](../000-base-comun/research.md) decía «Vitest solo para `formato.ts`».
-  Ahora dice «para `formato.ts`, `medianoche.ts` y `recarga.ts`», por Q3 y D5. Lo revisa la Persona B.
+  Ahora dice «para `formato.ts`, `medianoche.ts`, `recarga.ts` y `eventos.ts`», por Q3, D5 y E1 de
+  analyze-1. Lo revisa la Persona B.
 - **Alternativas descartadas**: `new Date().setHours(24, 0, 0, 0)`, que usa la zona del navegador;
   una prueba de la página con `@testing-library/svelte` y `jsdom`, que añade dependencias solo para
   esto (principio I): la página solo llama a `programarMedianoche(cargar)`, y eso se comprueba en el
@@ -143,9 +185,12 @@ referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
 ## D7. La pantalla en la pared del taller y en el móvil del jefe
 
 - **Decisión**:
-  - **Ancho**: el `<main>` de `+layout.svelte` lleva `max-w-6xl`. En `/tablero` pasa a ocupar todo el
-    ancho (`max-w-none`), para que en una pantalla grande quepan las 6 columnas con tarjetas
-    legibles. Es un cambio de una línea en un fichero compartido; el menú no cambia.
+  - **Ancho**: el `<nav>` y el `<main>` de `+layout.svelte` llevan `max-w-6xl`. En `/tablero` los
+    **dos** pasan a ocupar todo el ancho, para que en una pantalla grande quepan las 6 columnas con
+    tarjetas legibles y el menú quede alineado con ellas (corregido por I3 de analyze-1). Se hace
+    con una sola variable (`ancho`, verdadera si la ruta empieza por `/tablero`) que quita
+    `max-w-6xl` en los dos. En las demás pantallas el menú y el contenido siguen exactamente igual:
+    mismas entradas, mismo orden y mismo ancho.
   - **Carga**: arriba, una fila de chips «Luis 5 · Marta 3 · Pedro (de baja) 1», que salta de línea
     si no cabe.
   - **Columnas**: con 1280 px o más (`xl`), una rejilla de 6 columnas iguales. Por debajo, una tira

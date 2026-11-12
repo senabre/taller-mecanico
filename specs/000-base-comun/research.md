@@ -157,9 +157,9 @@ editando este archivo y la spec afectada.
   - **Backend**: pruebas de integración con `#[sqlx::test]`, que crea una base de datos limpia por
     prueba, para cada regla de negocio de las specs: km, cupo, correlativos, caducidad, 10 %,
     stock y transiciones de estado.
-  - **Frontend**: `svelte-check` y Vitest solo para `formato.ts`, `medianoche.ts` y `recarga.ts` (estos
-    dos, por el tablero: la medianoche de Madrid y una sola petición a la vez; spec-008 Q3, research
-    D5 y D6).
+  - **Frontend**: `svelte-check` y Vitest solo para `formato.ts`, `medianoche.ts`, `recarga.ts` y
+    `eventos.ts` (estos tres, por el tablero: la medianoche de Madrid, una sola petición a la vez y
+    la reconexión de la conexión de eventos; spec-008 Q3, research D5 y D6, y E1 de su analyze-1).
   - **Aceptación**: se recorre a mano `quickstart.md` en la aplicación (principio IV).
 - **Motivo**: las reglas de negocio son lo crítico. Una batería E2E con navegador sería complejidad
   anticipada (principio I).

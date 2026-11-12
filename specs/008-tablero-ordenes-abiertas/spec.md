@@ -27,7 +27,8 @@ Prioridad Media · 5 pts.
   uno de esos tres roles.
 - Q: ¿Qué debe hacer que el tablero se actualice solo, sin recargar? → A: Abrir una orden,
   cualquier cambio de estado (también facturar, con lo que la tarjeta desaparece), el cambio de
-  día a las 00:00 Europe/Madrid (recalcula las retrasadas) y la vuelta de la conexión (los
+  día a medianoche (00:01 de Madrid, con un minuto de margen; precisado en analyze-1, I1), que
+  recalcula las retrasadas, y la vuelta de la conexión (los
   eventos enviados mientras no había conexión se han perdido). En todos los casos se vuelve a
   pedir el tablero entero. La medianoche se calcula en Europe/Madrid con `Intl`, no con la zona
   del navegador, y se prueba en el frontend con reloj simulado (`vi.useFakeTimers`), porque en
@@ -118,9 +119,10 @@ desde otro y comprobar que la tarjeta cambia de columna sin tocar el tablero.
    segundos su tarjeta aparece en «recibida» y la carga de su mecánico sube en 1.
 3. **Given** el tablero abierto, **When** se factura una orden terminada, **Then** en menos de 5
    segundos su tarjeta desaparece y la carga de su mecánico baja en 1.
-4. **Given** el tablero abierto con una orden cuya entrega prometida es hoy, **When** llegan las
-   00:00 en Europe/Madrid (sea cual sea la zona horaria del ordenador), **Then** el tablero se
-   vuelve a pedir y la tarjeta aparece como «Retrasada» sin que cambie ninguna orden.
+4. **Given** el tablero abierto con una orden cuya entrega prometida es hoy, **When** llega la
+   medianoche (00:01 de Madrid, con un minuto de margen, sea cual sea la zona horaria del
+   ordenador), **Then** el tablero se vuelve a pedir y la tarjeta aparece como «Retrasada» sin
+   que cambie ninguna orden.
 5. **Given** el tablero sin conexión y una orden que cambia de estado mientras tanto, **When**
    vuelve la conexión, **Then** el aviso de desconexión desaparece y el tablero se vuelve a pedir
    entero, con esa tarjeta ya en su columna nueva.
@@ -154,8 +156,8 @@ desde otro y comprobar que la tarjeta cambia de columna sin tocar el tablero.
 - **FR-004**: Las órdenes abiertas cuya fecha de entrega prometida sea anterior a hoy MUST
   aparecer destacadas visualmente y con el texto «Retrasada».
 - **FR-005**: El tablero MUST actualizarse solo, sin recargar la página, cuando se abra una
-  orden, cuando cualquier orden cambie de estado (incluido facturarla), al cambiar el día a las
-  00:00 Europe/Madrid y al recuperar la conexión tras perderla.
+  orden, cuando cualquier orden cambie de estado (incluido facturarla), al cambiar el día a
+  medianoche (00:01 de Madrid, con un minuto de margen) y al recuperar la conexión tras perderla.
 - **FR-006**: El tablero MUST estar disponible solo para el jefe de taller. Los demás roles
   (recepción, mecánico, almacén) no lo ven en el menú, el sistema les niega los datos del
   tablero y, si abren su dirección a mano, ven «No tienes permiso para hacer esto» sin ninguna

@@ -43,11 +43,13 @@ ejemplo son orientativos.
 | Momento | Llamada | Qué muestra | Requisito |
 |---|---|---|---|
 | Al abrir | `GET /api/tablero` | **200**: la carga arriba («Luis 5 · Marta 3», con «(de baja)» si `activo` es `false`) y las 6 columnas con sus tarjetas: «Nº», matrícula, mecánico y «Entrega dd/mm/aaaa»; con `retrasada`, borde destacado e insignia «Retrasada»; una columna vacía, «Sin órdenes» · **403**: solo «No tienes permiso para hacer esto», sin columnas ni tarjetas · **otro error**: su mensaje, o «No se pudo cargar el tablero» si no hay conexión | FR-001 a FR-004, FR-006, US1, US2, US3 |
-| Al abrir | `EventSource('/api/eventos')` | Nada por sí mismo; en cada `onopen`, el primero incluido, vuelve a pedir `GET /api/tablero` | FR-005, US4-5 |
+| Tras la primera carga, salvo si dio 403 (también si falló por la red: así se recupera sola) | `EventSource('/api/eventos')`, con `conectarEventos` de `lib/eventos.ts` | Nada por sí mismo | FR-005, FR-006, US4-5 (research D5; E2, N2) |
+| `onopen`: el primero y cada vez que la conexión se abre de nuevo tras un error (reconecte el navegador solo o se cree otra tras un cierre) | `GET /api/tablero` | Quita el aviso y muestra el tablero entero: lo enviado mientras no había conexión se ha perdido | FR-005, US4-5 (Q3, N3) |
 | Con cada evento `orden` (`{id, estado}`) | `GET /api/tablero` | El tablero entero, sin mirar el contenido del evento. Si ya hay una petición en curso, se hace una más al terminar, y solo una | FR-005, US4-1 a US4-3, SC-002 |
-| `onerror` del `EventSource` | ninguna | «Sin conexión, reintentando…» encima del tablero, que se queda como estaba. Desaparece en el siguiente `onopen` | Caso límite «Se pierde la conexión» |
-| 00:01 de Madrid | `GET /api/tablero` | Las órdenes con entrega ayer pasan a «Retrasada» sin que cambie ninguna orden | FR-005, US4-4 (research D6) |
-| Al salir de la página | ninguna | Se cierran el `EventSource` y el temporizador de medianoche | — |
+| `onerror`, con la conexión reintentando (`CONNECTING`) | ninguna: el tablero se pide en el `onopen` | «Sin conexión, reintentando…» encima del tablero, que se queda como estaba. Desaparece en el siguiente `onopen` | Caso límite «Se pierde la conexión» |
+| `onerror`, con la conexión cerrada (`CLOSED`: la respuesta no fue un 200 de eventos, p. ej. 401) | `GET /api/tablero` **una vez** (única excepción: con un 401 la conexión no volvería a abrirse) y otra conexión pasados 5 s | El mismo aviso. Si `GET /api/tablero` da 401, `api.ts` lleva a `/entrar`; si no, la conexión nueva abre, el aviso desaparece y su `onopen` pide el tablero | Caso límite «Se pierde la conexión», US4-5 (E1, N3) |
+| 00:01 de Madrid (medianoche, con un minuto de margen) | `GET /api/tablero` | Las órdenes con entrega ayer pasan a «Retrasada» sin que cambie ninguna orden | FR-005, US4-4 (research D6) |
+| Al salir de la página | ninguna | Se cierran la conexión de eventos, su espera pendiente y el temporizador de medianoche | — |
 
 Las tarjetas no son enlaces y no se arrastran: el tablero es solo de consulta (principio III). Si
 `GET /api/tablero` responde 401 (sesión caducada), `api.ts` lleva a `/entrar`, como en todas las

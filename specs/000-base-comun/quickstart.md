@@ -204,19 +204,55 @@ con un reloj para los pasos 4 y 6 (SC-001 y SC-002). La correspondencia con la s
    «Recibida» y la carga pasa a «Marta 4».
 8. Como `ana`, en la orden de `2222CCC` («Terminada»), pulsar «Facturar» → en menos de 5 s su
    tarjeta desaparece y la carga pasa a «Luis 5».
-9. En el navegador de `paco`, en las herramientas de desarrollo, poner la red en «Sin conexión» →
-   aparece «Sin conexión, reintentando…». Mientras tanto, como `luis`, terminar la orden de
-   `3333DDD`. Volver a poner la red → el aviso desaparece y `3333DDD` ya está en «Terminada», sin
-   recargar.
-10. Con las herramientas de desarrollo a **390 px** de ancho: se ve una columna entera y el borde de
-    la siguiente; las columnas se desplazan con el dedo en horizontal **dentro del tablero**, la
+9. Parar el servidor (Ctrl+C en la terminal de `cargo run`) → en el navegador de `paco` aparece
+   «Sin conexión, reintentando…». Volver a arrancarlo (`cargo run`) → en unos segundos el aviso
+   desaparece solo, sin recargar, y el tablero sigue al día. *Con las herramientas de desarrollo*
+   (opcional) se comprueba además que no se pierde nada: en el navegador de `paco`, poner la red en
+   «Sin conexión»; mientras tanto, como `luis`, terminar la orden de `3333DDD`; volver a poner la
+   red → el aviso desaparece y `3333DDD` ya está en «Terminada», sin recargar. (Si no se hace esta
+   parte, terminar `3333DDD` después, con el tablero conectado: la tarjeta pasa a «Terminada».)
+10. En un **móvil** conectado a la misma red, abrir `http://<IP del ordenador>:3000/tablero` como
+    `paco` (o, con las herramientas de desarrollo, a **390 px** de ancho): se ve una columna entera y
+    el borde de la siguiente; las columnas se desplazan con el dedo en horizontal **dentro del tablero**, la
     página no se mueve de lado, y la carga salta de línea si no cabe. A 1280 px o más, las 6
     columnas caben una al lado de otra y ocupan todo el ancho.
 11. El paso de medianoche no se comprueba a mano: lo cubre `npm test` en `frontend/`
     (`medianoche.test.ts`).
 
 ## §9 Integración (los dos juntos)
-Recorrer §1 → §8 seguidos con un vehículo nuevo, desde la cita hasta la factura, mirando el
-tablero en otra ventana durante todo el recorrido. Como la orden solo se abre el día de la cita
-(spec-002 Q2) y la página pública solo ofrece días desde mañana, el recorrido ocupa dos días:
-pedir la cita un día y seguir el día de la cita.
+Un vehículo nuevo, `3579KLM`, recorre todo el flujo, desde la cita hasta la factura, con el tablero
+de `paco` abierto en otra ventana. Se hace después del §8 y ocupa **dos sesiones**: el día A, el del
+recorrido §0–§8, y el día B, el de la cita. La orden solo se abre el día de la cita (spec-002 Q2), y
+la página pública solo ofrece días laborables desde mañana con plaza: después del §1, el primer día
+libre **puede no ser el siguiente** (el §1 llena alguno, y no hay citas en fin de semana).
+
+**Día A**, al terminar el §8:
+1. Sin entrar, en `/cita`, escribir `3579KLM` → pide los datos del vehículo y del cliente. Rellenar
+   marca «Seat», modelo «Arona», un nombre, un teléfono válido y un correo, motivo «Revisión de frenos», y elegir
+   el **primer día que ofrezca la página** → se confirma. Anotar ese día: es el día B. El tablero no
+   cambia (las citas no salen en él).
+
+**Día B** (el de la cita). **No se recargan los datos demo**: el `demo.sql` se carga sobre una base
+vacía y borraría la cita del día A. Por eso los datos demo están desfasados, y **es normal que
+alguna orden demo salga «Retrasada»** en el tablero y en la lista de órdenes: por ejemplo
+`3333DDD`, cuya entrega era el día A, y cualquiera cuya entrega ya haya pasado. Lo que se comprueba
+es la orden nueva.
+2. Como `paco`, abrir `/tablero` y dejarlo abierto. La carga coincide con las tarjetas de cada
+   mecánico.
+3. Como `ana`, en «Citas» de hoy aparece `3579KLM` con «Abrir orden». Abrirla con 15.000 km, «Sin
+   daños visibles», mecánico Luis y entrega dentro de 3 días → orden **Nº 13** (la siguiente a la
+   Nº 12 del §8.7). En menos de 5 s su tarjeta aparece en «Recibida» y Luis suma 1.
+4. Como `luis`, en esa orden, diagnóstico «Pastillas delanteras desgastadas» → la tarjeta pasa a
+   «En diagnóstico». Crear el presupuesto con una línea de mano de obra «Cambio de pastillas», 1 h,
+   y emitirlo → la tarjeta **no** se mueve (emitir no cambia el estado). En Mailpit llega el correo
+   con el enlace.
+5. Abrir el enlace del correo, aceptar y confirmar → «Aceptado el … a las …», y la tarjeta pasa a
+   «En reparación».
+6. Como `luis`, imputar 1 h de «Cambio de pastillas» (lo presupuestado, sin pasar del 110 %) y pulsar
+   «Terminar reparación» → la tarjeta pasa a «Terminada».
+7. Como `ana`, pulsar «Facturar» → «Factura nº N» con su total, y en Mailpit «Su vehículo 3579KLM
+   está listo para recoger». La tarjeta desaparece del tablero y Luis resta 1.
+8. En `/historial`, buscar `3579KLM` → aparece la reparación con su diagnóstico y sus líneas.
+
+En todo el día B, cada cambio de la orden nueva se ve en el tablero de `paco` en menos de 5 s, sin
+recargar.
