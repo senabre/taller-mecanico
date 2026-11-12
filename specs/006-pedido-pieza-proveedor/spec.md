@@ -36,7 +36,7 @@ Prioridad Media · 3 pts.
 
 ### User Story 1 - Dar de alta referencias de piezas (Priority: P1)
 
-El responsable del almacén da de alta a mano cada referencia de pieza con su código,
+El responsable del almacén da de alta a mano cada referencia de pieza con su referencia (p. ej. «PF-123»),
 descripción, precio de venta y, si quiere, el stock inicial. No hay conexión con catálogos de
 fabricantes.
 
@@ -51,8 +51,8 @@ comprobar que aparece en la lista del almacén y al presupuestar (spec-003).
    **Then** la referencia aparece en la lista con esos datos.
 2. **Given** el almacén, **When** se da de alta «FA-77», «Filtro aire», 12,50 € sin indicar
    stock, **Then** la referencia aparece con stock 0.
-3. **Given** ya existe «PF-123», **When** se intenta dar de alta otra con el mismo código,
-   **Then** no se permite y se indica que ese código ya existe.
+3. **Given** ya existe «PF-123», **When** se intenta dar de alta otra con la misma referencia,
+   **Then** no se permite y se indica que esa referencia ya existe.
 
 ---
 
@@ -145,8 +145,8 @@ comprobar que aparecen los dos con su estado.
 ### Functional Requirements
 
 - **FR-001**: El responsable del almacén MUST poder dar de alta referencias de piezas a mano con
-  código (único), descripción, precio de venta y stock inicial opcional (0 por defecto).
-- **FR-002**: El sistema MUST rechazar el alta de una referencia con un código que ya existe,
+  referencia (única), descripción, precio de venta y stock inicial opcional (0 por defecto).
+- **FR-002**: El sistema MUST rechazar el alta de una referencia con una referencia que ya existe,
   indicando el motivo.
 - **FR-003**: El responsable del almacén MUST poder registrar un pedido con proveedor (elegido
   entre los existentes), referencia, cantidad (entero mayor que 0) y orden asociada; el sistema
@@ -174,7 +174,7 @@ comprobar que aparecen los dos con su estado.
 
 ### Key Entities
 
-- **Referencia de pieza**: código único, descripción, precio de venta y stock. Compartida con
+- **Referencia de pieza**: referencia única, descripción, precio de venta y stock. Compartida con
   spec-003 y spec-005.
 - **Proveedor**: nombre. Precargado.
 - **Pedido a proveedor**: proveedor, referencia, cantidad, orden asociada, estado (pendiente o
@@ -193,7 +193,7 @@ comprobar que aparecen los dos con su estado.
 - **SC-004**: Tras recibir un pedido, el stock mostrado sube exactamente en la cantidad pedida.
 - **SC-005**: El 100 % de los intentos de pedido sobre órdenes en un estado no permitido se
   rechazan con un mensaje que explica el motivo.
-- **SC-006**: No es posible tener dos referencias con el mismo código.
+- **SC-006**: No es posible tener dos referencias con la misma referencia.
 
 ## Assumptions
 

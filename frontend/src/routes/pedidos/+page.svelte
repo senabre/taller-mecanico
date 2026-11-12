@@ -33,8 +33,8 @@
 	let busqueda = $state('');
 	let resultados: Pieza[] = $state([]);
 	let pieza: Pieza | null = $state(null);
-	let cantidad: number | null = $state(1);
-	let ordenNumero: number | null = $state(null);
+	let cantidad = $state('1');
+	let ordenNumero = $state('');
 	let enviando = $state(false);
 	let error = $state('');
 	let aviso = $state('');
@@ -64,6 +64,14 @@
 		resultados = [];
 	}
 
+	// Los números se escriben en campos de texto: si lo escrito es un entero viaja como número y, si
+	// no, tal cual, para que el servidor responda con su motivo en español (principio II; spec-006
+	// analyze-1 C1). Vacío es null.
+	const entero = (texto: string) => {
+		const t = texto.trim();
+		return t === '' ? null : /^-?\d+$/.test(t) ? Number(t) : t;
+	};
+
 	async function registrar(evento: SubmitEvent) {
 		evento.preventDefault();
 		error = '';
@@ -77,14 +85,14 @@
 			const pedido = await post<Pedido>('/pedidos', {
 				proveedor_id: proveedorId,
 				pieza_id: pieza.id,
-				cantidad,
-				orden_numero: ordenNumero
+				cantidad: entero(cantidad),
+				orden_numero: entero(ordenNumero)
 			});
 			aviso = `Pedido registrado: ${pedido.cantidad} × ${pedido.pieza.referencia} para la orden ${pedido.orden.numero}`;
 			pieza = null;
 			busqueda = '';
-			cantidad = 1;
-			ordenNumero = null;
+			cantidad = '1';
+			ordenNumero = '';
 			await cargarPendientes();
 		} catch (e) {
 			error = mensaje(e);
@@ -122,7 +130,8 @@
 
 	<section class="card bg-surface-100-900 max-w-3xl space-y-4 p-6">
 		<h2 class="h4">Nuevo pedido</h2>
-		<form class="grid gap-4 sm:grid-cols-2" onsubmit={registrar}>
+		<!-- `novalidate`: los mensajes los da el servidor, en español, no el navegador. -->
+		<form class="grid gap-4 sm:grid-cols-2" novalidate onsubmit={registrar}>
 			<label class="label">
 				<span class="label-text">Proveedor</span>
 				<select class="select" name="proveedor" required bind:value={proveedorId}>
@@ -173,9 +182,7 @@
 				<input
 					class="input"
 					name="cantidad"
-					type="number"
-					min="1"
-					step="1"
+					inputmode="numeric"
 					required
 					bind:value={cantidad}
 				/>
@@ -186,9 +193,7 @@
 				<input
 					class="input"
 					name="orden"
-					type="number"
-					min="1"
-					step="1"
+					inputmode="numeric"
 					required
 					bind:value={ordenNumero}
 				/>

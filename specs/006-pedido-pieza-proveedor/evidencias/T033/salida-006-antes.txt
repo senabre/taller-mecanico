@@ -1,0 +1,8 @@
+FALLA (a1) Referencia vacía: aplicación=«»; navegador=«Completa este campo»
+FALLA (a2) Stock -1: aplicación=«»; navegador=«El valor debe ser superior o igual a 0»
+OK    (a3) Alta de FA-9 sin stock: fila=«FA-9Filtro aceite12,00 €0»
+FALLA (b1) Cantidad 0: aplicación=«»; navegador=«El valor debe ser superior o igual a 1»
+FALLA (b2) Sin nº de orden: aplicación=«»; navegador=«Completa este campo»
+OK    (b3) Pedido de FA-9 para la orden 3: aviso=«Pedido registrado: 1 × FA-9 para la orden 3»
+OK    (c) /pedidos a 390 px: ancho del documento=390px
+3 correctas y 4 fallos

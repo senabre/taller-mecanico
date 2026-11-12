@@ -1,0 +1,8 @@
+OK    (a1) Referencia vacía: aplicación=«Indica la referencia de la pieza»; navegador=«»
+OK    (a2) Stock -1: aplicación=«El stock debe ser un número entero de 0 o más»; navegador=«»
+OK    (a3) Alta de FA-9 sin stock: fila=«FA-9Filtro aceite12,00 €0»
+OK    (b1) Cantidad 0: aplicación=«La cantidad debe ser un número entero mayor que 0»; navegador=«»
+OK    (b2) Sin nº de orden: aplicación=«Indica el número de la orden»; navegador=«»
+OK    (b3) Pedido de FA-9 para la orden 3: aviso=«Pedido registrado: 1 × FA-9 para la orden 3»
+OK    (c) /pedidos a 390 px: ancho del documento=390px
+7 correctas y 0 fallos
