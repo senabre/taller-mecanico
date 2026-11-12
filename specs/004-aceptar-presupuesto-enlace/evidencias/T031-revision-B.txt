@@ -1,0 +1,464 @@
+Revisión de la Persona B · 12/11/2026 · main en bd330b9 · Docker (Postgres y Mailpit) en marcha
+Ejecutada con Claude Code por encargo de la Persona B.
+
+################ cargo-test
+   Compiling taller v0.1.0 (C:\Users\Usuario\Desktop\tallerMecanico\backend)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 33.31s
+     Running unittests src\lib.rs (target\debug\deps\taller-522af845e81486aa.exe)
+
+running 16 tests
+test dinero::pruebas::la_mitad_redondea_hacia_arriba ... ok
+test dinero::pruebas::importe_de_pieza ... ok
+test dinero::pruebas::importe_de_mano_de_obra ... ok
+test dinero::pruebas::totales_del_quickstart ... ok
+test dinero::pruebas::totales_se_serializan_como_strings_con_dos_decimales ... ok
+test formato::pruebas::euros_con_punto_de_miles_y_coma_decimal ... ok
+test formato::pruebas::numeros_con_punto_de_miles ... ok
+test fechas::pruebas::de_noche_en_verano_ya_es_el_dia_siguiente_en_madrid ... ok
+test fechas::pruebas::de_noche_en_invierno_ya_es_el_ano_siguiente_en_madrid ... ok
+test matricula::pruebas::limites_de_longitud ... ok
+test matricula::pruebas::matriculas_invalidas ... ok
+test matricula::pruebas::misma_matricula_escrita_de_varias_formas ... ok
+test rutas::citas::pruebas::correos_no_validos ... ok
+test rutas::citas::pruebas::correos_validos ... ok
+test rutas::citas::pruebas::telefonos_no_validos ... ok
+test rutas::citas::pruebas::telefonos_validos ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\crear-usuario.rs (target\debug\deps\crear_usuario-d92dfbdca317816c.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\main.rs (target\debug\deps\taller-f2bf421b3fed9295.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\spec000_contador.rs (target\debug\deps\spec000_contador-c4c6c7f7ffcd11ae.exe)
+
+running 3 tests
+test orden_y_factura_llevan_cuentas_independientes ... ok
+test numeros_seguidos ... ok
+test un_rollback_no_deja_hueco ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s
+
+     Running tests\spec000_estados.rs (target\debug\deps\spec000_estados-acd32214bf25cca0.exe)
+
+running 7 tests
+test orden_inexistente_da_404 ... ok
+test cambio_permitido ... ok
+test transicion_que_no_esta_en_la_tabla_da_error ... ok
+test terminar_rellena_terminada_en ... ok
+test en_diagnostico_no_tiene_transicion_a_si_mismo ... ok
+test desde_un_estado_que_no_es_el_actual_da_409 ... ok
+test publicar_llega_al_tablero ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.79s
+
+     Running tests\spec000_sesion.rs (target\debug\deps\spec000_sesion-b6cb4e3ce66d42e8.exe)
+
+running 12 tests
+test exigir_mecanico_de_solo_deja_al_asignado_y_al_jefe ... ok
+test exigir_rol_deja_pasar_siempre_al_jefe ... ok
+test eventos_exige_sesion ... ok
+test una_sesion_caducada_da_401 ... ok
+test el_login_se_acepta_en_mayusculas ... ok
+test entrar_da_204_y_una_cookie_de_sesion ... ok
+test un_usuario_desactivado_pierde_la_sesion ... ok
+test salir_cierra_la_sesion ... ok
+test cada_peticion_renueva_la_sesion ... ok
+test yo_exige_sesion_y_no_devuelve_la_contrasena ... ok
+test credenciales_incorrectas_dan_siempre_el_mismo_401 ... ok
+test mecanicos_activos_por_nombre ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.39s
+
+     Running tests\spec001_citas.rs (target\debug\deps\spec001_citas-322a377c6798232b.exe)
+
+running 15 tests
+test prueba_6_vehiculo_conocido_no_cambia ... ok
+test con_cupo_0_no_se_ofrece_ningun_dia ... ok
+test prueba_2_vehiculo_conocido_se_reconoce ... ok
+test prueba_3_matricula_invalida ... ok
+test prueba_4_telefono_y_correo ... ok
+test prueba_11_solo_dias_laborables_de_manana_a_30_dias ... ok
+test prueba_5_obligatorios ... ok
+test alta_simultanea_de_la_misma_matricula_nueva ... ok
+test prueba_1_alta_completa ... ok
+test prueba_10_concurrencia_cita_pendiente ... ok
+test errores_documentados_en_el_contrato ... ok
+test prueba_7_una_sola_cita_pendiente ... ok
+test prueba_8_cupo ... ok
+test prueba_9_concurrencia_cupo ... ok
+test prueba_12_lista_de_citas ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.94s
+
+     Running tests\spec002_ordenes.rs (target\debug\deps\spec002_ordenes-65567bc34d39da16.exe)
+
+running 12 tests
+test prueba_5_solo_el_dia_de_la_cita ... ok
+test prueba_7_campos ... ok
+test prueba_1_abrir_y_publicar_evento ... ok
+test prueba_6_kilometraje ... ok
+test prueba_11_lista_de_citas ... ok
+test prueba_4_misma_cita_a_la_vez ... ok
+test prueba_2_correlativo_sin_huecos ... ok
+test prueba_3_concurrencia_del_numero ... ok
+test prueba_8_mecanico ... ok
+test prueba_12_lista_de_ordenes ... ok
+test prueba_9_acceso_y_cita_inexistente ... ok
+test prueba_10_ficha ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.81s
+
+     Running tests\spec003_presupuestos.rs (target\debug\deps\spec003_presupuestos-c1a224d6aa87139b.exe)
+
+running 20 tests
+test diagnostico_en_orden_recibida_la_pasa_a_en_diagnostico ... ok
+test el_concepto_enviado_para_una_pieza_se_ignora ... ok
+test crear_presupuesto_segun_el_estado_de_la_orden ... ok
+test diagnostico_de_una_orden_en_reparacion_da_409 ... ok
+test como_mucho_un_presupuesto_abierto_por_orden ... ok
+test la_base_de_datos_tambien_rechaza_cantidades_no_validas ... ok
+test el_diagnostico_se_puede_cambiar_mientras_no_haya_presupuesto_emitido ... ok
+test emitir_fija_totales_caducidad_y_token ... ok
+test el_iva_se_redondea_una_vez_sobre_la_base ... ok
+test cualquier_rol_con_sesion_puede_leer_el_presupuesto ... ok
+test con_un_presupuesto_emitido_el_diagnostico_queda_fijo ... ok
+test presupuestos_de_una_orden_con_su_caducidad ... ok
+test lineas_importes_y_totales_del_ejemplo ... ok
+test lineas_no_validas_dan_422 ... ok
+test diagnostico_no_valido_o_sin_permiso ... ok
+test un_presupuesto_emitido_no_se_puede_modificar ... ok
+test si_el_correo_falla_el_presupuesto_queda_emitido ... ok
+test quitar_una_linea_recalcula_los_totales ... ok
+test no_se_emite_sin_lineas_ni_por_otro_mecanico ... ok
+test otro_mecanico_no_puede_preparar_el_presupuesto ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.16s
+
+     Running tests\spec004_respuesta.rs (target\debug\deps\spec004_respuesta-760a97696183a6c6.exe)
+
+running 16 tests
+test el_get_marca_el_caducado ... ok
+test rechazar_el_inicial_no_cambia_la_orden ... ok
+test el_dia_de_la_caducidad_aun_se_puede_responder ... ok
+test solo_se_responde_una_vez ... ok
+test aceptar_el_inicial_pasa_la_orden_a_reparacion ... ok
+test la_ampliacion_se_acepta_y_se_rechaza_igual ... ok
+test dos_respuestas_a_la_vez_solo_cuenta_una ... ok
+test un_caducado_no_admite_ninguna_respuesta ... ok
+test aceptar_y_rechazar_a_la_vez_solo_cuenta_una ... ok
+test sin_presupuesto_aceptado_no_se_imputa ... ok
+test tras_responder_la_api_sigue_enviando_el_enlace ... ok
+test la_ficha_trae_todas_las_respuestas ... ok
+test un_token_inexistente_da_el_mismo_404 ... ok
+test un_respondido_no_caduca ... ok
+test una_decision_no_valida_da_422 ... ok
+test ver_el_presupuesto_sin_datos_del_cliente ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.51s
+
+     Running tests\spec005_imputaciones.rs (target\debug\deps\spec005_imputaciones-d38bfacd398909f4.exe)
+
+running 12 tests
+test sin_stock_suficiente_no_se_imputa ... ok
+test el_resumen_suma_solo_lo_aceptado_de_esa_orden ... ok
+test con_la_ampliacion_rechazada_sigue_bloqueada ... ok
+test imputaciones_no_validas_con_los_mensajes_del_presupuesto ... ok
+test aceptar_la_ampliacion_suma_lo_presupuestado_y_reanuda ... ok
+test terminar_una_orden_con_imputaciones ... ok
+test el_limite_del_10_por_ciento_es_exacto_al_centimo ... ok
+test imputar_pieza_descuenta_stock_y_suma_al_acumulado ... ok
+test pasar_del_110_por_ciento_bloquea_la_orden ... ok
+test solo_se_imputa_en_reparacion_con_presupuesto_aceptado ... ok
+test no_se_termina_sin_imputaciones_ni_fuera_de_reparacion ... ok
+test permisos_para_imputar ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.89s
+
+     Running tests\spec006_pedidos.rs (target\debug\deps\spec006_pedidos-7acfa7ca87593cac.exe)
+
+running 23 tests
+test otro_pedido_con_la_orden_en_espera_se_admite ... ok
+test lista_de_piezas_ordenada_y_con_busqueda ... ok
+test el_jefe_puede_dar_de_alta_piezas ... ok
+test lista_de_pedidos_pendientes_de_todas_las_ordenes ... ok
+test lista_de_proveedores_ordenada ... ok
+test con_dos_pedidos_la_orden_espera_al_ultimo ... ok
+test orden_en_diagnostico_da_409_y_no_cambia ... ok
+test alta_con_datos_no_validos_da_422 ... ok
+test alta_con_stock_y_sin_stock ... ok
+test misma_referencia_pendiente_para_la_misma_orden_da_409 ... ok
+test orden_en_espera_no_se_puede_terminar_ni_imputar ... ok
+test un_mecanico_no_puede_dar_de_alta_piezas ... ok
+test recibir_un_pedido_que_no_existe_da_404 ... ok
+test pedido_con_datos_no_validos_da_422 ... ok
+test pedido_para_orden_en_reparacion_la_pone_en_espera ... ok
+test recibir_suma_el_stock_y_la_orden_vuelve_a_reparacion ... ok
+test recibir_dos_veces_da_409_y_no_suma_otra_vez ... ok
+test la_ficha_de_la_orden_trae_sus_pedidos ... ok
+test referencia_repetida_da_409 ... ok
+test pedidos_de_una_orden_sin_los_de_otras ... ok
+test tras_recibir_se_puede_volver_a_pedir_la_misma_referencia ... ok
+test un_mecanico_no_puede_pedir ... ok
+test un_mecanico_no_puede_recibir ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.58s
+
+     Running tests\spec007_facturas.rs (target\debug\deps\spec007_facturas-cb9e250deec1ed99.exe)
+
+running 11 tests
+test solo_se_factura_una_vez_y_solo_si_esta_terminada ... ok
+test sin_logo_o_con_un_archivo_que_no_existe_no_hay_logo ... ok
+test facturar_copia_las_imputaciones_y_cierra_la_orden ... ok
+test historial_con_la_reparacion_mas_reciente_primero ... ok
+test los_numeros_de_factura_son_correlativos_y_sin_repetir ... ok
+test con_logo_configurado_la_factura_lo_muestra ... ok
+test el_aviso_se_anota_si_sale_el_correo ... ok
+test si_el_correo_falla_la_factura_se_emite_igual ... ok
+test ver_la_factura_y_su_orden ... ok
+test historial_por_matricula_escrita_de_cualquier_forma ... ok
+test sin_imputaciones_o_sin_permiso_no_se_factura ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.82s
+
+     Running tests\spec008_tablero.rs (target\debug\deps\spec008_tablero-080c494604de28c9.exe)
+
+running 9 tests
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ignored, tarda ~100 s; lanzar con: cargo test --test spec008_tablero -- --ignored
+test prueba5_carga_por_mecanico_con_los_activos_a_cero ... ok
+test prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas ... ok
+test prueba4_tarjetas_por_entrega_y_numero ... ok
+test prueba7_retrasada_ayer_si_hoy_no_y_terminada_sin_facturar_si ... ok
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test prueba2_sin_ordenes_seis_columnas_vacias ... ok
+test prueba6_inactivos_solo_con_ordenes_abiertas ... ok
+test prueba3_solo_el_jefe ... ok
+
+test result: ok. 8 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 10.02s
+
+   Doc-tests taller
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+EXIT cargo test: 0
+
+################ cargo-ignored
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.67s
+     Running tests\spec008_tablero.rs (target\debug\deps\spec008_tablero-080c494604de28c9.exe)
+
+running 1 test
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion has been running for over 60 seconds
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 145.18s
+
+EXIT ignored: 0
+
+################ clippy
+    Checking cfg-if v1.0.5
+    Checking windows-link v0.2.1
+    Checking pin-project-lite v0.2.17
+    Checking serde_core v1.0.229
+   Compiling stable_deref_trait v1.2.1
+    Checking bytes v1.12.1
+   Compiling zerofrom v0.1.8
+    Checking scopeguard v1.2.0
+    Checking futures-core v0.3.34
+   Compiling serde v1.0.229
+    Checking itoa v1.0.18
+    Checking subtle v2.6.1
+   Compiling yoke v0.8.3
+    Checking windows-sys v0.61.2
+    Checking once_cell v1.21.4
+    Checking lock_api v0.4.14
+    Checking getrandom v0.2.17
+    Checking log v0.4.34
+   Compiling typenum v1.20.1
+   Compiling writeable v0.6.4
+   Compiling litemap v0.8.3
+   Compiling zerovec v0.11.8
+   Compiling zerotrie v0.2.5
+   Compiling smallvec v1.16.3
+    Checking futures-sink v0.3.34
+    Checking memchr v2.8.3
+   Compiling utf8_iter v1.0.4
+    Checking tracing-core v0.1.36
+   Compiling zeroize v1.9.1
+    Checking tinystr v0.8.4
+    Checking generic-array v0.14.7
+   Compiling potential_utf v0.1.6
+    Checking icu_locale_core v2.3.0
+   Compiling icu_collections v2.3.0
+   Compiling rustls-pki-types v1.15.1
+   Compiling icu_normalizer_data v2.3.0
+    Checking crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling icu_properties_data v2.3.0
+    Checking digest v0.10.7
+    Checking percent-encoding v2.3.2
+    Checking tracing v0.1.44
+   Compiling num-traits v0.2.19
+    Checking futures-task v0.3.34
+    Checking slab v0.4.12
+    Checking futures-io v0.3.34
+   Compiling equivalent v1.0.3
+   Compiling untrusted v0.9.0
+    Checking futures-util v0.3.34
+    Checking icu_provider v2.3.1
+   Compiling ring v0.17.14
+    Checking form_urlencoded v1.2.2
+   Compiling parking_lot_core v0.9.12
+    Checking http v1.5.0
+   Compiling icu_normalizer v2.3.0
+   Compiling windows_x86_64_msvc v0.48.5
+   Compiling zerocopy v0.8.63
+   Compiling icu_properties v2.3.0
+   Compiling foldhash v0.1.5
+    Checking parking_lot v0.12.5
+    Checking socket2 v0.6.5
+    Checking mio v1.2.4
+   Compiling idna_adapter v1.2.2
+   Compiling allocator-api2 v0.2.21
+   Compiling idna v1.1.0
+    Checking rustls-webpki v0.103.15
+    Checking tokio v1.53.3
+    Checking http-body v1.1.0
+   Compiling hashbrown v0.15.5
+   Compiling windows-targets v0.48.5
+   Compiling webpki-roots v1.0.9
+   Compiling rand_core v0.6.4
+   Compiling crossbeam-utils v0.8.23
+   Compiling zmij v1.0.23
+   Compiling crc-catalog v2.5.0
+   Compiling parking v2.2.1
+   Compiling cpufeatures v0.2.17
+   Compiling tinyvec v1.13.3
+   Compiling arrayvec v0.7.8
+   Compiling hashbrown v0.17.1
+   Compiling crossbeam-queue v0.3.14
+   Compiling sha2 v0.10.9
+   Compiling event-listener v5.4.2
+   Compiling crc v3.4.0
+   Compiling serde_json v1.0.154
+   Compiling unicode-normalization v0.1.25
+   Compiling rust_decimal v1.43.0
+   Compiling hashlink v0.10.0
+   Compiling webpki-roots v0.26.11
+   Compiling rustls v0.23.46
+   Compiling futures-intrusive v0.5.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling indexmap v2.14.2
+   Compiling windows-sys v0.48.0
+   Compiling url v2.5.8
+   Compiling rand_chacha v0.3.1
+   Compiling home v0.5.12
+   Compiling chrono v0.4.45
+   Compiling hmac v0.12.1
+   Compiling thiserror v2.0.21
+   Compiling either v1.19.0
+    Checking tower-service v0.3.3
+   Compiling unicode-bidi v0.3.18
+   Compiling unicode-properties v0.1.4
+    Checking httpdate v1.0.3
+    Checking mime v0.3.17
+   Compiling hkdf v0.12.4
+   Compiling stringprep v0.1.5
+   Compiling etcetera v0.8.0
+   Compiling rand v0.8.8
+   Compiling futures-channel v0.3.34
+   Compiling atoi v2.0.0
+   Compiling md-5 v0.10.6
+   Compiling hex v0.4.3
+   Compiling unicase v2.10.0
+   Compiling byteorder v1.5.0
+    Checking tower-layer v0.3.3
+   Compiling dotenvy v0.15.7
+   Compiling bitflags v2.13.2
+   Compiling whoami v1.6.1
+    Checking tokio-util v0.7.20
+   Compiling tokio-stream v0.1.19
+   Compiling mime_guess v2.0.5
+    Checking httparse v1.10.1
+    Checking http-body-util v0.1.5
+   Compiling sqlx-core v0.8.6
+    Checking atomic-waker v1.1.2
+    Checking regex-syntax v0.8.11
+    Checking base64 v0.22.1
+    Checking sync_wrapper v1.0.2
+    Checking siphasher v1.0.4
+    Checking hyper v1.12.0
+    Checking phf_shared v0.12.1
+    Checking lazy_static v1.5.1
+    Checking base64 v0.23.1
+    Checking base64ct v1.8.3
+    Checking ryu v1.0.23
+    Checking sharded-slab v0.1.7
+    Checking regex-automata v0.4.18
+    Checking hyper-util v0.1.21
+    Checking phf v0.12.1
+    Checking password-hash v0.5.0
+    Checking serde_urlencoded v0.7.1
+    Checking axum-core v0.5.6
+    Checking tower v0.5.3
+    Checking email-encoding v0.4.2
+    Checking tokio-rustls v0.26.6
+    Checking nu-ansi-term v0.50.3
+    Checking serde_path_to_error v0.1.20
+    Checking blake2 v0.10.6
+    Checking nom v8.0.0
+    Checking tracing-log v0.2.0
+    Checking thread_local v1.1.10
+    Checking http-range-header v0.4.2
+    Checking email_address v0.2.9
+    Checking fastrand v2.5.0
+    Checking quoted_printable v0.5.2
+    Checking matchit v0.8.4
+    Checking tower-http v0.6.11
+    Checking argon2 v0.5.3
+    Checking chrono-tz v0.10.4
+    Checking sqlx-postgres v0.8.6
+    Checking axum v0.8.9
+    Checking matchers v0.2.0
+    Checking tracing-subscriber v0.3.23
+    Checking lettre v0.11.23
+   Compiling sqlx-macros-core v0.8.6
+   Compiling sqlx-macros v0.8.6
+    Checking sqlx v0.8.6
+    Checking taller v0.1.0 (C:\Users\Usuario\Desktop\tallerMecanico\backend)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 32s
+EXIT clippy: 0
+
+################ npm-check
+
+> taller-frontend@0.1.0 check
+> svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+
+1794504161153 START "c:\\Users\\Usuario\\Desktop\\tallerMecanico\\frontend"
+1794504161158 COMPLETED 244 FILES 0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS
+EXIT check: 0
+
+################ npm-test
+
+> taller-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 C:/Users/Usuario/Desktop/tallerMecanico/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  21 passed (21)
+   Start at  18:22:57
+   Duration  930ms (transform 58%, import 27%, tests 9%, worker 6%)
+
+EXIT test: 0

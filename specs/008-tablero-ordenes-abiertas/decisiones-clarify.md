@@ -74,6 +74,8 @@ también los cambios que salieron de esta sesión: el contrato común (Q1, Q2, Q
 N1 en los hallazgos de spec-002. Esta sección ya no tiene tabla propia, para que no haya dos listas
 distintas (I4 de [analyze-1](analyze-1.md)).
 
+**Persona B (revisado)**, 12/11/2026, en T032 de [tasks.md](tasks.md).
+
 ## Comando y versión
 
 - **Comando**: `/speckit-clarify`, después de apuntar `.specify/feature.json` a

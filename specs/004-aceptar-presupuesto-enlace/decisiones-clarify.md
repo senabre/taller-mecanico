@@ -73,6 +73,8 @@ spec-004.
 | `specs/000-base-comun/research.md` | R9: única versión del `UPDATE` y orden de los motivos | Q4 | Hecho |
 | `specs/000-base-comun/hallazgos.md` | I5 y D1 cerrados | Q2, Q4 | Hecho |
 
+**Persona B (revisado)**, 12/11/2026, en T031 de [tasks.md](tasks.md). La fila de `presupuestos.rs` dice «Pendiente», pero está hecha (T014); la tabla al día es la del [plan](plan.md).
+
 ## Comando y versión
 
 - **Comando**: `/speckit-clarify` con este argumento:
