@@ -1,0 +1,5 @@
+OK    (a) 2,5 unidades de PF-123: aplicación=«Las unidades de pieza deben ser un número entero»; navegador=«»; líneas=0
+OK    (b) Mano de obra sin concepto: aplicación=«Escribe el concepto de la mano de obra»; navegador=«»
+OK    (c) Emitir presupuesto: diálogo del navegador=«»; pregunta=1; Sí, emitir=1; Volver=1; tras Volver sigue en borrador=true; emitido=true
+OK    (c) Confirmación a 390 px: ancho del documento=390px
+4 correctas y 0 fallos

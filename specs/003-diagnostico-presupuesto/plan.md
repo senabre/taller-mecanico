@@ -57,7 +57,7 @@ las decisiones abiertas en [research.md](research.md).
 | I. Simplicidad | Un precio por hora y un IVA únicos; sin descuentos ni edición de líneas (se quita y se añade). Reglas en la base de datos (`CHECK` de cantidades D1, índice parcial de borrador D5) y `FOR UPDATE`. Sin capas: `presupuestos.rs` hace sus consultas SQLx. | ✅ |
 | II. Español y euro | Mensajes en español; importes con `formato.ts` (es-ES, EUR); «Válido hasta dd/mm/aaaa». | ✅ |
 | III. Cero alcance fantasma | Quitar líneas y cambiar el diagnóstico están ya en la spec (FR-002a, FR-001a). Sin plantillas, catálogos, descuentos ni edición de líneas. El correo es el de spec-004 FR-001. | ✅ |
-| IV. Verificable sin código | Cada SC tiene su paso en [quickstart §3](../000-base-comun/quickstart.md); los importes se comprueban con calculadora. | ✅ |
+| IV. Verificable sin código | SC-002, SC-003 y SC-004 tienen su paso en [quickstart §3](../000-base-comun/quickstart.md); los importes se comprueban con calculadora. SC-001 (5 líneas en menos de 5 minutos) no tiene paso de cronometraje: se midió con un navegador automático y se acepta como desviación ([hallazgos](hallazgos.md), G1). | ✅ |
 | V. Datos | Solo se lee el correo del cliente para enviarle su enlace (spec-004 FR-001); el token es aleatorio (R9). | ✅ |
 
 **Re-check post-diseño**: la migración `0002` solo añade dos `CHECK` que concretan FR-002; los
@@ -127,7 +127,9 @@ su fichero de pruebas, dos componentes compartidos y dos secciones de la ficha d
 
 **Dependencias**: base común; piezas de spec-006 (ya en `main`); para la pantalla, la ficha de la
 orden de spec-002 (Persona A). Spec-004 (A) consume `presupuesto.token`, `estado`, `caduca_el` y
-`respondido_en`; A no modifica `presupuestos.rs` y B no modifica `publico_presupuesto.rs`.
+`respondido_en`; A no modifica `presupuestos.rs` y B no modifica `publico_presupuesto.rs`. Única
+excepción, acordada con la Persona B el 05/11/2026: spec-004 T014 añadió `respondido_en` a
+`PresupuestoResumen` y dejó `caducado()` en `pub(crate)` (hallazgo I1 de spec-004).
 
 **Cambios en documentos compartidos** (los revisa también la Persona A antes de fusionar):
 [data-model.md](../000-base-comun/data-model.md) (`linea_presupuesto`: cantidades, concepto,

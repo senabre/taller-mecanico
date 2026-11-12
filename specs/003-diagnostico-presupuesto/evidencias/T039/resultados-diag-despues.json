@@ -1,0 +1,30 @@
+[
+  {
+    "fase": "despues",
+    "paso": "(a) Diagnóstico vacío",
+    "esperado": "«Escribe el diagnóstico», sin mensaje del navegador",
+    "observado": "aplicación=«Escribe el diagnóstico»; navegador=«»",
+    "ok": true
+  },
+  {
+    "fase": "despues",
+    "paso": "(b) Con un presupuesto emitido",
+    "esperado": "el diagnóstico guardado, el motivo y ni cuadro ni «Guardar diagnóstico»",
+    "observado": "cuadro=0; botón=0; motivo=1; diagnóstico visible=1",
+    "ok": true
+  },
+  {
+    "fase": "despues",
+    "paso": "(c) Sin presupuesto emitido",
+    "esperado": "se guarda el cambio, sin error",
+    "observado": "error=0; cuadro=«Sensor de oxígeno y sonda lambda defectuosos»",
+    "ok": true
+  },
+  {
+    "fase": "despues",
+    "paso": "(b) A 390 px",
+    "esperado": "cabe sin desplazamiento horizontal",
+    "observado": "ancho del documento=390px",
+    "ok": true
+  }
+]

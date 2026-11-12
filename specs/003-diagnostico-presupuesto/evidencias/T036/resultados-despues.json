@@ -1,0 +1,30 @@
+[
+  {
+    "fase": "despues",
+    "paso": "(a) 2,5 unidades de PF-123",
+    "esperado": "«Las unidades de pieza deben ser un número entero», sin mensaje del navegador",
+    "observado": "aplicación=«Las unidades de pieza deben ser un número entero»; navegador=«»; líneas=0",
+    "ok": true
+  },
+  {
+    "fase": "despues",
+    "paso": "(b) Mano de obra sin concepto",
+    "esperado": "«Escribe el concepto de la mano de obra», sin mensaje del navegador",
+    "observado": "aplicación=«Escribe el concepto de la mano de obra»; navegador=«»",
+    "ok": true
+  },
+  {
+    "fase": "despues",
+    "paso": "(c) Emitir presupuesto",
+    "esperado": "pregunta en la página con «Sí, emitir» y «Volver», sin diálogo del navegador; Volver no emite; Sí, emitir emite",
+    "observado": "diálogo del navegador=«»; pregunta=1; Sí, emitir=1; Volver=1; tras Volver sigue en borrador=true; emitido=true",
+    "ok": true
+  },
+  {
+    "fase": "despues",
+    "paso": "(c) Confirmación a 390 px",
+    "esperado": "cabe sin desplazamiento horizontal",
+    "observado": "ancho del documento=390px",
+    "ok": true
+  }
+]

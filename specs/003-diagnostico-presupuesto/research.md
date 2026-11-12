@@ -106,3 +106,6 @@ Fecha: 2026-10-22.
   spec-002 y aún no existe. Así ninguna de las dos personas edita el módulo de la otra.
 - **Consecuencia**: igual que en spec-006, el recorrido en pantalla de quickstart §3 necesita la
   ficha de spec-002. El backend se prueba por completo con `#[sqlx::test]`.
+- **Después (spec-004, 05/11/2026)**: `PresupuestoResumen` lleva también `respondido_en`, para que la
+  ficha enseñe cada respuesta del cliente con su fecha y hora (spec-004 T014, con el acuerdo de la
+  Persona B). Está en el contrato común y en `tipos.ts`.

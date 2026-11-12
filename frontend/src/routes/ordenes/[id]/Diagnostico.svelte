@@ -2,22 +2,32 @@
 	// Sección «Diagnóstico» de la ficha de la orden (spec-003 US1, FR-001, FR-001a). La ficha
 	// (`+page.svelte`, spec-002) le pasa la orden y si el usuario es su mecánico o el jefe.
 	import { ErrorApi, put } from '$lib/api';
-	import type { EstadoOrden } from '$lib/tipos';
+	import type { EstadoOrden, PresupuestoResumen } from '$lib/tipos';
 
 	let {
 		orden,
 		puedeEditar,
 		onguardado
 	}: {
-		orden: { id: number; estado: EstadoOrden; diagnostico: string | null };
+		orden: {
+			id: number;
+			estado: EstadoOrden;
+			diagnostico: string | null;
+			presupuestos: PresupuestoResumen[];
+		};
 		puedeEditar: boolean;
 		onguardado: () => void;
 	} = $props();
 
-	// Se edita en recibida y en diagnóstico; el servidor rechaza el cambio si ya hay un
-	// presupuesto emitido y el mensaje se muestra tal cual.
+	// Con un presupuesto emitido (cualquiera que no esté en borrador, la misma regla que el
+	// servidor, research D2), el diagnóstico queda fijo: se enseña sin formulario y con el motivo
+	// (FR-001a, US1-3; converge-1 F2).
+	const emitido = $derived(orden.presupuestos.some((p) => p.estado !== 'borrador'));
+	// Se edita en recibida y en diagnóstico mientras no haya un presupuesto emitido.
 	const editable = $derived(
-		puedeEditar && (orden.estado === 'recibida' || orden.estado === 'en_diagnostico')
+		puedeEditar &&
+			!emitido &&
+			(orden.estado === 'recibida' || orden.estado === 'en_diagnostico')
 	);
 
 	let texto = $state('');
@@ -46,7 +56,9 @@
 <section class="space-y-3">
 	<h2 class="h4">Diagnóstico</h2>
 	{#if editable}
-		<form class="space-y-3" onsubmit={guardar}>
+		<!-- `novalidate`: el mensaje lo da el servidor, en español, no el navegador (principio II;
+		     converge-1 F1). -->
+		<form class="space-y-3" novalidate onsubmit={guardar}>
 			<textarea
 				class="textarea"
 				rows="3"
@@ -66,6 +78,11 @@
 		</form>
 	{:else if orden.diagnostico}
 		<p class="whitespace-pre-line">{orden.diagnostico}</p>
+		{#if puedeEditar && emitido && orden.estado === 'en_diagnostico'}
+			<p class="text-surface-600-400 text-sm">
+				Ya se ha emitido un presupuesto para esta orden; el diagnóstico no se puede cambiar.
+			</p>
+		{/if}
 	{:else}
 		<p>Todavía no hay diagnóstico.</p>
 	{/if}
