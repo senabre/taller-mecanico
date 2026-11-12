@@ -45,4 +45,8 @@ Es el §9 del quickstart común, con su informe en `specs/008-tablero-ordenes-ab
 
 ### Revisión
 
-Pendiente: la revisan las dos personas, como R1.
+El 12/11/2026 la Persona A y la Persona B revisaron juntas el recorrido R2 y sus capturas. La
+Persona B comprobó los pasos de sus specs: R2.2 (diagnóstico y presupuesto, spec-003), R2.4
+(imputar y terminar, spec-005) y R2.5 (facturar, spec-007). Sin observaciones.
+
+**Estado**: revisado.
