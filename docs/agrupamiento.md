@@ -20,6 +20,7 @@ resume con los datos del repositorio (rama `entrega`, 12/11/2026).
   commits `feat(000)`), y abrió el PR #1, que fusionó la Persona B el 22/10/2026.
 
 En los documentos de `specs/000-base-comun/` hay 5 commits de la Persona B y 29 de la Persona A.
+La Persona B confirmó el 12/11/2026 que está de acuerdo con esta descripción de la base común.
 
 ## 2. Por qué así
 
@@ -111,12 +112,14 @@ siguió. Entrada en `main`:
 ## 6. Trazabilidad del reparto
 
 **Commits** (`git log --all --author=…`, por rutas: los documentos `specs/…` y el código y las pruebas
-de cada spec):
+de cada spec; recuento del 12/11/2026). Los commits de la Persona B están firmados en git como
+«Andres», salvo las fusiones hechas en GitHub, que salen como «senabre»; la Persona B confirmó el
+12/11/2026 que «Andres» es @senabre.
 
 | Persona | En sus specs | En las specs de la otra | Total en el repositorio |
 |---|---|---|---|
-| Persona A (@evm60-ua) | 81 | 11 | 123 |
-| Persona B (@senabre) | 12 | 2 | 13 |
+| Persona A (@evm60-ua) | 81 | 11 | 124 |
+| Persona B (@senabre) | 13 | 2 | 16 (15 como «Andres» y la fusión del PR #5) |
 
 Los números no miden el trabajo de la misma forma: la Persona B subió cada spec en pocos commits
 grandes (por ejemplo, `feat(003): … (T001-T030, T032-T034)`), y la Persona A, en muchos commits
