@@ -89,7 +89,7 @@ está en [000-base-comun/research.md](../000-base-comun/research.md); las reglas
 - **Decisión**: sección `ordenes/[id]/Imputaciones.svelte` de la ficha de spec-002: indicador
   «Acumulado X € de Y € presupuestados» (destacado si pasa del 100 %), `TablaLineas` (sin
   «Quitar»: no se anulan imputaciones), formulario de nueva imputación y botón «Terminar
-  reparación» con confirmación. El formulario de línea (mano de obra / pieza con buscador) se
+  reparación» con confirmación (desde analyze-1 C1, dentro de la página y no con `confirm()`). El formulario de línea (mano de obra / pieza con buscador) se
   saca de `Presupuesto.svelte` a un componente compartido `lib/componentes/FormularioLinea.svelte`
   que usan las dos secciones.
 - **Motivo**: FR-003 y SC-003 (imputar en menos de 30 s). El mismo formulario en las dos pantallas

@@ -138,8 +138,8 @@ las pruebas automáticas (`cargo test`).
 9. (Enlace modificado) Abrir `/presupuesto/enlace-inventado` → solo «Este enlace no es válido».
 
 ## §5 spec-005 · Imputar
-1. Orden de 1313MMM, intentar terminarla sin imputar nada → «Primero hay que imputar el trabajo
-   realizado».
+1. Orden de 1313MMM, sin imputar nada: no aparece «Terminar reparación» y se ve «Primero hay que
+   imputar el trabajo realizado.»
 2. Imputar PF-123 × 2 → concepto «PF-123 Pastillas freno»; en `/almacen` el stock de PF-123 pasa
    de 4 a **2**. Intentar imputar PF-123 × 3 → «Solo hay 2 unidades en stock de PF-123…».
 3. Imputar «Cambio de pastillas» 1 h → «Acumulado 90,00 € de 110,00 €».
@@ -147,7 +147,7 @@ las pruebas automáticas (`cargo test`).
    conformidad» y ya no deja imputar ni terminar.
 5. Crear una ampliación de 1 h (40,00 €), emitirla y aceptarla desde Mailpit → la orden vuelve a
    «En reparación» con 150,00 € presupuestados.
-6. Marcar como terminada → «Terminada» y ya no deja imputar.
+6. Marcar como terminada y confirmar con «Sí, terminar» → «Terminada» y ya no deja imputar.
 
 ## §6 spec-006 · Almacén y pedidos
 1. Como `pepe`, en `/almacen` dar de alta `FA-9 Filtro aceite`, 12,00 €, **sin** indicar stock →

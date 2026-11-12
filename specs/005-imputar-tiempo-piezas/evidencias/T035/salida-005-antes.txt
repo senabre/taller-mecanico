@@ -1,0 +1,4 @@
+FALLA (a) En reparación sin imputaciones: motivo=0; botón=0
+FALLA (b) Terminar reparación: diálogo del navegador=«¿Marcar la reparación como terminada? Ya no se podrán imputar más horas ni piezas.»; pregunta=0; Sí, terminar=0; Volver=0; tras Volver sigue=false; terminada=false
+FALLA (c) Confirmación a 390 px: ancho del documento=0px
+0 correctas y 3 fallos
