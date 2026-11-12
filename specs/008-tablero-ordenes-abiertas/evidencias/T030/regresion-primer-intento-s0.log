@@ -1,0 +1,7 @@
+FALLA §0.1 Menú de luis: ve=[]; no debería ver=[]
+OK    §0.2 Contraseña errónea: mensaje visible
+FALLA §0.3 Menú de paco: ve=[]
+FALLA §0.4 Menú de ana: ve=[]; Tablero=false
+FALLA §0.4 Menú de pepe: ve=[]; Tablero=false
+
+1/5 comprobaciones superadas

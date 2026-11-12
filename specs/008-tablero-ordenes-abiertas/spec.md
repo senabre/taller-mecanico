@@ -136,6 +136,11 @@ desde otro y comprobar que la tarjeta cambia de columna sin tocar el tablero.
   columna.
 - Se pierde la conexión: el tablero indica que no está actualizado y, al volver la conexión, se
   vuelve a pedir entero, porque los cambios ocurridos mientras tanto no le han llegado.
+- La red se cae «en silencio» (la conexión no llega a cerrarse, así que el tablero no sabe que la
+  ha perdido): **limitación aceptada**. El tablero no muestra el aviso ni recibe cambios mientras
+  tanto; se pone al día con el siguiente evento que le llegue o a medianoche, y un corte real acaba
+  cerrando la conexión, momento en que se reconecta y se pide entero (V1 de
+  [hallazgos.md](hallazgos.md), decidido el 2026-11-12).
 - Pasa la medianoche con el tablero abierto: las órdenes cuya entrega era el día anterior pasan a
   «Retrasada» sin esperar a ningún cambio de estado.
 

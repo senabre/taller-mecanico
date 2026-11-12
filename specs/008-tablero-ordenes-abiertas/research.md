@@ -7,47 +7,68 @@ Europe/Madrid, errores, roles, transiciones de estado) está en
 real es **R11**, «hoy» es **R12** y la publicación después del `commit` es **R14**. Código de
 referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
 
-## D1. `GET /api/tablero`: una instantánea con dos consultas
+## D1. `GET /api/tablero`: una sola lista de órdenes y sin transacción
 
-- **Decisión**: `backend/src/rutas/tablero.rs`, con `exigir_rol(&[Rol::Jefe])` (D4). En una
-  transacción de solo lectura `REPEATABLE READ`:
-  1. **Columnas**: `ordenes::resumenes(&mut tx, None, true)` (D3) devuelve las órdenes no
+*Revisado el 2026-11-12 por el hallazgo V3 (converge-1, T034). La versión anterior leía las tarjetas
+y la carga en una transacción `REPEATABLE READ READ ONLY`.*
+
+- **Decisión**: `backend/src/rutas/tablero.rs`, con `exigir_rol(&[Rol::Jefe])` (D4), con una
+  conexión normal del *pool* y **sin transacción**:
+  1. **Columnas**: `ordenes::resumenes(&mut conexion, None, true)` (D3) devuelve las órdenes no
      facturadas como `OrdenResumen`, con `retrasada` ya calculada. `tablero.rs` las reparte en las
      6 columnas en el orden de `Estado` (recibida → terminada), crea las 6 aunque estén vacías y
      ordena cada una por `(fecha_entrega_prometida, numero)` ascendentes (Q4).
-  2. **Carga**: la consulta de D2.
-- **Motivo**: con `REPEATABLE READ`, las dos consultas ven la misma foto de la base de datos. Si
-  entre una y otra se abre o se factura una orden, la carga no puede dejar de cuadrar con las
-  tarjetas (SC-003). El criterio de `retrasada` es el de `OrdenResumen` (I1 e I2 de spec-002): no hay
-  una segunda definición. Ordenar en Rust no toca la consulta compartida, cuyo orden sirve para la
-  lista de órdenes.
-- **Alternativas descartadas**: una consulta propia de las tarjetas en `tablero.rs`, porque duplica
-  `OrdenResumen` (I2); dos consultas sin transacción común, porque pueden ver momentos distintos;
+  2. **Carga**: se cuenta en Rust a partir de **esa misma lista** de órdenes (D2).
+- **Motivo**: al contar la carga sobre las mismas órdenes que las columnas, la suma de la carga es el
+  número de tarjetas **por construcción** (SC-003), sin necesitar una foto común de dos consultas. El
+  criterio de `retrasada` es el de `OrdenResumen` (I1 e I2 de spec-002): no hay una segunda
+  definición. Ordenar en Rust no toca la consulta compartida, cuyo orden sirve para la lista de
+  órdenes.
+- **Por qué se quitó la transacción** (V3): cuando el navegador corta una petición a mitad (al
+  cambiar de pantalla, cerrar la pestaña o reconectar los eventos), Axum cancela el manejador. Si la
+  cancelación llega mientras se espera la respuesta del `BEGIN`, SQLx 0.8.6 no encola el `ROLLBACK`
+  (su guardián solo lo hace con `transaction_depth > 0`, y la profundidad aún no ha subido), así que
+  la conexión vuelve al *pool* dentro de la transacción. Con `READ ONLY`, la siguiente petición de
+  cualquier pantalla falla («cannot execute UPDATE in a read-only transaction») y la conexión se
+  queda abortada; con un `BEGIN` normal, las filas de `sesion` se quedan bloqueadas. Lo encontró la
+  regresión T030 y lo reproducen `estres.sh` y la prueba 9.
+- **Prueba**: la 9 corta unas 4600 peticiones en todos sus puntos de espera y comprueba tras cada
+  corte, con una conexión aparte, que ninguna conexión queda «idle in transaction». Con la
+  transacción falla siempre (6 o 7 conexiones por ejecución); sin ella, pasa.
+- **Alternativas descartadas**: mantener la transacción (`READ ONLY` o normal), por V3; una consulta
+  propia de las tarjetas en `tablero.rs`, porque duplica `OrdenResumen` (I2); dos consultas
+  agregadas sin transacción, porque pueden ver momentos distintos y la carga podría no cuadrar;
   ordenar en el frontend, porque la prueba del orden quedaría fuera del backend.
 
 ## D2. Carga por mecánico: la suma siempre cuadra con las tarjetas
 
-- **Decisión**:
+*Revisado el 2026-11-12 con D1 (V3): la carga ya no sale de un `count` en SQL, sino de la lista de
+órdenes.*
+
+- **Decisión**: en `tablero.rs`, un `HashMap` cuenta las órdenes abiertas de cada mecánico a partir
+  de la lista de D1. A la base solo se le piden los usuarios que pueden salir en la carga:
 
   ```sql
-  SELECT u.id, u.nombre, u.activo, count(o.id) AS ordenes_abiertas
-    FROM usuario u
-    LEFT JOIN orden o ON o.mecanico_id = u.id AND o.estado <> 'facturada'
-   GROUP BY u.id
-  HAVING (u.rol = 'mecanico' AND u.activo) OR count(o.id) > 0
-   ORDER BY u.nombre, u.id
+  SELECT id, nombre, activo, rol::text AS rol FROM usuario
+   WHERE rol = 'mecanico' OR id = ANY($1)   -- $1: los mecánicos de las órdenes abiertas
+   ORDER BY nombre, id
   ```
 
-  La pantalla escribe «(de baja)» junto al nombre cuando `activo` es `false` (Q1).
+  Sale cada usuario que sea mecánico activo (aunque tenga 0) **o** tenga órdenes abiertas (aunque
+  esté de baja), en el orden de la consulta. La pantalla escribe «(de baja)» junto al nombre cuando
+  `activo` es `false` (Q1).
 - **Motivo**: salen los mecánicos activos aunque tengan 0 (US2-1) y **cualquier usuario con órdenes
-  abiertas**, aunque esté inactivo (US2-2). Como la condición del `HAVING` no filtra por rol a quien
-  tiene órdenes, la suma de `ordenes_abiertas` es siempre el número de tarjetas (SC-003), aunque
-  algún día cambie el rol de un usuario. Ordenar por nombre da «Luis · Marta», como el quickstart.
+  abiertas**, aunque esté inactivo (US2-2). Como los recuentos salen de las mismas órdenes que las
+  tarjetas y a quien tiene órdenes no se le filtra por rol, la suma de `ordenes_abiertas` es siempre
+  el número de tarjetas (SC-003). Ordenar en SQL por nombre conserva la intercalación de la base
+  («Luis · Marta», como el quickstart).
 - **Prueba**: en todas las pruebas de carga se comprueba que la suma de `ordenes_abiertas` es igual
-  al número total de tarjetas.
-- **Alternativas descartadas**: `WHERE u.rol = 'mecanico' AND u.activo`, que era la del plan
-  anterior y deja fuera las órdenes de un inactivo (Q1-B); contar en Rust a partir de las tarjetas,
-  porque no daría los mecánicos con 0.
+  al número total de tarjetas. Mutación (T014 y T034): sin «o tiene órdenes abiertas», falla la
+  prueba 6.
+- **Alternativas descartadas**: solo los mecánicos activos, que era la del plan anterior y deja
+  fuera las órdenes de un inactivo (Q1-B); la consulta con `LEFT JOIN … GROUP BY … HAVING` de la
+  primera versión, porque es una segunda lectura de las órdenes que, sin transacción, podría no
+  cuadrar con las tarjetas.
 
 ## D3. Cambio en `ordenes.rs`: `resumenes()` puede traer solo las abiertas
 

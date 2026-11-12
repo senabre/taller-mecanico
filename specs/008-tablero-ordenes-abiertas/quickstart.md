@@ -17,9 +17,10 @@ ninguno sin probar.
   cargados, la carga del paso 3 es «Luis 5 · Marta 3» y el paso 2 no tiene `1313MMM`.
 - Dos navegadores, o una ventana normal y otra privada: uno con `paco` en `/tablero` y otro para los
   cambios.
-- El paso 9 **no necesita herramientas**: se para el servidor (Ctrl+C en `cargo run`) y se vuelve
-  a arrancar; cortar la red desde las herramientas de desarrollo, con una orden que cambia mientras
-  tanto, queda como opción. El paso 10 se hace en un móvil de la misma red (C1 de
+- El paso 9 **no necesita herramientas**: se para el servidor (Ctrl+C en `cargo run`), se vuelve a
+  arrancar y después se termina `3333DDD` con el tablero conectado. La parte opcional con la red
+  cortada en las herramientas de desarrollo se quitó (V1 de [hallazgos.md](hallazgos.md)): no corta
+  una conexión de eventos ya abierta. El paso 10 se hace en un móvil de la misma red (C1 de
   [analyze-1](analyze-1.md)).
 - El §9 se hace en dos sesiones: el día A, al terminar el §8, se pide la cita de `3579KLM` para el
   primer día que ofrezca la página; el día B, el de la cita, **sin recargar los datos demo** (es
@@ -43,7 +44,7 @@ ninguno sin probar.
 | US4-2 · una orden nueva aparece en «Recibida» | 7 |
 | US4-3 · al facturar, la tarjeta desaparece | 8 |
 | US4-4 · medianoche de Madrid | 11 (`medianoche.test.ts`) |
-| US4-5 · al volver la conexión, el tablero entero | 9 (servidor parado y arrancado; con la orden que cambia mientras tanto, la parte opcional) |
+| US4-5 · al volver la conexión, el tablero entero | 9 (servidor parado y arrancado: el aviso se va y el tablero se vuelve a pedir solo). Que una orden que cambió durante el corte aparezca al volver, en `eventos.test.ts` (cada reapertura llama a `alAbrir`, que pide el tablero entero): a mano no se puede cambiar una orden con el servidor parado |
 | Caso límite · estado sin órdenes: columna vacía | pruebas automáticas (con datos demo ninguna queda vacía) |
 | Caso límite · terminada sin facturar y con la entrega pasada | 4 (`8888KKK`) |
 | Caso límite · muchas órdenes en una columna | 10 (desplazamiento vertical propio de cada columna) |
@@ -61,6 +62,8 @@ ninguno sin probar.
 ## Pruebas automáticas
 
 - `cd backend && cargo test --test spec008_tablero`: la lista de pruebas está en [plan.md](plan.md).
+- `cd backend && cargo test --test spec008_tablero -- --ignored`: la prueba 9 (peticiones cortadas a
+  mitad, hallazgo V3), que tarda unos 100 s y por eso la suite normal la salta. Se lanza aparte.
 - `cd frontend && npm test`, con reloj simulado y sin dependencias nuevas:
   - `medianoche.test.ts`: la medianoche de Madrid, también con el proceso en otra zona horaria y en
     los días de cambio de hora ([research](research.md) D6);

@@ -1,0 +1,17 @@
+== Converge-1 · comprobaciones finales · frontend · 2026-11-12 14:17:49 CET
+-- npm run check
+1794489509787 COMPLETED 244 FILES 0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS
+-- npm test
+ Test Files  4 passed (4)
+      Tests  21 passed (21)
+-- npm run build
+.svelte-kit/output/server/entries/pages/_error.svelte.js                       0.45 kB │ gzip:  0.30 kB
+  Wrote site to "build"
+  ✔ done
+
+== backend · cargo test --no-fail-fast
+pasan: 156 · fallan: 0
+salida=0
+-- cargo clippy --all-targets -- -D warnings · 2026-11-12 16:13:24 CET
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 13.49s
+código de salida: 0

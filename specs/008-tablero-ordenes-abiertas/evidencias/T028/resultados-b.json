@@ -1,0 +1,44 @@
+[
+  {
+    "paso": "T011 Ancho de las pantallas (1920 px)",
+    "esperado": "Todas las pantallas salvo /tablero siguen en 1152 px; /tablero ocupa todo el ancho, también navegando sin recargar",
+    "observado": "{\"/citas\":1152,\"/ordenes\":1152,\"/almacen\":1152,\"/pedidos\":1152,\"/historial\":1152,\"/tablero\":1920}; navegando: citas=1152, tablero=1920",
+    "ok": true,
+    "img": "b01-t011-citas-1920.png"
+  },
+  {
+    "paso": "T025 Con un 403 no se abre /api/eventos (ana)",
+    "esperado": "Pide /api/tablero (403) y no abre /api/eventos",
+    "observado": "peticiones=[/api/yo,/api/tablero]; mensaje=true",
+    "ok": true,
+    "img": "b02-t025-ana-403.png"
+  },
+  {
+    "paso": "T012 Falla la primera carga (red interceptada)",
+    "esperado": "«No se pudo cargar el tablero»",
+    "observado": "mensaje=true",
+    "ok": true,
+    "img": "b03-t012-no-se-pudo-cargar.png"
+  },
+  {
+    "paso": "T012 Columna vacía (preparada por SQL)",
+    "esperado": "La columna sigue y dice «Sin órdenes»",
+    "observado": "existe=1; texto=«Pendiente de conformidad /  / Sin órdenes»",
+    "ok": true,
+    "img": "b04-t012-columna-vacia.png"
+  },
+  {
+    "paso": "T012 Columna llena (preparada por SQL, 1920 px)",
+    "esperado": "Las 8 tarjetas en «En reparación»; la columna se desplaza por dentro; la página no se mueve de lado",
+    "observado": "{\"tarjetas\":8,\"desborda\":true,\"desplaza\":true,\"pagina\":true}",
+    "ok": true,
+    "img": "b05-t012-columna-llena-1920.png"
+  },
+  {
+    "paso": "T012 Columna llena (preparada por SQL, 390 px)",
+    "esperado": "Las 8 tarjetas en «En reparación»; la columna se desplaza por dentro; la página no se mueve de lado",
+    "observado": "{\"tarjetas\":8,\"desborda\":true,\"desplaza\":true,\"pagina\":true}",
+    "ok": true,
+    "img": "b06-t012-columna-llena-390.png"
+  }
+]

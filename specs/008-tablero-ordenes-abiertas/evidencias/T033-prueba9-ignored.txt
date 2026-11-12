@@ -1,0 +1,1 @@
+== Prueba 9 con #[ignore], lanzada aparte: cargo test --test spec008_tablero -- --ignored · 2026-11-12 16:14:50 CET

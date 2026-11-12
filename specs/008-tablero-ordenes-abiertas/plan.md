@@ -125,14 +125,15 @@ pruebas, una pantalla y un módulo de frontend, y toca los ficheros compartidos 
 ### Reglas clave
 
 - **`GET /api/tablero`** (jefe): `exigir_rol(&[Rol::Jefe])` → 403 «No tienes permiso para hacer
-  esto» a los demás (D4). En una transacción de solo lectura `REPEATABLE READ` (D1):
-  1. `resumenes(&mut tx, None, true)`: las no facturadas, con `retrasada` calculada como dice el
+  esto» a los demás (D4). Con una conexión normal y **sin transacción** (D1, revisado por V3):
+  1. `resumenes(&mut conexion, None, true)`: las no facturadas, con `retrasada` calculada como dice el
      [data-model común](../000-base-comun/data-model.md) (no facturada y entrega < `fechas::hoy()`,
      Europe/Madrid; hallazgos I1 e I2 de spec-002). No hay una segunda definición.
   2. Se reparten en las 6 columnas, en el orden de `Estado`, aunque estén vacías, y cada una se
      ordena por `(fecha_entrega_prometida, numero)` ascendentes (Q4).
-  3. La carga, con la consulta de D2: activos aunque tengan 0; cualquier usuario con órdenes
-     abiertas, aunque esté inactivo; por nombre (Q1). La suma es el número de tarjetas (SC-003).
+  3. La carga, contada en Rust sobre esa misma lista (D2): activos aunque tengan 0; cualquier
+     usuario con órdenes abiertas, aunque esté inactivo; por nombre (Q1). A la base solo se le
+     piden esos usuarios. La suma es el número de tarjetas por construcción (SC-003).
 - **Frontend `/tablero`** (D5, D7): `cargar()` pide el tablero entero al abrir. Después de esa
   primera carga, **en todos los casos salvo con un 403** (con un 403, solo el mensaje y ninguna
   conexión, E2), la página abre `conectarEventos` (`eventos.ts`) y `programarMedianoche`. Si la
@@ -177,6 +178,12 @@ demo, principio V). En todas las que devuelven el tablero se comprueba además q
    entrega ayer → `true` (US3-1, US3-2, caso límite).
 8. `resumenes(…, false)` sigue devolviendo también las facturadas, en el mismo orden que antes: la
    lista de órdenes de spec-002 no cambia (D3).
+9. Peticiones cortadas a mitad (V3): unas 4600 peticiones al tablero, cortadas en todos sus puntos
+   de espera (tras 1–200 vueltas del planificador, 25 pasadas); tras **cada** corte, con una conexión
+   aparte, ninguna conexión queda «idle in transaction»; y al final, entrar sigue funcionando. Falla
+   con la transacción que tenía D1. Como tarda unos 100 s, lleva `#[ignore]` y la suite normal la
+   salta: se lanza aparte con `cargo test --test spec008_tablero -- --ignored` (en T031 y en la
+   revisión de la Persona B, T032).
 
 `frontend/src/lib/medianoche.test.ts` (Vitest, `vi.useFakeTimers`, `vi.stubEnv('TZ',
 'America/New_York')`, sin `@types/node`): primero comprueba que la zona del proceso es de verdad otra y, si no, falla

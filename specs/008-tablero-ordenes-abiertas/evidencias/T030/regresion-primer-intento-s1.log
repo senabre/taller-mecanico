@@ -1,0 +1,51 @@
+Días: 2026-11-13 2026-11-16 2026-11-17 2026-11-18 2026-11-19 2026-11-20
+OK   §1.1 Matrícula «12#4»: error=true, confirmar activo=false
+OK   §1.1 Matrícula «A»: error=true, confirmar activo=false
+OK   §1.1 Matrícula «ABCDE123456»: error=true, confirmar activo=false
+OK   §1.1 Matrícula «AB»: sin error=true, pide datos=true
+OK   §1.2 «1234-bcd» (US2-1): campos=1,1,1,1,1
+OK   §1.3 Teléfono «12345» (US2-3): error=true
+OK   §1.3 Correo «ana@correo» (US2-3): error=true
+OK   §1.3 Alta y confirmación (US2-2, US1-2): confirmada con fecha dd/mm/aaaa y motivo
+OK   §1.4 «1234BCD» con cita pendiente (US1-1, US1-4): marca/modelo=true, aviso=true, confirmar activo=false
+OK   §1.5 «+34 612 345 678» (US2-4): confirmada
+OK   §1.5 / (a) Día lleno (US3-1, SC-003): primer día ofrecido=16/11/2026
+OK   §1.6 «1111BBB» (US1-1, US1-7): Seat Ibiza=true, campos de contacto=0, aviso=false
+OK   §1.6 Cita de 1111BBB (US1-2, US1-6): confirmada para 16/11/2026
+OK   /cita en móvil (390 px): ancho del documento=390px
+OK   §1.7 «Citas» abre con hoy (US1-8): título=Citas de hoy, selector=2026-11-12
+OK   §1.7 Lista del día (US1-3, US1-8, FR-009): filas=1234BCD, 5678CDF; columnas=Matrícula | Marca | Modelo | Motivo | Nombre | Teléfono | Orden
+OK   §1.7 1111BBB con sus datos sin cambiar (US1-7, FR-003): 1111BBB · Seat · Ibiza · Cambio de aceite · María López · 600111222 · 
+OK   §1.8 Día sin citas (US1-9): mensaje visible
+OK   §1.9 luis (US1-10): menú con Citas=false, mensaje=true, tabla=0
+OK   §1.9 pepe (US1-10): menú con Citas=false, mensaje=true, tabla=0
+OK   §1.9 Sin sesión (US1-10): url=/entrar
+FALLA §1.9 paco (jefe): filas=
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('button[type=submit]')[22m
+[2m    - locator resolved to <button disabled type="submit" class="btn preset-filled-primary-500">Confirmar</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not enabled[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    58 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is not enabled[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+
+    at confirmar (/tmp/claude-0/-home-claude/25f19f03-592c-5f7c-94f0-51da21d8588e/scratchpad/e2e/tester/t032.mjs:45:14)
+    at /tmp/claude-0/-home-claude/25f19f03-592c-5f7c-94f0-51da21d8588e/scratchpad/e2e/tester/t032.mjs:270:9 {
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.0
