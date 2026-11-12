@@ -1,0 +1,19 @@
+OK    §8.1 ana y el tablero: menú=0; mensaje=true; columnas=0; API=403
+OK    §8.1 luis y el tablero: menú=0; mensaje=true; columnas=0; API=403
+OK    §8.1 pepe y el tablero: menú=0; mensaje=true; columnas=0; API=403
+PACO: navega a http://localhost:3000/tablero
+PACO: navega a http://localhost:3000/tablero
+OK    §8.2 Columnas (paco): menú=1; columnas=[Recibida, En diagnóstico, En reparación, En espera de piezas, Pendiente de conformidad, Terminada]; tarjetas=9 de 9 abiertas; 9999LLL=false; 1313MMM=false; fuera de su columna=[]; vacías=0
+OK    §8.3 Carga por mecánico: carga=«Luis 6 · Marta 3»; tarjetas por mecánico={"Luis":6,"Marta":3}
+OK    §8.4 Retrasadas (lo que hay que encontrar en SC-001): retrasadas=[8888KKK (Terminada, borde 2px)]; 3333DDD retrasada=false
+OK    §8.5 Orden por fecha de entrega: orden=[3333DDD,2222CCC]
+OK    §8.6 luis termina 2222CCC: confirm()=«¿Marcar la reparación como terminada? Ya no se podrán imputar más horas ni piezas.»; tiempo=106 ms; columna=Terminada; carga=«Luis 6 · Marta 3»
+OK    §8.7 ana abre una orden de 8888KKK para Marta: tiempo=106 ms; carga=«Luis 6 · Marta 4»
+OK    §8.8 ana factura 2222CCC: confirm()=«¿Emitir la factura? Ya no se podrá modificar.»; tiempo=106 ms; carga=«Luis 5 · Marta 4»
+OK    §8.9 Parar y volver a arrancar el servidor: aviso tras 106 ms; vuelta tras 2888 ms de arrancar
+FALLA §8.9 Red cortada en el navegador de paco (opcional): aviso=false; terminar=200; columna sin red=En reparación; al volver: null ms
+OK    §8.10 Móvil a 390 px: {"pagina":390,"tira":true,"primera":true,"siguiente":true,"cargaAncho":true}
+OK    §8.10 Pantalla grande (1920 px): {"fila":true,"dentro":true,"ancho":1888,"pagina":1920}
+PACO: la página se ha cerrado
+
+13/14 comprobaciones superadas

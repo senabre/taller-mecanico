@@ -1,0 +1,51 @@
+[
+  {
+    "paso": "§3.1 Diagnóstico y cambio",
+    "esperado": "«En diagnóstico»; el cambio se guarda y sigue «En diagnóstico»",
+    "observado": "en diagnóstico=true/true; guardado=true",
+    "ok": true,
+    "img": "s3-01-diagnostico.png"
+  },
+  {
+    "paso": "§3.2 Líneas del presupuesto",
+    "esperado": "«Cambio de pastillas» 60,00 € y «PF-123 Pastillas freno» 50,00 €",
+    "observado": "faltan=[]",
+    "ok": true,
+    "img": "s3-02-lineas.png"
+  },
+  {
+    "paso": "§3.3 Totales",
+    "esperado": "Base 110,00 €, IVA 23,10 €, total 133,10 €",
+    "observado": "faltan=[]",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "§3.4 1,3 h y 2,5 unidades",
+    "esperado": "Se rechaza explicando el motivo",
+    "observado": "1,3 h=«Las horas van en múltiplos de 0,25 (p. ej. 1,5)»; 2,5 uds: navegador=«Please enter a valid value. The two nearest valid values are 2 and 3.», API=422 «Las unidades de pieza deben ser un número entero»",
+    "ok": true,
+    "img": "s3-03-rechazos.png"
+  },
+  {
+    "paso": "§3.5 Añadir y quitar «Prueba»",
+    "esperado": "Los totales vuelven a 110,00 / 23,10 / 133,10",
+    "observado": "añadida=true; quitada=true; totales=true",
+    "ok": true,
+    "img": "s3-04-prueba-quitada.png"
+  },
+  {
+    "paso": "§3.6 Emitir",
+    "esperado": "«Válido hasta 27/11/2026»; sin añadir ni quitar líneas; correo con el enlace",
+    "observado": "válido=true; formulario=0; botones quitar=0; correo=true",
+    "ok": true,
+    "img": "s3-05-emitido.png"
+  },
+  {
+    "paso": "§3.7 Cambiar el diagnóstico tras emitir",
+    "esperado": "«Ya se ha emitido un presupuesto para esta orden; el diagnóstico no se puede cambiar» y no se guarda",
+    "observado": "pantalla=«Ya se ha emitido un presupuesto para esta orden; el diagnóstico no se puede cambiar»; en la base=«Pastillas y discos delanteros desgastados»",
+    "ok": true,
+    "img": "s3-06-diagnostico-bloqueado.png"
+  }
+]

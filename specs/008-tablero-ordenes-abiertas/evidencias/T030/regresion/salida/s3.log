@@ -1,0 +1,9 @@
+OK    §3.1 Diagnóstico y cambio: en diagnóstico=true/true; guardado=true
+OK    §3.2 Líneas del presupuesto: faltan=[]
+OK    §3.3 Totales: faltan=[]
+OK    §3.4 1,3 h y 2,5 unidades: 1,3 h=«Las horas van en múltiplos de 0,25 (p. ej. 1,5)»; 2,5 uds: navegador=«Please enter a valid value. The two nearest valid values are 2 and 3.», API=422 «Las unidades de pieza deben ser un número entero»
+OK    §3.5 Añadir y quitar «Prueba»: añadida=true; quitada=true; totales=true
+OK    §3.6 Emitir: válido=true; formulario=0; botones quitar=0; correo=true
+OK    §3.7 Cambiar el diagnóstico tras emitir: pantalla=«Ya se ha emitido un presupuesto para esta orden; el diagnóstico no se puede cambiar»; en la base=«Pastillas y discos delanteros desgastados»
+
+7/7 comprobaciones superadas
