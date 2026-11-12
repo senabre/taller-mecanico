@@ -1,0 +1,79 @@
+[
+  {
+    "fase": "sinlogo",
+    "criterio": "007 US1-4 · sin logo",
+    "esperado": "Con TALLER_LOGO apuntando a un archivo que no existe, la factura sale sin logo y sin hueco",
+    "observado": "Factura nº 1 (9999LLL): 0 imágenes en la página",
+    "ok": true,
+    "capturas": [
+      "b01-factura-sin-logo.png",
+      "b02-impresion-sin-logo.png"
+    ]
+  },
+  {
+    "fase": "principal",
+    "criterio": "006 SC-001 · registrar un pedido en menos de 1 minuto",
+    "esperado": "Pedido registrado; una persona necesita 4 campos (proveedor, referencia, cantidad, nº de orden) y 2 clics (elegir la referencia y «Registrar pedido»)",
+    "observado": "«Pedido registrado: 1 × PF-123 para la orden 2» a los 0,56 s de abrir /pedidos (tiempo de máquina)",
+    "ok": true,
+    "ms": 555,
+    "capturas": [
+      "c01-006-pedido.png"
+    ]
+  },
+  {
+    "fase": "principal",
+    "criterio": "005 SC-003 · registrar una imputación en menos de 30 segundos",
+    "esperado": "La imputación queda y el acumulado pasa de 40,00 a 50,00 €; una persona necesita 2 campos (concepto y horas) y 1 clic",
+    "observado": "«Acumulado 50,00 € de 110,00 €» a los 0,24 s de abrir la ficha (tiempo de máquina)",
+    "ok": true,
+    "ms": 244,
+    "capturas": [
+      "c02-005-imputacion.png"
+    ]
+  },
+  {
+    "fase": "principal",
+    "criterio": "003 SC-001 · preparar un presupuesto de 5 líneas en menos de 5 minutos",
+    "esperado": "5 líneas (4 de mano de obra y 1 de pieza) con sus totales; una persona necesita 1 clic para crearlo y, por línea, 2 campos y 1 clic (la pieza: buscar, elegir y unidades)",
+    "observado": "5 líneas a los 1,02 s de abrir la ficha, total 169,40 € (tiempo de máquina)",
+    "ok": true,
+    "ms": 1024,
+    "capturas": [
+      "c03-003-presupuesto-5-lineas.png"
+    ]
+  },
+  {
+    "fase": "principal",
+    "criterio": "007 SC-001 · emitir una factura en menos de 30 segundos sin escribir nada",
+    "esperado": "Factura emitida; una persona necesita 2 clics («Facturar» y aceptar la confirmación) y ningún campo",
+    "observado": "«Factura nº 2 · 12/11/2026 · 133,10 € · Ver e imprimir» a los 0,24 s de abrir la ficha (tiempo de máquina)",
+    "ok": true,
+    "ms": 236,
+    "capturas": [
+      "c04-007-factura.png"
+    ]
+  },
+  {
+    "fase": "principal",
+    "criterio": "007 US1-4 · con logo",
+    "esperado": "Con TALLER_LOGO apuntando a una imagen que existe, el logo sale en la cabecera, también al imprimir",
+    "observado": "1 imagen, src=«/api/taller/logo», alt=«Logo de Talleres Rueda», cargada=true, visible al imprimir=true",
+    "ok": true,
+    "capturas": [
+      "b03-factura-con-logo.png",
+      "b04-impresion-con-logo.png"
+    ]
+  },
+  {
+    "fase": "principal",
+    "criterio": "007 SC-004 · consultar el historial en menos de 10 segundos",
+    "esperado": "Sale la reparación facturada de 9999LLL; una persona necesita 1 campo (la matrícula) y 1 clic",
+    "observado": "«25/10/2026 · Orden 9 · Factura nº 1 · 120.400 km» a los 0,22 s de abrir /historial (tiempo de máquina)",
+    "ok": true,
+    "ms": 219,
+    "capturas": [
+      "c05-007-historial.png"
+    ]
+  }
+]
