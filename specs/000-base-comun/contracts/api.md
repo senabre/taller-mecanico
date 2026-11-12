@@ -183,7 +183,7 @@ solo sale de ahí con `recibir` (spec-006 FR-008a).
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `GET /api/tablero` | jefe | — | `{columnas: [{estado, ordenes:[OrdenResumen]}] /* los 6 estados abiertos, en orden, aunque estén vacíos */, carga_mecanicos: [{id, nombre, ordenes_abiertas}] /* incluye los que tienen 0 */}` |
+| `GET /api/tablero` | jefe | — | `{columnas: [{estado, ordenes:[OrdenResumen]}] /* los 6 estados abiertos, en orden, aunque estén vacíos; tarjetas por fecha_entrega_prometida y numero ascendentes */, carga_mecanicos: [{id, nombre, activo, ordenes_abiertas}] /* los activos aunque tengan 0; los inactivos solo con órdenes abiertas */}` |
 
 Se actualiza con `GET /api/eventos` (base común).
 

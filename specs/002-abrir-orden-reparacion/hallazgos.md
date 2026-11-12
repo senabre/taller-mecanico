@@ -40,7 +40,7 @@ o se asignan).
 
 | ID | Historia o criterio | Gravedad | Evidencia | Decisión | Responsable | Estado |
 |----|---------------------|----------|-----------|----------|-------------|--------|
-| N1 | Plan de spec-008 (dependencias) · I2 | LOW | El plan de spec-008 añade spec-002 a sus dependencias, pero sigue diciendo «Se puede hacer desde el principio con las órdenes demo en varios estados», que ya no es cierto porque usa `OrdenResumen` de `ordenes.rs`. El orden del plan maestro (001 → 002 → 004 → 008) ya pone 008 después de 002. | Asignado: quitar la frase al generar las tareas de spec-008. | Persona A (spec-008) | Asignado a spec-008 |
+| N1 | Plan de spec-008 (dependencias) · I2 | LOW | El plan de spec-008 añade spec-002 a sus dependencias, pero sigue diciendo «Se puede hacer desde el principio con las órdenes demo en varios estados», que ya no es cierto porque usa `OrdenResumen` de `ordenes.rs`. El orden del plan maestro (001 → 002 → 004 → 008) ya pone 008 después de 002. | Asignado: quitar la frase al generar las tareas de spec-008. Hecho en el clarify de spec-008 (2026-11-12): el plan de 008 ya no la tiene y nombra sus dependencias (002 y los eventos de 003 a 007). | Persona A (spec-008) | Cerrado |
 | N2 | Plan de 002 («Cambios en documentos compartidos») · G1 | LOW | El párrafo nombra «el contrato, el data-model y el quickstart comunes» y no el plan maestro, que la tabla de ficheros compartidos sí incluye desde G1. | Justificado: el párrafo remite a «la tabla de arriba», que es la que manda, y T031 revisa el plan maestro. | Persona A | Cerrado (justificado) |
 | N3 | I5 · specs 003 y 004 | LOW | La asignación de I5 solo consta en el registro de spec-002: spec-003 no tiene `hallazgos.md` y spec-004 aún no ha pasado por el clarify. | Asignado: la Persona A lo lleva al clarify de spec-004 (§4.3); la Persona B lo ve en T031, que revisa el §4 del quickstart (§4.5). **Hecho para spec-004 (2026-11-04)**: llevado a su clarify (Q1). | Persona A (spec-004) y Persona B (T031) | Spec-004 hecho · Asignado a T031 (§4.5) |
 | N4 | SC-002 · US1-9 · quickstart común §2 (pasos 3–6) · T008 | LOW | En la app, solo el rechazo del paso 3 va seguido de una orden nueva (la Nº 10); los de la segunda pestaña y del km menor van después de la última orden, así que en pantalla no se ve que tampoco gastan número. | Justificado: el paso 3 ya muestra en la app que un rechazo no gasta número, SC-002 no exige más, y T008 (prueba 2) lo comprueba con todos los tipos de rechazo. | Persona A | Cerrado (justificado) |
@@ -56,7 +56,7 @@ o se asignan).
 - **Verificados en analyze-2**: 8 (C1, I1, I2, A2, O1, E2, I4; E1, justificado)
 - **Verificados en analyze-2, con revisión de la Persona B en T031** (documentos comunes): 2 (G1, A1)
 - **Verificado en las tareas** (se aplica al hacerlas): 1 (I3)
-- **Asignados**: I5 (spec-004 y spec-003), N1 (spec-008), N3 (spec-004 y T031)
+- **Asignados**: I5 (spec-004 y spec-003), N1 (spec-008, cerrado en su clarify el 2026-11-12), N3 (spec-004 y T031)
 - **Nuevos de analyze-2, justificados**: 2 (N2, N4)
 - **Encontrados durante la implementación, justificados**: 1 (V1)
 - Ninguno queda abierto ni bloquea `/speckit-implement` de spec-002. Antes de fusionar hay que
