@@ -1,0 +1,27 @@
+Pruebas de spec-003 para la matriz de trazabilidad (Persona B)
+Rama: entrega · commit: 48d884b · 12/11/2026 17:26
+Orden: cd backend && cargo test --test spec003_presupuestos   (con docker compose up: Postgres y Mailpit)
+
+     Running tests\spec003_presupuestos.rs (target\debug\deps\spec003_presupuestos-c1a224d6aa87139b.exe)
+running 20 tests
+test diagnostico_de_una_orden_en_reparacion_da_409 ... ok
+test el_diagnostico_se_puede_cambiar_mientras_no_haya_presupuesto_emitido ... ok
+test el_concepto_enviado_para_una_pieza_se_ignora ... ok
+test diagnostico_en_orden_recibida_la_pasa_a_en_diagnostico ... ok
+test la_base_de_datos_tambien_rechaza_cantidades_no_validas ... ok
+test el_iva_se_redondea_una_vez_sobre_la_base ... ok
+test crear_presupuesto_segun_el_estado_de_la_orden ... ok
+test emitir_fija_totales_caducidad_y_token ... ok
+test como_mucho_un_presupuesto_abierto_por_orden ... ok
+test cualquier_rol_con_sesion_puede_leer_el_presupuesto ... ok
+test lineas_no_validas_dan_422 ... ok
+test presupuestos_de_una_orden_con_su_caducidad ... ok
+test lineas_importes_y_totales_del_ejemplo ... ok
+test diagnostico_no_valido_o_sin_permiso ... ok
+test con_un_presupuesto_emitido_el_diagnostico_queda_fijo ... ok
+test un_presupuesto_emitido_no_se_puede_modificar ... ok
+test quitar_una_linea_recalcula_los_totales ... ok
+test otro_mecanico_no_puede_preparar_el_presupuesto ... ok
+test no_se_emite_sin_lineas_ni_por_otro_mecanico ... ok
+test si_el_correo_falla_el_presupuesto_queda_emitido ... ok
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.14s

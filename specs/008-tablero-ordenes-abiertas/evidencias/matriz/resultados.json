@@ -1,0 +1,16 @@
+[
+  {
+    "paso": "HU-08 US2-2 Mecánico de baja con órdenes (preparado por SQL)",
+    "esperado": "Pedro sale en la carga marcado «(de baja)» con 1; la carga suma lo mismo que las tarjetas",
+    "observado": "carga=«Luis 4 · Marta 3 · Pedro (de baja) 1»; tarjeta de 1111BBB=«Nº 1 /  / 1111BBB /  / Pedro /  / Entrega 15/11/2026»",
+    "ok": true,
+    "img": "c01-us2-2-de-baja.png"
+  },
+  {
+    "paso": "HU-08 US4-5 Lo que cambió sin conexión aparece al volver",
+    "esperado": "Con el servidor parado sale «Sin conexión, reintentando…» y el tablero no cambia; al volver a arrancar, 3333DDD ya está en «Terminada», sin recargar, y el aviso desaparece",
+    "observado": "antes=En reparación; aviso=«Sin conexión, reintentando…»; con el servidor parado=En reparación; al volver: Terminada tras 1769 ms; aviso al final=«»",
+    "ok": true,
+    "img": "c02-us4-5-sin-conexion.png, c03-us4-5-al-volver.png"
+  }
+]

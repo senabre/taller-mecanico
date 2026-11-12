@@ -1,0 +1,19 @@
+Pruebas de spec-005 para la matriz de trazabilidad (Persona B)
+Rama: entrega · commit: 48d884b · 12/11/2026 17:26
+Orden: cd backend && cargo test --test spec005_imputaciones   (con docker compose up: Postgres y Mailpit)
+
+     Running tests\spec005_imputaciones.rs (target\debug\deps\spec005_imputaciones-d38bfacd398909f4.exe)
+running 12 tests
+test imputar_pieza_descuenta_stock_y_suma_al_acumulado ... ok
+test pasar_del_110_por_ciento_bloquea_la_orden ... ok
+test imputaciones_no_validas_con_los_mensajes_del_presupuesto ... ok
+test sin_stock_suficiente_no_se_imputa ... ok
+test el_limite_del_10_por_ciento_es_exacto_al_centimo ... ok
+test solo_se_imputa_en_reparacion_con_presupuesto_aceptado ... ok
+test con_la_ampliacion_rechazada_sigue_bloqueada ... ok
+test el_resumen_suma_solo_lo_aceptado_de_esa_orden ... ok
+test aceptar_la_ampliacion_suma_lo_presupuestado_y_reanuda ... ok
+test terminar_una_orden_con_imputaciones ... ok
+test permisos_para_imputar ... ok
+test no_se_termina_sin_imputaciones_ni_fuera_de_reparacion ... ok
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.31s
