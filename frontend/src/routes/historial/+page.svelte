@@ -14,10 +14,16 @@
 
 	async function buscar(evento: SubmitEvent) {
 		evento.preventDefault();
-		buscando = true;
 		error = '';
 		historial = null;
 		sinHistorial = false;
+		// Sin matrícula no se llama al servidor: la ruta del historial necesita una (principio II:
+		// el mensaje es de la aplicación y no del navegador; analyze-1 C1).
+		if (matricula.trim() === '') {
+			error = 'Escribe la matrícula';
+			return;
+		}
+		buscando = true;
 		try {
 			const h = await get<Historial>(
 				`/vehiculos/${encodeURIComponent(matricula.trim())}/historial`
@@ -38,7 +44,7 @@
 <div class="space-y-6">
 	<h1 class="h2">Historial del vehículo</h1>
 
-	<form class="flex max-w-md flex-wrap items-end gap-3" onsubmit={buscar}>
+	<form class="flex max-w-md flex-wrap items-end gap-3" novalidate onsubmit={buscar}>
 		<label class="label grow">
 			<span class="label-text">Matrícula</span>
 			<input

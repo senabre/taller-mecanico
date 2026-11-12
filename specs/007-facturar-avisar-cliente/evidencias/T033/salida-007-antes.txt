@@ -1,0 +1,5 @@
+FALLA (a) Facturar la orden 8: diálogo del navegador=«¿Emitir la factura? Ya no se podrá modificar.»; pregunta=0; Sí, facturar=0; Volver=0; tras Volver sigue=false; resultado=«»
+FALLA (a) Confirmación a 390 px: ancho del documento=0px
+FALLA (b) Historial sin matrícula: aplicación=«»; navegador=«Completa este campo»
+OK    (c) Historial de «9999 lll»: reparaciones=1
+1 correctas y 3 fallos

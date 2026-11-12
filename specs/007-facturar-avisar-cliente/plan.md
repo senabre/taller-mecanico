@@ -57,7 +57,7 @@ a petición de la Persona B, antes de construirlo (principio III).
 | I. Simplicidad | Impresión del navegador, sin PDF en el servidor; logo como una variable más de configuración, sin subir archivos (D8); serie de facturas única; sin migraciones; `linea_factura` sin `tipo` (D6); reglas con `FOR UPDATE` y `UNIQUE`. | ✅ |
 | II. Español y euro | Factura, correo y pantallas en español; importes «157,30 €» (también en el correo, D2) y fechas dd/mm/aaaa. | ✅ |
 | III. Cero alcance fantasma | Sin cobros, entrega, VeriFactu, factura completa, reenvío del aviso ni envío de la factura por correo. Imprimir está en la spec (FR-003, aclaración del 29/10). | ✅ |
-| IV. Verificable sin código | Cada SC tiene su paso en [quickstart §7](../000-base-comun/quickstart.md); los totales se comprueban con calculadora y el correo en Mailpit. | ✅ |
+| IV. Verificable sin código | SC-002 y SC-003 tienen su paso en [quickstart §7](../000-base-comun/quickstart.md); los totales se comprueban con calculadora y el correo en Mailpit. SC-001 (facturar en menos de 30 s) y SC-004 (historial en menos de 10 s) no tienen paso de cronometraje: se midieron con un navegador automático y se aceptan como desviación ([hallazgos](hallazgos.md), G1). | ✅ |
 | V. Datos | Factura simplificada: solo nombre del cliente y matrícula (Q2-A); el correo se usa solo para el aviso de FR-006. | ✅ |
 
 **Re-check post-diseño**: el contrato concreta errores, roles, `LineaFactura` y el 404 del
@@ -72,7 +72,7 @@ nuevo. ✅
 specs/007-facturar-avisar-cliente/
 ├── spec.md
 ├── plan.md        # este fichero
-└── research.md    # decisiones D1–D7
+└── research.md    # decisiones D1–D8
 # data-model, contrato y quickstart: los compartidos de specs/000-base-comun/ (actualizados)
 ```
 

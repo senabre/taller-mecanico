@@ -74,12 +74,15 @@ Fecha: 2026-10-29.
 ## D7. Pantallas y punto de contacto con spec-002
 
 - **Decisión**: sección `ordenes/[id]/Factura.svelte` de la ficha de spec-002, solo para
-  recepción y jefe: con la orden `terminada`, botón «Facturar» con confirmación; facturada,
+  recepción y jefe: con la orden `terminada`, botón «Facturar» con confirmación (desde analyze-1 C1,
+  dentro de la página y no con `confirm()`); facturada,
   «Factura nº N · dd/mm/aaaa · total», el aviso «No se pudo avisar al cliente por correo: llámale»
   si `aviso_enviado` es `false`, y el enlace «Ver e imprimir» a `/facturas/{id}`. `facturas.rs`
   expone `factura_de_orden(conexion, orden_id) -> Option<i64>` para que spec-002 llene
   `factura_id` de `GET /api/ordenes/{id}`, igual que `pedidos_de_orden`,
-  `presupuestos_de_orden` y `resumen_imputaciones`. `/historial` y `/facturas/[id]` son páginas
+  `presupuestos_de_orden` y `resumen_imputaciones`. *(Al integrar, T017: `GET /api/ordenes/{id}` ya
+  llenaba `factura_id` con su propia subconsulta, equivalente, y no se tocó `ordenes.rs`; la función
+  queda y la prueba T012; analyze-1 I1.)* `/historial` y `/facturas/[id]` son páginas
   propias de esta spec.
 - **Motivo**: FR-001 («Facturar» solo en terminadas, US1/AC5) sin editar el módulo de la otra
   persona.

@@ -167,7 +167,7 @@ las pruebas automáticas (`cargo test`).
 
 ## §7 spec-007 · Factura e historial
 1. Como `ana`, en una orden «En reparación» → **no** aparece «Facturar».
-2. En la orden de 1313MMM («Terminada») pulsar Facturar → «Factura nº N» con su número correlativo, las líneas
+2. En la orden de 1313MMM («Terminada») pulsar Facturar y confirmar con «Sí, facturar» → «Factura nº N» con su número correlativo, las líneas
    imputadas, base, IVA y total que cuadran con la calculadora. Sin escribir nada.
 3. Pulsar «Ver e imprimir» y después «Imprimir» → la vista previa de impresión muestra solo la factura (sin menú),
    y se puede guardar como PDF. Sin `TALLER_LOGO` en el `.env` sale sin logo; con `TALLER_LOGO` apuntando a una
