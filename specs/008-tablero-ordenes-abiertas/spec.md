@@ -21,8 +21,10 @@ Prioridad Media · 5 pts.
   órdenes abiertas, marcados como «(de baja)».
 - Q: ¿Quién puede ver el tablero, y qué le pasa a otro rol que escriba `/tablero` a mano? → A:
   Solo el jefe. Recepción, mecánico y almacén no ven «Tablero» en el menú, `GET /api/tablero` les
-  responde 403 y `/tablero` les muestra la página de error común (`+error.svelte`, «Ha ocurrido
-  un error»), sin ninguna tarjeta. Hay una prueba del 403 para cada uno de esos tres roles.
+  responde 403 y `/tablero` les muestra, dentro de la página y sin ninguna tarjeta, el mensaje del
+  servidor «No tienes permiso para hacer esto», como las demás pantallas protegidas (corregido en
+  el plan, 2026-11-12: ninguna usa `+error.svelte` para el 403). Hay una prueba del 403 para cada
+  uno de esos tres roles.
 - Q: ¿Qué debe hacer que el tablero se actualice solo, sin recargar? → A: Abrir una orden,
   cualquier cambio de estado (también facturar, con lo que la tarjeta desaparece), el cambio de
   día a las 00:00 Europe/Madrid (recalcula las retrasadas) y la vuelta de la conexión (los
@@ -53,8 +55,8 @@ aparece en la columna de su estado.
    6 columnas y cada orden en la suya.
 2. **Given** una orden «facturada», **When** se abre el tablero, **Then** no aparece.
 3. **Given** un usuario de recepción, mecánico o almacén con sesión, **When** escribe a mano la
-   dirección del tablero, **Then** no tiene «Tablero» en el menú, ve la página de error común «Ha
-   ocurrido un error» sin ninguna tarjeta, y el sistema le niega los datos del tablero.
+   dirección del tablero, **Then** no tiene «Tablero» en el menú, ve el mensaje «No tienes permiso
+   para hacer esto» sin ninguna tarjeta, y el sistema le niega los datos del tablero.
 4. **Given** en una misma columna una orden con entrega pasado mañana, otra con entrega ayer y
    dos con entrega hoy (números 12 y 7), **When** se abre el tablero, **Then** aparecen en este
    orden: la de ayer, la nº 7, la nº 12 y la de pasado mañana.
@@ -156,7 +158,8 @@ desde otro y comprobar que la tarjeta cambia de columna sin tocar el tablero.
   00:00 Europe/Madrid y al recuperar la conexión tras perderla.
 - **FR-006**: El tablero MUST estar disponible solo para el jefe de taller. Los demás roles
   (recepción, mecánico, almacén) no lo ven en el menú, el sistema les niega los datos del
-  tablero y, si abren su dirección a mano, ven la página de error común sin ninguna tarjeta.
+  tablero y, si abren su dirección a mano, ven «No tienes permiso para hacer esto» sin ninguna
+  tarjeta, igual que en las demás pantallas protegidas.
 
 ### Key Entities
 

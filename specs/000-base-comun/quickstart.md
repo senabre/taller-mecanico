@@ -178,12 +178,42 @@ las pruebas automáticas (`cargo test`).
    matrícula».
 
 ## §8 spec-008 · Tablero
-1. Como `paco`, abrir `/tablero` → 6 columnas (vacías incluidas) y la carga «Luis N · Marta N».
-2. La orden facturada no aparece.
-3. En otro navegador, como `luis`, terminar una orden → en menos de 5 s la tarjeta cambia de
-   columna en el tablero de `paco`, sin recargar.
-4. Con una orden cuya entrega prometida ya pasó (datos demo) → la tarjeta aparece destacada como
-   «Retrasada».
+Se recorre después del §7, con los datos demo cargados ese mismo día. Hacen falta **dos
+navegadores** (o una ventana normal y otra privada, porque la sesión va en una cookie) y una persona
+con un reloj para los pasos 4 y 6 (SC-001 y SC-002). La correspondencia con la spec está en
+[spec-008 quickstart](../008-tablero-ordenes-abiertas/quickstart.md).
+
+1. Como `ana`, `luis` y `pepe`: ninguno ve «Tablero» en el menú. Escribir `/tablero` a mano → «No
+   tienes permiso para hacer esto», sin columnas ni tarjetas.
+2. Como `paco`, abrir `/tablero` → 6 columnas en este orden: Recibida, En diagnóstico, En
+   reparación, En espera de piezas, Pendiente de conformidad y Terminada. `9999LLL` y `1313MMM`
+   (facturadas) **no** aparecen. Con los datos demo ninguna columna queda vacía; la columna vacía
+   con «Sin órdenes» la comprueban las pruebas automáticas.
+3. Arriba, la carga «Luis 6 · Marta 3» (con los datos recién cargados, sin el §1–§7: «Luis 5 ·
+   Marta 3»). Contar las tarjetas de cada uno → coinciden. Pedro (de baja, sin órdenes) no sale.
+4. **Cronometrar** (SC-001): una persona que no haya visto el tablero dice qué órdenes van con
+   retraso, desde que se ve la página → en **menos de 10 s** nombra `8888KKK` (Terminada, entrega
+   ayer, con borde destacado y «Retrasada»), y **no** `3333DDD` (entrega hoy, sin «Retrasada»).
+5. En «En reparación», `3333DDD` (entrega hoy) está **encima** de `2222CCC` (entrega pasado mañana):
+   las tarjetas van por fecha de entrega, no por fecha de apertura.
+6. **Cronometrar** (SC-002), sin tocar el navegador de `paco`. En el otro, como `luis`, abrir la orden
+   de `2222CCC` y pulsar «Terminar reparación» → en **menos de 5 s** la tarjeta pasa a «Terminada»,
+   y la carga de Luis no cambia.
+7. En el otro navegador, como `ana`, «Abrir orden» en `8888KKK` (cita de hoy) con 40.000 km,
+   «Sin daños visibles», mecánica Marta y entrega mañana → en menos de 5 s aparece su tarjeta en
+   «Recibida» y la carga pasa a «Marta 4».
+8. Como `ana`, en la orden de `2222CCC` («Terminada»), pulsar «Facturar» → en menos de 5 s su
+   tarjeta desaparece y la carga pasa a «Luis 5».
+9. En el navegador de `paco`, en las herramientas de desarrollo, poner la red en «Sin conexión» →
+   aparece «Sin conexión, reintentando…». Mientras tanto, como `luis`, terminar la orden de
+   `3333DDD`. Volver a poner la red → el aviso desaparece y `3333DDD` ya está en «Terminada», sin
+   recargar.
+10. Con las herramientas de desarrollo a **390 px** de ancho: se ve una columna entera y el borde de
+    la siguiente; las columnas se desplazan con el dedo en horizontal **dentro del tablero**, la
+    página no se mueve de lado, y la carga salta de línea si no cabe. A 1280 px o más, las 6
+    columnas caben una al lado de otra y ocupan todo el ancho.
+11. El paso de medianoche no se comprueba a mano: lo cubre `npm test` en `frontend/`
+    (`medianoche.test.ts`).
 
 ## §9 Integración (los dos juntos)
 Recorrer §1 → §8 seguidos con un vehículo nuevo, desde la cita hasta la factura, mirando el

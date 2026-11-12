@@ -183,9 +183,9 @@ solo sale de ahí con `recibir` (spec-006 FR-008a).
 
 | Método y ruta | Acceso | Entrada | Salida |
 |---|---|---|---|
-| `GET /api/tablero` | jefe | — | `{columnas: [{estado, ordenes:[OrdenResumen]}] /* los 6 estados abiertos, en orden, aunque estén vacíos; tarjetas por fecha_entrega_prometida y numero ascendentes */, carga_mecanicos: [{id, nombre, activo, ordenes_abiertas}] /* los activos aunque tengan 0; los inactivos solo con órdenes abiertas */}` |
+| `GET /api/tablero` | jefe | — | `{columnas: [{estado, ordenes:[OrdenResumen]}] /* los 6 estados abiertos, en orden, aunque estén vacíos; tarjetas por fecha_entrega_prometida y numero ascendentes */, carga_mecanicos: [{id, nombre, activo, ordenes_abiertas}] /* por nombre; los activos aunque tengan 0; los inactivos solo con órdenes abiertas; la suma es el número de tarjetas */}` · 401 sin sesión · 403 «No tienes permiso para hacer esto» para los demás roles |
 
-Se actualiza con `GET /api/eventos` (base común).
+Se actualiza con `GET /api/eventos` (base común): la pantalla vuelve a pedir `GET /api/tablero` entero con cada evento `orden`, al reconectar y a la medianoche de Madrid ([spec-008 research D5 y D6](../../008-tablero-ordenes-abiertas/research.md)).
 
 ---
 
