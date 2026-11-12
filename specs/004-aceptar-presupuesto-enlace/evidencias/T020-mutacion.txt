@@ -1,0 +1,28 @@
+T020 · Prueba 4, variante aceptar y rechazar a la vez · Comprobación por mutación (spec-004, FR-003, US1-4, Q4)
+Fecha: 04/11/2026 19:45 · Rama: spec-004 · Fichero: backend/src/rutas/publico_presupuesto.rs
+Prueba: aceptar_y_rechazar_a_la_vez_solo_cuenta_una (20 vueltas, alternando el orden de la pareja)
+
+== 1. Antes de la mutación ==
+test aceptar_y_rechazar_a_la_vez_solo_cuenta_una ... ok
+test result: ok. 1 passed; 0 failed
+
+== 2. Mutación: se quita la condición estado = 'emitido' del UPDATE ==
+164c164
+<           WHERE token = $1 AND estado = 'emitido' AND caduca_el >= $2
+---
+>           WHERE token = $1 AND caduca_el >= $2
+
+== 3. Con la mutación (debe fallar) ==
+test aceptar_y_rechazar_a_la_vez_solo_cuenta_una ... FAILED
+thread 'aceptar_y_rechazar_a_la_vez_solo_cuenta_una' panicked at tests/spec004_respuesta.rs:451:9:
+assertion `left == right` failed: vuelta 1
+  left: 200
+ right: 409
+test result: FAILED. 0 passed; 1 failed
+
+== 4. Restaurado y comprobado con cmp ==
+cmp: el fichero es idéntico al original (salida 0)
+
+== 5. Después de restaurar ==
+test aceptar_y_rechazar_a_la_vez_solo_cuenta_una ... ok
+test result: ok. 1 passed; 0 failed

@@ -7,7 +7,7 @@ Alternativas descartadas. Fecha: 2026-10-15.
 
 | Pregunta | Decisión | Motivo |
 |---|---|---|
-| Q1 · Rechazo de presupuesto (spec-004/005) | Presupuesto inicial rechazado → la orden vuelve a «en diagnóstico». Ampliación rechazada → sigue «pendiente de conformidad». | Es la opción más simple y no necesita estados nuevos (principio I). |
+| Q1 · Rechazo de presupuesto (spec-004/005) | Presupuesto inicial rechazado → la orden sigue «en diagnóstico» (sin transición: spec-004 Q2). Ampliación rechazada → sigue «pendiente de conformidad». | Es la opción más simple y no necesita estados nuevos (principio I). |
 | Q2 · Datos fiscales de la factura (spec-007) | Factura simplificada: datos del taller, nombre del cliente y matrícula. | Así no se piden más datos al cliente (principio V). ⚠️ Antes de usarla de verdad, el taller debe confirmar con su gestoría que la factura simplificada le sirve. |
 | Q3 · Acceso del personal (spec-008 y todas) | Usuario y contraseña por empleado, cada uno con un rol. | Las specs exigen saber quién es «el mecánico asignado» y quién imputa. |
 
@@ -113,7 +113,13 @@ editando este archivo y la spec afectada.
 
 - **Decisión**: cada presupuesto emitido lleva un `token` aleatorio de 32 bytes en base64url, único
   e imposible de adivinar. La URL es `{URL_PUBLICA}/presupuesto/{token}`. La respuesta se guarda
-  con `UPDATE ... WHERE id = $1 AND respondido_en IS NULL`, de modo que solo cuenta la primera.
+  con una sola sentencia, que es la **única versión** de esta regla (spec-004 remite aquí):
+  `UPDATE presupuesto SET estado = $decision, respondido_en = now() WHERE token = $1 AND estado =
+  'emitido' AND caduca_el >= $hoy RETURNING …`, con `$hoy` = `fechas::hoy()`. Así solo cuenta la
+  primera respuesta, también con dos a la vez, y nadie responde a uno caducado. Si no actualiza
+  ninguna fila, se averigua el motivo con el mismo `$hoy`: token inexistente → 404; ya tiene
+  respuesta → 409 «Este presupuesto ya fue respondido»; si no, → 409 «Este presupuesto caducó el
+  dd/mm/aaaa. Contacte con el taller». El cambio de estado de la orden va en la misma transacción.
 - **Motivo**: cumple «una sola vez» y «solo su presupuesto» (spec-004) sin que el cliente tenga
   que crear una cuenta.
 
@@ -151,7 +157,9 @@ editando este archivo y la spec afectada.
   - **Backend**: pruebas de integración con `#[sqlx::test]`, que crea una base de datos limpia por
     prueba, para cada regla de negocio de las specs: km, cupo, correlativos, caducidad, 10 %,
     stock y transiciones de estado.
-  - **Frontend**: `svelte-check` y Vitest solo para `formato.ts`.
+  - **Frontend**: `svelte-check` y Vitest solo para `formato.ts`, `medianoche.ts`, `recarga.ts` y
+    `eventos.ts` (estos tres, por el tablero: la medianoche de Madrid, una sola petición a la vez y
+    la reconexión de la conexión de eventos; spec-008 Q3, research D5 y D6, y E1 de su analyze-1).
   - **Aceptación**: se recorre a mano `quickstart.md` en la aplicación (principio IV).
 - **Motivo**: las reglas de negocio son lo crítico. Una batería E2E con navegador sería complejidad
   anticipada (principio I).
@@ -169,3 +177,20 @@ editando este archivo y la spec afectada.
   cambio esté guardado y seguir viendo el estado antiguo; si la transacción falla, no se publica
   nada. `#[must_use]` hace que el compilador avise si alguien olvida publicar.
 - **Alternativas descartadas**: publicar dentro de `cambiar_estado`, por la carrera descrita.
+- **Aviso: una transacción cancelada a mitad** (añadido el 2026-11-12 por el hallazgo V3 de
+  spec-008; para la Persona B). Cuando el navegador corta una petición (cambiar de pantalla, cerrar
+  la pestaña), Axum cancela el manejador en el punto en que esté. Si eso ocurre **mientras se espera
+  la respuesta del `BEGIN`**, SQLx 0.8.6 no encola el `ROLLBACK`: su guardián solo lo hace con
+  `transaction_depth > 0`, y la profundidad no sube hasta que llega esa respuesta. La conexión vuelve
+  al *pool* dentro de la transacción, y las peticiones siguientes que la reciben trabajan dentro de
+  ella: con `READ ONLY` fallan al escribir y dejan la transacción abortada; con un `BEGIN` normal,
+  sus cambios quedan sin confirmar y bloquean filas (por ejemplo, de `sesion`) hasta que otra
+  petición hace `COMMIT` o `ROLLBACK` sobre esa conexión. Si la cancelación llega después, cuando
+  el `Transaction` ya existe, SQLx sí deshace la transacción al devolver la conexión.
+  - **En spec-008** se quitó la transacción de `GET /api/tablero`, porque el tablero se vuelve a
+    pedir muchas veces y se corta al navegar; su prueba 9 corta unas 4600 peticiones en todos sus
+    puntos de espera y comprueba tras cada corte que ninguna conexión queda «idle in transaction».
+  - **Las demás transacciones** (`POST` de citas, órdenes, presupuestos, imputaciones, facturas,
+    pedidos y sesión) pueden sufrir lo mismo, aunque es mucho menos probable: no se repiten solas
+    ni se cortan al navegar, y la ventana es de una décima de milisegundo. Queda a criterio de la
+    Persona B si alguna lo necesita; spec-008 no cambia sus ficheros.

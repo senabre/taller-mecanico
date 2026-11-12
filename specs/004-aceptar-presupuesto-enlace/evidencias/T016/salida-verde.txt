@@ -1,0 +1,45 @@
+OK    escritorio emitido: enlace en un campo de solo lectura
+OK    escritorio emitido: botón «Copiar enlace»
+OK    escritorio emitido: sin desplazamiento horizontal
+OK    escritorio copiar: el botón pasa a «Copiado»
+OK    escritorio copiar: el portapapeles tiene el enlace
+OK    escritorio copiar: vuelve a «Copiar enlace»
+OK    escritorio aceptado: «Inicial · Aceptado el 05/11/2026 a las 18:06»
+OK    escritorio aceptado: sin enlace ni «Copiar enlace»
+OK    escritorio rechazado: «Inicial · Rechazado el 05/11/2026 a las 18:06»
+OK    escritorio rechazado: sin enlace ni «Copiar enlace»
+OK    escritorio rechazado y otro emitido: la respuesta y el enlace del nuevo
+OK    escritorio rechazado y otro emitido: el enlace es el del nuevo
+OK    escritorio dos respuestas: se ven las dos
+OK    escritorio dos respuestas: sin enlace ni «Copiar enlace»
+OK    escritorio dos respuestas: sin desplazamiento horizontal
+OK    escritorio ampliación caducada: la ficha dice que caducó
+OK    escritorio ampliación caducada: se ve la respuesta del inicial
+OK    escritorio ampliación caducada: sin enlace ni «Copiar enlace»
+OK    escritorio ampliación rechazada: «Ampliación · Rechazado el 05/11/2026 a las 18:06»
+OK    escritorio ampliación rechazada: sin enlace ni «Copiar enlace»
+OK    escritorio borrador: sin enlace ni «Copiar enlace»
+OK    escritorio ficha: sin errores de JavaScript 
+OK    movil emitido: enlace en un campo de solo lectura
+OK    movil emitido: botón «Copiar enlace»
+OK    movil emitido: sin desplazamiento horizontal
+OK    movil copiar: el botón pasa a «Copiado»
+OK    movil copiar: el portapapeles tiene el enlace
+OK    movil copiar: vuelve a «Copiar enlace»
+OK    movil aceptado: «Inicial · Aceptado el 05/11/2026 a las 18:06»
+OK    movil aceptado: sin enlace ni «Copiar enlace»
+OK    movil rechazado: «Inicial · Rechazado el 05/11/2026 a las 18:07»
+OK    movil rechazado: sin enlace ni «Copiar enlace»
+OK    movil rechazado y otro emitido: la respuesta y el enlace del nuevo
+OK    movil rechazado y otro emitido: el enlace es el del nuevo
+OK    movil dos respuestas: se ven las dos
+OK    movil dos respuestas: sin enlace ni «Copiar enlace»
+OK    movil dos respuestas: sin desplazamiento horizontal
+OK    movil ampliación caducada: la ficha dice que caducó
+OK    movil ampliación caducada: se ve la respuesta del inicial
+OK    movil ampliación caducada: sin enlace ni «Copiar enlace»
+OK    movil ampliación rechazada: «Ampliación · Rechazado el 05/11/2026 a las 18:07»
+OK    movil ampliación rechazada: sin enlace ni «Copiar enlace»
+OK    movil borrador: sin enlace ni «Copiar enlace»
+OK    movil ficha: sin errores de JavaScript 
+CORRECTAS: 44 · FALLOS: 0

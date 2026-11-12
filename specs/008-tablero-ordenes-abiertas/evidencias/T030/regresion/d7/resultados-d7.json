@@ -1,0 +1,23 @@
+[
+  {
+    "paso": "D7 Lo presupuestado de la orden 7",
+    "esperado": "110,00 € (solo cuentan los aceptados: ni la ampliación caducada ni la rechazada en §4.7)",
+    "observado": "total_presupuestado=110.00; estado=pendiente_conformidad; presupuestos=inicial:aceptado, ampliacion:emitido, ampliacion:rechazado",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "D7 Emitir otra ampliación en la orden 7",
+    "esperado": "Se puede crear y emitir (la caducada y la rechazada no lo bloquean)",
+    "observado": "crear=201 (ampliacion); línea=201; emitir=200 (emitido)",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "D7 Tarjeta de la orden 7",
+    "esperado": "La entrega prometida no cambia con el ajuste de la cita; el tablero (§8) es de spec-008 y aún no existe",
+    "observado": "entrega prometida=13/11/2026; retrasada hoy=false",
+    "ok": true,
+    "img": null
+  }
+]

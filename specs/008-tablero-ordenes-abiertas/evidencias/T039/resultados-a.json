@@ -1,0 +1,16 @@
+[
+  {
+    "paso": "§9.1 Pedir cita para 3579KLM (día A)",
+    "esperado": "Pide los datos del vehículo y del cliente; con el primer día que ofrece la página se confirma",
+    "observado": "pide datos=1,1,1,1,1; primer día ofrecido=2026-11-18 («18/11/2026»); confirmada=true; en la base=2026-11-18|Revisión de frenos",
+    "ok": true,
+    "img": "a01-formulario.png, a02-cita-confirmada.png"
+  },
+  {
+    "paso": "§9.1 El tablero no cambia con la cita",
+    "esperado": "Las citas no salen en el tablero",
+    "observado": "igual=true",
+    "ok": true,
+    "img": "a00-tablero-antes.png, a03-tablero-despues.png"
+  }
+]

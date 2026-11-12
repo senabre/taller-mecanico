@@ -1,0 +1,24 @@
+== T014 · MUTACIÓN de la consulta de carga · 2026-11-12 12:33:39 CET
+-- cambio aplicado (diff mutado → original):
+86d85
+<           WHERE u.rol = 'mecanico' AND u.activo
+87a87
+>          HAVING (u.rol = 'mecanico' AND u.activo) OR count(o.id) > 0
+-- pruebas con la mutación:
+test prueba2_sin_ordenes_seis_columnas_vacias ... ok
+test prueba4_tarjetas_por_entrega_y_numero ... ok
+test prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas ... ok
+test prueba5_carga_por_mecanico_con_los_activos_a_cero ... ok
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test prueba6_inactivos_solo_con_ordenes_abiertas ... FAILED
+test prueba3_solo_el_jefe ... ok
+thread 'prueba6_inactivos_solo_con_ordenes_abiertas' (106965) panicked at tests/spec008_tablero.rs:299:5:
+  left: [("Luis", 0, true)]
+ right: [("Luis", 0, true), ("Pedro", 1, false)]
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.29s
+-- líneas de salida: 11
+-- restaurado: cmp src/rutas/tablero.rs con la copia original
+cmp: idénticos
+
+-- pruebas después de restaurar:
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.04s

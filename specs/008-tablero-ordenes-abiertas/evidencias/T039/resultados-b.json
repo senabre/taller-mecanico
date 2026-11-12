@@ -1,0 +1,58 @@
+[
+  {
+    "paso": "§9.2 Tablero de paco (día B)",
+    "esperado": "La carga coincide con las tarjetas de cada mecánico; alguna orden demo sale «Retrasada» (normal: los datos son del día A)",
+    "observado": "carga=«Luis 5 · Marta 4»; en la base=«Luis 5 · Marta 4»; retrasadas=[8888KKK,1111BBB,1414NNN,5555GGG,4444FFF,6666HHH,7777JJJ,8888KKK,3333DDD]",
+    "ok": true,
+    "img": "b01-tablero-inicio.png"
+  },
+  {
+    "paso": "§9.3 ana abre la orden (15.000 km, Luis, entrega en 3 días)",
+    "esperado": "Orden Nº 13; en menos de 5 s sale en «Recibida» y Luis suma 1",
+    "observado": "en Citas de hoy con «Abrir orden»=true; Orden Nº 13; tablero en 106 ms; carga=«Luis 6 · Marta 4»",
+    "ok": true,
+    "img": "b03-p3-recibida.png"
+  },
+  {
+    "paso": "§9.4 luis guarda el diagnóstico",
+    "esperado": "La tarjeta pasa a «En diagnóstico» en menos de 5 s",
+    "observado": "108 ms",
+    "ok": true,
+    "img": "b05-p4-en-diagnostico.png"
+  },
+  {
+    "paso": "§9.4 luis crea el presupuesto (1 h «Cambio de pastillas») y lo emite",
+    "esperado": "La tarjeta no se mueve; llega el correo con el enlace",
+    "observado": "48,40 €=true; columna=En diagnóstico; correo con el enlace=true",
+    "ok": true,
+    "img": "b06-p4-presupuesto-emitido.png"
+  },
+  {
+    "paso": "§9.5 El cliente acepta desde el enlace",
+    "esperado": "«Aceptado el … a las …» y la tarjeta pasa a «En reparación» en menos de 5 s",
+    "observado": "«Aceptado el 18/11/2026 a las 08:26»; tablero en 104 ms",
+    "ok": true,
+    "img": "b09-p5-aceptado-movil.png"
+  },
+  {
+    "paso": "§9.6 luis imputa 1 h y termina",
+    "esperado": "Sin pasar del 110 %; la tarjeta pasa a «Terminada» en menos de 5 s",
+    "observado": "«Acumulado 40,00 € de 40,00 € presupuestados»; tablero en 105 ms",
+    "ok": true,
+    "img": "b11-p6-terminada.png"
+  },
+  {
+    "paso": "§9.7 ana factura",
+    "esperado": "«Factura nº N» con su total; correo «Su vehículo 3579KLM está listo para recoger»; la tarjeta desaparece y Luis resta 1 en menos de 5 s",
+    "observado": "«Factura nº 4», total 48.40 €; correo=true; tablero en 105 ms; Luis 6 → 5",
+    "ok": true,
+    "img": "b12-p7-factura.png"
+  },
+  {
+    "paso": "§9.8 Historial de 3579KLM",
+    "esperado": "La reparación con su diagnóstico y sus líneas",
+    "observado": "diagnóstico=true; línea=true; 15.000 km=true",
+    "ok": true,
+    "img": "b14-p8-historial.png"
+  }
+]

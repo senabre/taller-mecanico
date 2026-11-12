@@ -1,0 +1,20 @@
+== T004 · prueba 8 ANTES de T005 · 2026-11-12 12:26:26 CET
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.97s
+
+== T005 · prueba 8 y spec002_ordenes DESPUÉS del cambio · 2026-11-12 12:26:41 CET
+test prueba_1_abrir_y_publicar_evento ... ok
+test prueba_11_lista_de_citas ... ok
+test prueba_3_concurrencia_del_numero ... ok
+test prueba_12_lista_de_ordenes ... ok
+test prueba_2_correlativo_sin_huecos ... ok
+test prueba_10_ficha ... ok
+test prueba_5_solo_el_dia_de_la_cita ... ok
+test prueba_4_misma_cita_a_la_vez ... ok
+test prueba_6_kilometraje ... ok
+test prueba_7_campos ... ok
+test prueba_8_mecanico ... ok
+test prueba_9_acceso_y_cita_inexistente ... ok
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 38.35s
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.41s

@@ -118,7 +118,7 @@ const SELECT_PRESUPUESTO: &str = "
       FROM presupuesto";
 
 /// Un emitido pasada su fecha de caducidad se considera caducado; no es un estado guardado.
-fn caducado(estado: &str, caduca_el: Option<NaiveDate>) -> bool {
+pub(crate) fn caducado(estado: &str, caduca_el: Option<NaiveDate>) -> bool {
     estado == "emitido" && caduca_el.is_some_and(|c| c < fechas::hoy())
 }
 
@@ -191,6 +191,7 @@ pub struct PresupuestoResumen {
     total: Decimal,
     emitido_en: Option<DateTime<Utc>>,
     caduca_el: Option<NaiveDate>,
+    respondido_en: Option<DateTime<Utc>>,
 }
 
 /// Los presupuestos de una orden, del más antiguo al más reciente. Es el campo `presupuestos` de
@@ -226,6 +227,7 @@ pub async fn presupuestos_de_orden(
             total,
             emitido_en: fila.emitido_en,
             caduca_el: fila.caduca_el,
+            respondido_en: fila.respondido_en,
         });
     }
     Ok(lista)

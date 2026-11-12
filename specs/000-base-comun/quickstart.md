@@ -30,7 +30,8 @@ cd ../backend && cargo run                 # app en http://localhost:3000
 - Pieza demo: `PF-123 Pastillas freno`, 25,00 €, stock 4. (`BJ-7 Bujía`, stock 0, solo está para el
   pedido demo pendiente de la orden en espera de piezas.)
 - Presupuesto demo emitido (token ficticio, solo para demostración; constitución, principio V):
-  `/presupuesto/demo-presupuesto-emitido`.
+  `/presupuesto/demo-presupuesto-emitido`. Ampliación demo caducada de la orden 7, también con token
+  ficticio: `/presupuesto/demo-presupuesto-caducado`.
 - Proveedores demo (precargados): «Recambios Sur» y «Autopartes Norte». En producción, los
   proveedores reales los inserta el equipo con `psql` (la app no los gestiona).
 
@@ -112,12 +113,29 @@ las pruebas automáticas (`cargo test`).
    diagnóstico no se puede cambiar».
 
 ## §4 spec-004 · Respuesta del cliente
-1. En Mailpit, abrir el correo del presupuesto y pulsar el enlace → se ve el presupuesto completo.
-2. Aceptar y confirmar → se ve la fecha y la hora. Volver a abrir el enlace → ya no hay botones.
-3. Como `luis`, la orden de 1313MMM está «En reparación» con «Aceptado el … a las …».
-4. Comprobar en otra orden con presupuesto sin responder que **no** aparece la opción de imputar.
-5. (Rechazo) Emitir un presupuesto en la orden de 1414NNN y rechazarlo desde el enlace → la orden vuelve a
-   «En diagnóstico».
+1. En Mailpit, abrir el correo del presupuesto y pulsar el enlace → se ven el vehículo, el
+   diagnóstico, las líneas, la base, el IVA, el total y la caducidad, sin el nombre, el teléfono ni
+   el correo del cliente. Con el ancho de un móvil (390 px) se lee sin desplazar la página de lado.
+2. Pulsar «Aceptar» → «¿Acepta este presupuesto por 133,10 €? Una vez confirmado, no se podrá
+   cambiar.»; «Volver» deja la página como estaba. Aceptar otra vez y pulsar «Sí, aceptar» → se ve
+   la fecha y la hora. **Cronometrar** desde abrir el enlace hasta ver ese mensaje: **menos de 1
+   minuto** (spec-004 SC-001). Volver a abrir el enlace → ya no hay botones.
+3. Como `luis`, la orden de 1313MMM está «En reparación» con «Aceptado el … a las …», y ya no se ve
+   el enlace.
+4. Como `ana`, en la orden demo 5 (presupuesto sin responder) se ven el enlace y «Copiar enlace», que
+   lo copia. Como `marta`, su mecánica, comprobar que en esa orden **no** aparece la opción de imputar.
+5. (Rechazo) Emitir un presupuesto en la orden de 1414NNN y rechazarlo desde el enlace → la orden sigue
+   «En diagnóstico», con «Rechazado el … a las …».
+6. (Enlace de un caducado) Como `luis`, abrir la orden demo 7 («Pendiente de conformidad») → su
+   ampliación sale «Caducado el …», y **no** aparecen el enlace ni «Copiar enlace».
+7. (Ampliación rechazada) Como `luis`, en la orden demo 7 («Pendiente de conformidad») crear una
+   ampliación de 1 h y emitirla. Abrir el enlace de Mailpit en **dos pestañas**. Rechazarla en la
+   primera → la orden sigue «Pendiente de conformidad» y muestra las dos respuestas: «Inicial ·
+   Aceptado el …» y «Ampliación · Rechazado el …». En la segunda, pulsar «Aceptar» y confirmar →
+   «Este presupuesto ya fue respondido», y la orden no cambia.
+8. (Caducado) Abrir `/presupuesto/demo-presupuesto-caducado` → «Este presupuesto caducó el dd/mm/aaaa.
+   Contacte con el taller», sin botones.
+9. (Enlace modificado) Abrir `/presupuesto/enlace-inventado` → solo «Este enlace no es válido».
 
 ## §5 spec-005 · Imputar
 1. Orden de 1313MMM, intentar terminarla sin imputar nada → «Primero hay que imputar el trabajo
@@ -160,15 +178,81 @@ las pruebas automáticas (`cargo test`).
    matrícula».
 
 ## §8 spec-008 · Tablero
-1. Como `paco`, abrir `/tablero` → 6 columnas (vacías incluidas) y la carga «Luis N · Marta N».
-2. La orden facturada no aparece.
-3. En otro navegador, como `luis`, terminar una orden → en menos de 5 s la tarjeta cambia de
-   columna en el tablero de `paco`, sin recargar.
-4. Con una orden cuya entrega prometida ya pasó (datos demo) → la tarjeta aparece destacada como
-   «Retrasada».
+Se recorre después del §7, con los datos demo cargados ese mismo día. Hacen falta **dos
+navegadores** (o una ventana normal y otra privada, porque la sesión va en una cookie) y una persona
+con un reloj para los pasos 4 y 6 (SC-001 y SC-002). La correspondencia con la spec está en
+[spec-008 quickstart](../008-tablero-ordenes-abiertas/quickstart.md).
+
+1. Como `ana`, `luis` y `pepe`: ninguno ve «Tablero» en el menú. Escribir `/tablero` a mano → «No
+   tienes permiso para hacer esto», sin columnas ni tarjetas.
+2. Como `paco`, abrir `/tablero` → 6 columnas en este orden: Recibida, En diagnóstico, En
+   reparación, En espera de piezas, Pendiente de conformidad y Terminada. `9999LLL` y `1313MMM`
+   (facturadas) **no** aparecen. Con los datos demo ninguna columna queda vacía; la columna vacía
+   con «Sin órdenes» la comprueban las pruebas automáticas.
+3. Arriba, la carga «Luis 6 · Marta 3» (con los datos recién cargados, sin el §1–§7: «Luis 5 ·
+   Marta 3»). Contar las tarjetas de cada uno → coinciden. Pedro (de baja, sin órdenes) no sale.
+4. **Cronometrar** (SC-001): una persona que no haya visto el tablero dice qué órdenes van con
+   retraso, desde que se ve la página → en **menos de 10 s** nombra `8888KKK` (Terminada, entrega
+   ayer, con borde destacado y «Retrasada»), y **no** `3333DDD` (entrega hoy, sin «Retrasada»).
+5. En «En reparación», `3333DDD` (entrega hoy) está **encima** de `2222CCC` (entrega pasado mañana):
+   las tarjetas van por fecha de entrega, no por fecha de apertura.
+6. **Cronometrar** (SC-002), sin tocar el navegador de `paco`. En el otro, como `luis`, abrir la orden
+   de `2222CCC` y pulsar «Terminar reparación» → en **menos de 5 s** la tarjeta pasa a «Terminada»,
+   y la carga de Luis no cambia.
+7. En el otro navegador, como `ana`, «Abrir orden» en `8888KKK` (cita de hoy) con 40.000 km,
+   «Sin daños visibles», mecánica Marta y entrega mañana → en menos de 5 s aparece su tarjeta en
+   «Recibida» y la carga pasa a «Marta 4».
+8. Como `ana`, en la orden de `2222CCC` («Terminada»), pulsar «Facturar» → en menos de 5 s su
+   tarjeta desaparece y la carga pasa a «Luis 5».
+9. Parar el servidor (Ctrl+C en la terminal de `cargo run`) → en el navegador de `paco` aparece
+   «Sin conexión, reintentando…». Volver a arrancarlo (`cargo run`) → en unos segundos el aviso
+   desaparece solo, sin recargar, y el tablero sigue al día. Después, como `luis`, terminar la
+   orden de `3333DDD` → con el tablero ya conectado, la tarjeta pasa sola a «Terminada». (Que lo que
+   cambie mientras el tablero está sin conexión aparezca al volver lo comprueban las pruebas
+   automáticas; cortar la red desde las herramientas de desarrollo no sirve, porque no corta una
+   conexión de eventos ya abierta: V1 de spec-008.)
+10. En un **móvil** conectado a la misma red, abrir `http://<IP del ordenador>:3000/tablero` como
+    `paco` (o, con las herramientas de desarrollo, a **390 px** de ancho): se ve una columna entera y
+    el borde de la siguiente; las columnas se desplazan con el dedo en horizontal **dentro del tablero**, la
+    página no se mueve de lado, y la carga salta de línea si no cabe. A 1280 px o más, las 6
+    columnas caben una al lado de otra y ocupan todo el ancho.
+11. El paso de medianoche no se comprueba a mano: lo cubre `npm test` en `frontend/`
+    (`medianoche.test.ts`).
 
 ## §9 Integración (los dos juntos)
-Recorrer §1 → §8 seguidos con un vehículo nuevo, desde la cita hasta la factura, mirando el
-tablero en otra ventana durante todo el recorrido. Como la orden solo se abre el día de la cita
-(spec-002 Q2) y la página pública solo ofrece días desde mañana, el recorrido ocupa dos días:
-pedir la cita un día y seguir el día de la cita.
+Un vehículo nuevo, `3579KLM`, recorre todo el flujo, desde la cita hasta la factura, con el tablero
+de `paco` abierto en otra ventana. Se hace después del §8 y ocupa **dos sesiones**: el día A, el del
+recorrido §0–§8, y el día B, el de la cita. La orden solo se abre el día de la cita (spec-002 Q2), y
+la página pública solo ofrece días laborables desde mañana con plaza: después del §1, el primer día
+libre **puede no ser el siguiente** (el §1 llena alguno, y no hay citas en fin de semana).
+
+**Día A**, al terminar el §8:
+1. Sin entrar, en `/cita`, escribir `3579KLM` → pide los datos del vehículo y del cliente. Rellenar
+   marca «Seat», modelo «Arona», un nombre, un teléfono válido y un correo, motivo «Revisión de frenos», y elegir
+   el **primer día que ofrezca la página** → se confirma. Anotar ese día: es el día B. El tablero no
+   cambia (las citas no salen en él).
+
+**Día B** (el de la cita). **No se recargan los datos demo**: el `demo.sql` se carga sobre una base
+vacía y borraría la cita del día A. Por eso los datos demo están desfasados, y **es normal que
+alguna orden demo salga «Retrasada»** en el tablero y en la lista de órdenes: por ejemplo
+`3333DDD`, cuya entrega era el día A, y cualquiera cuya entrega ya haya pasado. Lo que se comprueba
+es la orden nueva.
+2. Como `paco`, abrir `/tablero` y dejarlo abierto. La carga coincide con las tarjetas de cada
+   mecánico.
+3. Como `ana`, en «Citas» de hoy aparece `3579KLM` con «Abrir orden». Abrirla con 15.000 km, «Sin
+   daños visibles», mecánico Luis y entrega dentro de 3 días → orden **Nº 13** (la siguiente a la
+   Nº 12 del §8.7). En menos de 5 s su tarjeta aparece en «Recibida» y Luis suma 1.
+4. Como `luis`, en esa orden, diagnóstico «Pastillas delanteras desgastadas» → la tarjeta pasa a
+   «En diagnóstico». Crear el presupuesto con una línea de mano de obra «Cambio de pastillas», 1 h,
+   y emitirlo → la tarjeta **no** se mueve (emitir no cambia el estado). En Mailpit llega el correo
+   con el enlace.
+5. Abrir el enlace del correo, aceptar y confirmar → «Aceptado el … a las …», y la tarjeta pasa a
+   «En reparación».
+6. Como `luis`, imputar 1 h de «Cambio de pastillas» (lo presupuestado, sin pasar del 110 %) y pulsar
+   «Terminar reparación» → la tarjeta pasa a «Terminada».
+7. Como `ana`, pulsar «Facturar» → «Factura nº N» con su total, y en Mailpit «Su vehículo 3579KLM
+   está listo para recoger». La tarjeta desaparece del tablero y Luis resta 1.
+8. En `/historial`, buscar `3579KLM` → aparece la reparación con su diagnóstico y sus líneas.
+
+En todo el día B, cada cambio de la orden nueva se ve en el tablero de `paco` en menos de 5 s, sin
+recargar.

@@ -11,6 +11,32 @@ el presupuesto, para no tener que pasar por el taller a firmarlo. Prioridad Alta
 
 **Responsable**: Persona A
 
+## Clarifications
+
+### Session 2026-11-04
+
+- Q: ¿Qué respuestas del cliente debe enseñar la ficha de la orden, con su fecha y hora, y de dónde
+  sale ese dato? → A: Todas las respuestas de la orden, no solo la del último presupuesto
+  («Aceptado el 16/10/2026 a las 10:32», «Rechazado el …»), indicando si es inicial o ampliación. El
+  resumen de cada presupuesto de la ficha trae su fecha y hora de respuesta (cierra el apartado a
+  del hallazgo I5 de spec-002).
+- Q: Cuando el cliente rechaza el presupuesto inicial, ¿debe quedar en la máquina de estados una
+  transición de «en diagnóstico» a «en diagnóstico»? → A: No, se elimina. Rechazar no cambia el
+  estado de la orden: solo se guarda la decisión, y la orden sigue «en diagnóstico» (cierra el
+  hallazgo I5 de la base común).
+- Q: Cuando un presupuesto ya ha caducado, ¿puede el cliente rechazarlo desde el enlace? → A: No.
+  Un presupuesto caducado no admite ninguna respuesta, ni aceptar ni rechazar, tanto el inicial
+  como una ampliación: la página no muestra botones y cualquier intento se rechaza con «Este
+  presupuesto caducó el dd/mm/aaaa. Contacte con el taller».
+- Q: Para que solo cuente la primera respuesta también con dos pestañas a la vez, ¿cómo se guarda?
+  → A: En una sola operación, que comprueba a la vez que el presupuesto sigue emitido y sin caducar;
+  la segunda respuesta no se guarda y ve «Este presupuesto ya fue respondido». El cambio de estado
+  de la orden se hace junto con la respuesta (cierra el hallazgo D1 de la base común).
+- Q: ¿Quién del personal puede ver y copiar el enlace del presupuesto en la orden, y durante cuánto
+  tiempo? → A: Todo el personal con sesión, solo mientras el presupuesto está emitido y vigente:
+  después de la respuesta o de la caducidad, la orden deja de mostrarlo. El cliente puede seguir
+  abriendo el enlace para ver su decisión.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - El cliente acepta el presupuesto (Priority: P1)
@@ -34,6 +60,13 @@ comprobar en la orden el estado «en reparación» y la fecha y hora de aceptaci
    **Then** ve «Aceptado el 16/10/2026 a las 10:32» y la orden está «en reparación».
 3. **Given** un presupuesto ya aceptado, **When** el cliente vuelve a abrir el enlace, **Then**
    ve la decisión tomada y su fecha y hora, sin botones para cambiarla.
+4. **Given** un presupuesto vigente abierto en dos pestañas, **When** el cliente confirma en las dos
+   a la vez, **Then** solo se guarda una respuesta, la orden cambia una sola vez, y la otra pestaña
+   ve «Este presupuesto ya fue respondido».
+5. **Given** un presupuesto emitido y vigente, **When** cualquier persona del personal con sesión
+   abre la orden, **Then** ve el enlace y «Copiar enlace»; y cuando el presupuesto ya tiene respuesta
+   o ha caducado, la orden deja de mostrarlos, mientras el cliente sigue pudiendo abrir el enlace y
+   ver la decisión tomada o el aviso de caducidad.
 
 ---
 
@@ -50,27 +83,33 @@ rechazo con su fecha y hora.
 **Acceptance Scenarios**:
 
 1. **Given** un presupuesto vigente, **When** el cliente lo rechaza, **Then** se guarda
-   «Rechazado» con fecha y hora exactas y la orden vuelve a «en diagnóstico» para que el
+   «Rechazado» con fecha y hora exactas y la orden sigue «en diagnóstico» para que el
    mecánico pueda preparar otro presupuesto.
 2. **Given** una ampliación (spec-005) vigente, **When** el cliente la rechaza, **Then** se guarda
    el rechazo y la orden sigue «pendiente de conformidad» hasta que se acepte otra ampliación.
+3. **Given** un presupuesto inicial rechazado y después otro aceptado en la misma orden, **When** el
+   personal consulta la orden, **Then** ve las dos respuestas, cada una con su fecha y hora y
+   diciendo si es inicial o ampliación, aunque ya exista un presupuesto más reciente.
 
 ---
 
 ### User Story 3 - Presupuesto caducado (Priority: P2)
 
 Si el cliente abre el enlace después de la fecha de caducidad, ve el presupuesto marcado como
-caducado y no puede aceptarlo.
+caducado y no puede responder: ni aceptarlo ni rechazarlo.
 
 **Why this priority**: Protege al taller de precios desactualizados.
 
 **Independent Test**: Con un presupuesto cuya fecha de caducidad ya ha pasado, abrir el enlace
-y comprobar que no aparece el botón de aceptar.
+y comprobar que no aparecen los botones de aceptar ni de rechazar.
 
 **Acceptance Scenarios**:
 
-1. **Given** un presupuesto caducado ayer, **When** el cliente abre el enlace, **Then** ve
-   «Este presupuesto caducó el dd/mm/aaaa. Contacte con el taller» y no puede aceptarlo.
+1. **Given** un presupuesto caducado ayer, inicial o ampliación, **When** el cliente abre el enlace,
+   **Then** ve «Este presupuesto caducó el dd/mm/aaaa. Contacte con el taller», sin botones, y no
+   puede aceptarlo ni rechazarlo.
+2. **Given** un presupuesto que caduca mientras el cliente lo tiene abierto, **When** pulsa
+   «Aceptar» o «Rechazar» y confirma, **Then** ve el mismo aviso y no se guarda ninguna respuesta.
 
 ---
 
@@ -91,10 +130,11 @@ las opciones de imputar tiempo y piezas no están disponibles.
 
 ### Edge Cases
 
-- El cliente pulsa «Aceptar» dos veces o desde dos pestañas: solo cuenta la primera respuesta.
+- El cliente pulsa «Aceptar» dos veces o desde dos pestañas: solo cuenta la primera respuesta, y
+  la otra ve «Este presupuesto ya fue respondido».
 - Alguien modifica el enlace a mano: no ve ningún presupuesto que no sea el suyo.
-- El presupuesto caduca mientras el cliente lo tiene abierto: al pulsar «Aceptar» se le indica
-  que ha caducado y no se guarda la aceptación.
+- El presupuesto caduca mientras el cliente lo tiene abierto: al pulsar «Aceptar» o «Rechazar» se
+  le indica que ha caducado y no se guarda ninguna respuesta.
 - El correo no llega: el personal puede ver y copiar el enlace desde la orden para enviárselo
   por otro medio.
 
@@ -109,14 +149,19 @@ las opciones de imputar tiempo y piezas no están disponibles.
 - **FR-003**: Desde el enlace, el cliente MUST poder aceptar o rechazar el presupuesto una sola
   vez, con un paso de confirmación.
 - **FR-004**: El sistema MUST guardar la decisión con la fecha y hora exactas de la respuesta y
-  mostrarlas en la orden.
-- **FR-005**: El sistema MUST impedir aceptar un presupuesto caducado.
+  mostrarlas en la orden. La orden MUST mostrar todas las respuestas de sus presupuestos, no solo la
+  del más reciente.
+- **FR-005**: El sistema MUST impedir responder a un presupuesto caducado: ni aceptarlo ni
+  rechazarlo. La regla es la misma para el presupuesto inicial y para las ampliaciones (FR-009).
 - **FR-006**: Al aceptarse el presupuesto, la orden MUST pasar a «en reparación».
 - **FR-007**: Mientras la orden no tenga un presupuesto aceptado, el sistema MUST NOT permitir
   imputar tiempo ni piezas.
-- **FR-008**: El personal MUST poder ver en la orden el enlace del presupuesto para reenviarlo.
-- **FR-009**: Este mismo mecanismo de enlace MUST usarse para que el cliente acepte las
-  ampliaciones de presupuesto (spec-005).
+- **FR-008**: Todo el personal con sesión MUST poder ver y copiar en la orden el enlace del
+  presupuesto para reenviarlo, mientras esté emitido y vigente. Después de la respuesta o de la
+  caducidad, la orden MUST NOT mostrarlo; el enlace MUST seguir funcionando para el cliente, que ve
+  su decisión o el aviso de caducidad sin poder cambiar nada.
+- **FR-009**: Este mismo mecanismo de enlace MUST usarse para que el cliente acepte o rechace
+  las ampliaciones de presupuesto (spec-005).
 
 ### Key Entities
 
@@ -132,7 +177,7 @@ las opciones de imputar tiempo y piezas no están disponibles.
 - **SC-001**: El cliente acepta o rechaza un presupuesto en menos de 1 minuto desde que abre el
   enlace, sin crear ninguna cuenta.
 - **SC-002**: El 100 % de las respuestas quedan registradas con fecha y hora visibles en la orden.
-- **SC-003**: Ningún presupuesto caducado puede aceptarse (comprobable abriendo el enlace de un
+- **SC-003**: Ningún presupuesto caducado puede aceptarse ni rechazarse (comprobable abriendo el enlace de un
   presupuesto caducado).
 - **SC-004**: Ninguna orden sin presupuesto aceptado permite imputar tiempo ni piezas.
 

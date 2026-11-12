@@ -161,6 +161,25 @@ export interface PresupuestoResumen {
 	total: Importe;
 	emitido_en: Instante | null;
 	caduca_el: Fecha | null;
+	/** Cuándo respondió el cliente (spec-004 FR-004): null si aún no ha respondido. */
+	respondido_en: Instante | null;
+}
+
+// --- spec-004 · Respuesta del cliente ---
+
+/** GET /api/publico/presupuestos/{token}: nunca trae datos del cliente (FR-002, principio V). */
+export interface PresupuestoPublico extends Totales {
+	taller: { nombre: string };
+	matricula: string;
+	marca: string;
+	modelo: string;
+	diagnostico: string | null;
+	tipo: TipoPresupuesto;
+	lineas: Linea[];
+	caduca_el: Fecha;
+	caducado: boolean;
+	decision: null | 'aceptado' | 'rechazado';
+	respondido_en: Instante | null;
 }
 
 // --- spec-005 · Imputaciones ---
@@ -249,4 +268,26 @@ export interface Pedido {
 export interface EventoOrden {
 	id: number;
 	estado: EstadoOrden;
+}
+
+// --- spec-008 · Tablero ---
+
+/** Una fila de la carga por mecánico: los activos aunque tengan 0; los inactivos solo con órdenes abiertas. */
+export interface CargaMecanico {
+	id: number;
+	nombre: string;
+	activo: boolean;
+	ordenes_abiertas: number;
+}
+
+/** Una columna del tablero: un estado abierto y sus órdenes, por entrega y número ascendentes. */
+export interface ColumnaTablero {
+	estado: EstadoOrden;
+	ordenes: OrdenResumen[];
+}
+
+/** GET /api/tablero: siempre los 6 estados abiertos, en orden, aunque estén vacíos. */
+export interface Tablero {
+	columnas: ColumnaTablero[];
+	carga_mecanicos: CargaMecanico[];
 }

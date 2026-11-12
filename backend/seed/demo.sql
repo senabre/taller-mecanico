@@ -38,7 +38,7 @@ INSERT INTO proveedor (nombre) VALUES
 --   nº  estado                 mecánico  para qué
 --   1   recibida               luis      B: diagnóstico (spec-003)
 --   2   en_reparacion          luis      B: imputaciones y pedidos (005, 006)
---   3   en_reparacion          luis      B: imputaciones y pedidos (005, 006)
+--   3   en_reparacion          luis      B: imputaciones y pedidos (005, 006); entrega hoy: no sale retrasada (008)
 --   4   en_diagnostico         luis      B: presupuesto (003); pedido rechazado (006)
 --   5   en_diagnostico         marta     A: presupuesto emitido con token conocido (004)
 --   6   en_espera_piezas       marta     pedido pendiente de BJ-7 (006)
@@ -78,16 +78,18 @@ SELECT ve.id, current_date - d.dias, d.motivo
         ('4444FFF',  2, 'Testigo del motor encendido'),
         ('5555GGG',  3, 'Ruido al frenar'),
         ('6666HHH',  6, 'Tirones al acelerar'),
-        ('7777JJJ',  8, 'Pastillas de freno gastadas'),
+        ('7777JJJ', 18, 'Pastillas de freno gastadas'),
         ('8888KKK',  7, 'Chirrido al frenar'),
         ('9999LLL', 20, 'Cambio de pastillas')
        ) AS d (matricula, dias, motivo)
   JOIN vehiculo ve USING (matricula);
 
--- La orden se abre el día de su cita. «entrega»: días desde hoy (negativo = ya pasó).
+-- La orden se abre el día de su cita. «entrega»: días desde hoy en Madrid (negativo = ya pasó;
+-- research R12: con la base en UTC, current_date aún sería ayer entre las 00:00 y las 02:00).
 INSERT INTO orden (numero, cita_id, vehiculo_id, mecanico_id, km, danos, fecha_entrega_prometida,
                    diagnostico, estado, abierta_en, terminada_en)
-SELECT o.numero, ci.id, ve.id, u.id, o.km, o.danos, current_date + o.entrega, o.diagnostico,
+SELECT o.numero, ci.id, ve.id, u.id, o.km, o.danos,
+       (now() AT TIME ZONE 'Europe/Madrid')::date + o.entrega, o.diagnostico,
        o.estado::estado_orden,
        (ci.fecha + time '09:30') AT TIME ZONE 'Europe/Madrid',
        CASE WHEN o.estado IN ('terminada', 'facturada')
@@ -95,7 +97,7 @@ SELECT o.numero, ci.id, ve.id, u.id, o.km, o.danos, current_date + o.entrega, o.
   FROM (VALUES
         (1, '1111BBB', 'luis',   60120, 'Sin daños visibles',              3, NULL::text,                           'recibida'),
         (2, '2222CCC', 'luis',   98500, 'Rayón en el paragolpes trasero',  2, 'Pastillas delanteras desgastadas',   'en_reparacion'),
-        (3, '3333DDD', 'luis',   45200, 'Sin daños visibles',              4, 'Discos de freno deformados',         'en_reparacion'),
+        (3, '3333DDD', 'luis',   45200, 'Sin daños visibles',              0, 'Discos de freno deformados',         'en_reparacion'),
         (4, '4444FFF', 'luis',  132000, 'Golpe en la puerta delantera',    5, 'Sensor de oxígeno defectuoso',       'en_diagnostico'),
         (5, '5555GGG', 'marta',  71300, 'Sin daños visibles',              3, 'Pastillas delanteras desgastadas',   'en_diagnostico'),
         (6, '6666HHH', 'marta',  88700, 'Faro derecho rajado',             2, 'Bujías en mal estado',               'en_espera_piezas'),
@@ -234,5 +236,30 @@ SELECT ve.id, (now() AT TIME ZONE 'Europe/Madrid')::date - d.dias, d.motivo
         ('1515PPP', 1, 'Ruido en la suspensión')
        ) AS d (matricula, dias, motivo)
   JOIN vehiculo ve USING (matricula);
+
+-- ---------------------------------------------------------------------------------------------
+-- Parte 6 · Ampliación caducada de la orden 7 (spec-004, research D7; quickstart §4.6 y §4.8)
+--   Sin ella no se podría comprobar en la aplicación un presupuesto caducado (spec-004 US3 y
+--   SC-003): habría que esperar 15 días. El token es ficticio y solo sirve para la demostración
+--   (constitución, principio V). Fechas de Madrid (research R12): emitida hace 16 días y, 15 días
+--   después, caducada ayer. La cita de 7777JJJ es de hace 18 días (parte 3) para que se haya
+--   emitido después de abrir la orden.
+--   Va al final para que no le alcance el CROSS JOIN de la parte 4, y lleva su propia línea.
+-- ---------------------------------------------------------------------------------------------
+
+INSERT INTO presupuesto (orden_id, tipo, estado, token, iva_porcentaje, base, iva, total,
+                         emitido_en, caduca_el)
+SELECT o.id, 'ampliacion', 'emitido', 'demo-presupuesto-caducado',
+       21.00, 40.00, 8.40, 48.40,
+       ((now() AT TIME ZONE 'Europe/Madrid')::date - 16 + time '10:00') AT TIME ZONE 'Europe/Madrid',
+       (now() AT TIME ZONE 'Europe/Madrid')::date - 1
+  FROM orden o
+ WHERE o.numero = 7;
+
+INSERT INTO linea_presupuesto (presupuesto_id, tipo, concepto, pieza_id, cantidad,
+                               precio_unitario, importe)
+SELECT p.id, 'mano_obra', 'Sustitución de discos', NULL, 1.00, 40.00, 40.00
+  FROM presupuesto p
+ WHERE p.token = 'demo-presupuesto-caducado';
 
 COMMIT;

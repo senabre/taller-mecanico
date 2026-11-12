@@ -1,0 +1,27 @@
+== US1 · ROJO (pruebas 1–4 contra el 501 de T003) · 2026-11-12 12:28:19 CET
+test prueba2_sin_ordenes_seis_columnas_vacias ... FAILED
+test prueba3_solo_el_jefe ... FAILED
+test prueba4_tarjetas_por_entrega_y_numero ... FAILED
+test prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas ... FAILED
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+thread 'prueba2_sin_ordenes_seis_columnas_vacias' (99771) panicked at tests/spec008_tablero.rs:167:5:
+  left: 501
+ right: 200
+thread 'prueba3_solo_el_jefe' (99772) panicked at tests/spec008_tablero.rs:180:9:
+  left: 501
+ right: 403
+thread 'prueba4_tarjetas_por_entrega_y_numero' (99773) panicked at tests/spec008_tablero.rs:199:5:
+  left: 501
+ right: 200
+thread 'prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas' (99770) panicked at tests/spec008_tablero.rs:141:5:
+  left: 501
+ right: 200
+test result: FAILED. 1 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.40s
+
+== US1 · VERDE (T010) · 2026-11-12 12:29:24 CET
+test prueba2_sin_ordenes_seis_columnas_vacias ... ok
+test prueba4_tarjetas_por_entrega_y_numero ... ok
+test prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas ... ok
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test prueba3_solo_el_jefe ... ok
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.49s

@@ -1,0 +1,9 @@
+[
+  {
+    "paso": "T011 Ancho del menú y del contenido (1920 px)",
+    "esperado": "Menú y contenido a 1152 px en las demás pantallas y a todo el ancho en /tablero, también navegando sin recargar",
+    "observado": "{\"/citas\":{\"menu\":1152,\"main\":1152},\"/ordenes\":{\"menu\":1152,\"main\":1152},\"/almacen\":{\"menu\":1152,\"main\":1152},\"/pedidos\":{\"menu\":1152,\"main\":1152},\"/historial\":{\"menu\":1152,\"main\":1152},\"/tablero\":{\"menu\":1920,\"main\":1920}}; navegando: /citas={\"menu\":1152,\"main\":1152}, /tablero={\"menu\":1920,\"main\":1920}",
+    "ok": true,
+    "img": "b01-t011-citas-1920.png, b07-t011-tablero-1920.png"
+  }
+]

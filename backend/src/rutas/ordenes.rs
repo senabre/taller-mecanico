@@ -100,18 +100,22 @@ const DESDE: &str = "FROM orden o
   JOIN vehiculo v ON v.id = o.vehiculo_id
   JOIN usuario u ON u.id = o.mecanico_id";
 
-/// Órdenes de la más reciente a la más antigua; con `mecanico_id`, solo las de ese mecánico.
+/// Órdenes de la más reciente a la más antigua; con `mecanico_id`, solo las de ese mecánico; con
+/// `solo_abiertas`, sin las facturadas (el tablero de spec-008, research D3).
 pub async fn resumenes(
     conexion: &mut PgConnection,
     mecanico_id: Option<i64>,
+    solo_abiertas: bool,
 ) -> Resultado<Vec<OrdenResumen>> {
     let filas: Vec<FilaResumen> = sqlx::query_as(&format!(
         "SELECT {COLUMNAS_RESUMEN} {DESDE}
-          WHERE $2::bigint IS NULL OR o.mecanico_id = $2
+          WHERE ($2::bigint IS NULL OR o.mecanico_id = $2)
+            AND (NOT $3 OR o.estado <> 'facturada')
           ORDER BY o.abierta_en DESC, o.id DESC"
     ))
     .bind(fechas::hoy())
     .bind(mecanico_id)
+    .bind(solo_abiertas)
     .fetch_all(conexion)
     .await?;
     Ok(filas.into_iter().map(OrdenResumen::from).collect())
@@ -421,7 +425,7 @@ async fn listar_ordenes(
     usuario.exigir_rol(&[Rol::Recepcion, Rol::Mecanico])?;
     let mecanico_id = filtro.mias.unwrap_or(false).then_some(usuario.id);
     let mut conexion = estado.db.acquire().await?;
-    Ok(Json(resumenes(&mut conexion, mecanico_id).await?))
+    Ok(Json(resumenes(&mut conexion, mecanico_id, false).await?))
 }
 
 /// La ficha: todos los roles con sesión.

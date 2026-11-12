@@ -1,0 +1,107 @@
+OK    escritorio vigente: sin desplazamiento horizontal
+OK    escritorio vigente: sin nombre, teléfono ni correo del cliente
+OK    escritorio vigente: sin menú del personal
+OK    escritorio vigente: «Válido hasta 20/11/2026»
+OK    escritorio vigente: total en euros
+OK    escritorio vigente: taller y vehículo
+OK    escritorio vigente: solo «Aceptar» y «Rechazar»
+OK    escritorio confirmación: pregunta de aceptar
+OK    escritorio confirmación: «Sí, aceptar» y «Volver»
+OK    escritorio confirmación: sin desplazamiento horizontal
+OK    escritorio confirmación: sin nombre, teléfono ni correo del cliente
+OK    escritorio confirmación: sin menú del personal
+OK    escritorio Volver: no guarda nada y deja la página como estaba
+OK    escritorio confirmación: pregunta de rechazar
+OK    escritorio Volver de rechazar: no guarda nada
+OK    escritorio rechazar: «Rechazado el 05/11/2026 a las 18:00», hora de Madrid
+OK    escritorio rechazar: guardado y la orden no cambia
+OK    escritorio rechazar: sin botones
+OK    escritorio rechazado: sin desplazamiento horizontal
+OK    escritorio rechazado: sin nombre, teléfono ni correo del cliente
+OK    escritorio rechazado: sin menú del personal
+OK    escritorio rechazar: sigue al volver a abrir el enlace
+OK    escritorio aceptar: «Aceptado el 05/11/2026 a las 18:00», hora de Madrid
+OK    escritorio aceptar: guardado y la orden pasa a en reparación
+OK    escritorio aceptar: sin botones
+OK    escritorio 409 respondido: enseña el mensaje del servidor
+OK    escritorio 409 respondido: enseña la decisión que ganó
+OK    escritorio 409 respondido: sin botones
+OK    escritorio 409 respondido: la segunda respuesta no cambia nada
+OK    escritorio 409 caducado: aviso con la fecha
+OK    escritorio 409 caducado: el aviso se ve una sola vez
+OK    escritorio 409 caducado: sin botones
+OK    escritorio 409 caducado: no guarda nada y la orden no cambia
+OK    escritorio caducado: sin desplazamiento horizontal
+OK    escritorio caducado: sin nombre, teléfono ni correo del cliente
+OK    escritorio caducado: sin menú del personal
+OK    escritorio caducado: aviso con la fecha
+OK    escritorio caducado: dice que es una ampliación
+OK    escritorio caducado: sin botones
+OK    escritorio ampliación: aceptar pasa la orden a en reparación
+OK    escritorio sin red al responder: mensaje
+OK    escritorio sin red al responder: no se guarda nada
+OK    escritorio sin conexión al cargar: mensaje
+OK    escritorio ya aceptado: sin desplazamiento horizontal
+OK    escritorio ya aceptado: sin nombre, teléfono ni correo del cliente
+OK    escritorio ya aceptado: sin menú del personal
+OK    escritorio ya aceptado: decisión, sin botones
+OK    escritorio enlace inválido: sin desplazamiento horizontal
+OK    escritorio enlace inválido: sin nombre, teléfono ni correo del cliente
+OK    escritorio enlace inválido: sin menú del personal
+OK    escritorio enlace inválido: solo ese texto
+OK    escritorio: sin confirm()
+OK    escritorio: sin errores de JavaScript 
+OK    movil vigente: sin desplazamiento horizontal
+OK    movil vigente: sin nombre, teléfono ni correo del cliente
+OK    movil vigente: sin menú del personal
+OK    movil vigente: «Válido hasta 20/11/2026»
+OK    movil vigente: total en euros
+OK    movil vigente: taller y vehículo
+OK    movil vigente: solo «Aceptar» y «Rechazar»
+OK    movil confirmación: pregunta de aceptar
+OK    movil confirmación: «Sí, aceptar» y «Volver»
+OK    movil confirmación: sin desplazamiento horizontal
+OK    movil confirmación: sin nombre, teléfono ni correo del cliente
+OK    movil confirmación: sin menú del personal
+OK    movil Volver: no guarda nada y deja la página como estaba
+OK    movil confirmación: pregunta de rechazar
+OK    movil Volver de rechazar: no guarda nada
+OK    movil rechazar: «Rechazado el 05/11/2026 a las 18:00», hora de Madrid
+OK    movil rechazar: guardado y la orden no cambia
+OK    movil rechazar: sin botones
+OK    movil rechazado: sin desplazamiento horizontal
+OK    movil rechazado: sin nombre, teléfono ni correo del cliente
+OK    movil rechazado: sin menú del personal
+OK    movil rechazar: sigue al volver a abrir el enlace
+OK    movil aceptar: «Aceptado el 05/11/2026 a las 18:00», hora de Madrid
+OK    movil aceptar: guardado y la orden pasa a en reparación
+OK    movil aceptar: sin botones
+OK    movil 409 respondido: enseña el mensaje del servidor
+OK    movil 409 respondido: enseña la decisión que ganó
+OK    movil 409 respondido: sin botones
+OK    movil 409 respondido: la segunda respuesta no cambia nada
+OK    movil 409 caducado: aviso con la fecha
+OK    movil 409 caducado: el aviso se ve una sola vez
+OK    movil 409 caducado: sin botones
+OK    movil 409 caducado: no guarda nada y la orden no cambia
+OK    movil caducado: sin desplazamiento horizontal
+OK    movil caducado: sin nombre, teléfono ni correo del cliente
+OK    movil caducado: sin menú del personal
+OK    movil caducado: aviso con la fecha
+OK    movil caducado: dice que es una ampliación
+OK    movil caducado: sin botones
+OK    movil ampliación: aceptar pasa la orden a en reparación
+OK    movil sin red al responder: mensaje
+OK    movil sin red al responder: no se guarda nada
+OK    movil sin conexión al cargar: mensaje
+OK    movil ya aceptado: sin desplazamiento horizontal
+OK    movil ya aceptado: sin nombre, teléfono ni correo del cliente
+OK    movil ya aceptado: sin menú del personal
+OK    movil ya aceptado: decisión, sin botones
+OK    movil enlace inválido: sin desplazamiento horizontal
+OK    movil enlace inválido: sin nombre, teléfono ni correo del cliente
+OK    movil enlace inválido: sin menú del personal
+OK    movil enlace inválido: solo ese texto
+OK    movil: sin confirm()
+OK    movil: sin errores de JavaScript 
+CORRECTAS: 106 · FALLOS: 0

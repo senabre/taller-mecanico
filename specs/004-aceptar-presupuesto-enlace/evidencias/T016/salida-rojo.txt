@@ -1,0 +1,39 @@
+FALLO escritorio emitido: enlace en un campo de solo lectura
+FALLO escritorio emitido: botón «Copiar enlace»
+OK    escritorio emitido: sin desplazamiento horizontal
+FALLO escritorio aceptado: «Inicial · Aceptado el 05/11/2026 a las 17:52»
+OK    escritorio aceptado: sin enlace ni «Copiar enlace»
+FALLO escritorio rechazado: «Inicial · Rechazado el 05/11/2026 a las 17:52»
+OK    escritorio rechazado: sin enlace ni «Copiar enlace»
+FALLO escritorio rechazado y otro emitido: la respuesta y el enlace del nuevo
+FALLO escritorio rechazado y otro emitido: el enlace es el del nuevo
+FALLO escritorio dos respuestas: se ven las dos
+OK    escritorio dos respuestas: sin enlace ni «Copiar enlace»
+OK    escritorio dos respuestas: sin desplazamiento horizontal
+OK    escritorio ampliación caducada: la ficha dice que caducó
+FALLO escritorio ampliación caducada: se ve la respuesta del inicial
+OK    escritorio ampliación caducada: sin enlace ni «Copiar enlace»
+FALLO escritorio ampliación rechazada: «Ampliación · Rechazado el 05/11/2026 a las 17:53»
+OK    escritorio ampliación rechazada: sin enlace ni «Copiar enlace»
+OK    escritorio borrador: sin enlace ni «Copiar enlace»
+OK    escritorio ficha: sin errores de JavaScript 
+FALLO movil emitido: enlace en un campo de solo lectura
+FALLO movil emitido: botón «Copiar enlace»
+OK    movil emitido: sin desplazamiento horizontal
+FALLO movil aceptado: «Inicial · Aceptado el 05/11/2026 a las 17:53»
+OK    movil aceptado: sin enlace ni «Copiar enlace»
+FALLO movil rechazado: «Inicial · Rechazado el 05/11/2026 a las 17:53»
+OK    movil rechazado: sin enlace ni «Copiar enlace»
+FALLO movil rechazado y otro emitido: la respuesta y el enlace del nuevo
+FALLO movil rechazado y otro emitido: el enlace es el del nuevo
+FALLO movil dos respuestas: se ven las dos
+OK    movil dos respuestas: sin enlace ni «Copiar enlace»
+OK    movil dos respuestas: sin desplazamiento horizontal
+OK    movil ampliación caducada: la ficha dice que caducó
+FALLO movil ampliación caducada: se ve la respuesta del inicial
+OK    movil ampliación caducada: sin enlace ni «Copiar enlace»
+FALLO movil ampliación rechazada: «Ampliación · Rechazado el 05/11/2026 a las 17:53»
+OK    movil ampliación rechazada: sin enlace ni «Copiar enlace»
+OK    movil borrador: sin enlace ni «Copiar enlace»
+OK    movil ficha: sin errores de JavaScript 
+CORRECTAS: 20 · FALLOS: 18

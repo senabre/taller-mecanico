@@ -1,0 +1,7 @@
+OK    §7.1 Orden en reparación (Nº 2) como ana: Facturar=0
+OK    §7.2 Facturar la orden de 1313MMM: Factura nº 2 · 09/11/2026 · 157,30 € · Ver e imprimir; anterior=1
+FALLA §7.2 y §7.3 Ver e imprimir: faltan=[]; menú al imprimir=true; imágenes=0
+FALLA §7.4 Correo al cliente: asunto=false; total=true
+OK    §7.5 Historial: faltan en 1313=[]; 9999LLL=true; inexistente=true
+
+3/5 comprobaciones superadas

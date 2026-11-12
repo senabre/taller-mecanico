@@ -12,6 +12,31 @@ Prioridad Media · 5 pts.
 
 **Responsable**: Persona A
 
+## Clarifications
+
+### Session 2026-11-12
+
+- Q: Si un mecánico inactivo todavía tiene órdenes abiertas, ¿cómo aparece en la carga por
+  mecánico? → A: Los activos salen siempre, también con 0. Los inactivos salen solo si tienen
+  órdenes abiertas, marcados como «(de baja)».
+- Q: ¿Quién puede ver el tablero, y qué le pasa a otro rol que escriba `/tablero` a mano? → A:
+  Solo el jefe. Recepción, mecánico y almacén no ven «Tablero» en el menú, `GET /api/tablero` les
+  responde 403 y `/tablero` les muestra, dentro de la página y sin ninguna tarjeta, el mensaje del
+  servidor «No tienes permiso para hacer esto», como las demás pantallas protegidas (corregido en
+  el plan, 2026-11-12: ninguna usa `+error.svelte` para el 403). Hay una prueba del 403 para cada
+  uno de esos tres roles.
+- Q: ¿Qué debe hacer que el tablero se actualice solo, sin recargar? → A: Abrir una orden,
+  cualquier cambio de estado (también facturar, con lo que la tarjeta desaparece), el cambio de
+  día a medianoche (00:01 de Madrid, con un minuto de margen; precisado en analyze-1, I1), que
+  recalcula las retrasadas, y la vuelta de la conexión (los
+  eventos enviados mientras no había conexión se han perdido). En todos los casos se vuelve a
+  pedir el tablero entero. La medianoche se calcula en Europe/Madrid con `Intl`, no con la zona
+  del navegador, y se prueba en el frontend con reloj simulado (`vi.useFakeTimers`), porque en
+  el quickstart no se puede comprobar a mano.
+- Q: ¿En qué orden van las tarjetas dentro de cada columna? → A: Por fecha de entrega prometida,
+  de la más antigua a la más reciente, y a igual fecha por número de orden ascendente. Así las
+  retrasadas quedan arriba.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Ver las órdenes abiertas agrupadas por estado (Priority: P1)
@@ -30,6 +55,12 @@ aparece en la columna de su estado.
 1. **Given** una orden en cada estado abierto, **When** el jefe abre el tablero, **Then** ve las
    6 columnas y cada orden en la suya.
 2. **Given** una orden «facturada», **When** se abre el tablero, **Then** no aparece.
+3. **Given** un usuario de recepción, mecánico o almacén con sesión, **When** escribe a mano la
+   dirección del tablero, **Then** no tiene «Tablero» en el menú, ve el mensaje «No tienes permiso
+   para hacer esto» sin ninguna tarjeta, y el sistema le niega los datos del tablero.
+4. **Given** en una misma columna una orden con entrega pasado mañana, otra con entrega ayer y
+   dos con entrega hoy (números 12 y 7), **When** se abre el tablero, **Then** aparecen en este
+   orden: la de ayer, la nº 7, la nº 12 y la de pasado mañana.
 
 ---
 
@@ -39,13 +70,16 @@ El tablero muestra cuántas órdenes abiertas tiene asignadas cada mecánico.
 
 **Why this priority**: Permite repartir mejor el trabajo y detectar sobrecargas.
 
-**Independent Test**: Con 3 órdenes abiertas de Luis y 1 de Ana, comprobar que el tablero muestra
-«Luis: 3» y «Ana: 1».
+**Independent Test**: Con 3 órdenes abiertas de Luis y 1 de Marta, comprobar que el tablero
+muestra «Luis: 3» y «Marta: 1».
 
 **Acceptance Scenarios**:
 
-1. **Given** Luis con 3 órdenes abiertas y Ana con 1, **When** se abre el tablero, **Then** se ve
-   «Luis 3 · Ana 1», y los mecánicos sin órdenes aparecen con 0.
+1. **Given** Luis con 3 órdenes abiertas y Marta con 1, **When** se abre el tablero, **Then** se ve
+   «Luis 3 · Marta 1», y los mecánicos activos sin órdenes aparecen con 0.
+2. **Given** un mecánico inactivo con 1 orden abierta y otro inactivo sin ninguna, **When** se
+   abre el tablero, **Then** el primero aparece en la carga con 1 y marcado «(de baja)», el
+   segundo no aparece, y la suma de la carga coincide con el número de tarjetas.
 
 ---
 
@@ -69,7 +103,8 @@ tarjeta aparece destacada y con la indicación «Retrasada».
 
 ### User Story 4 - Actualización automática (Priority: P2)
 
-Cuando cualquier orden cambia de estado, el tablero se actualiza solo, sin recargar la página.
+Cuando se abre una orden, cualquier orden cambia de estado (también al facturarla) o cambia el
+día, el tablero se actualiza solo, sin recargar la página.
 
 **Why this priority**: El tablero se deja abierto todo el día en el taller.
 
@@ -80,6 +115,17 @@ desde otro y comprobar que la tarjeta cambia de columna sin tocar el tablero.
 
 1. **Given** el tablero abierto, **When** desde otro puesto una orden pasa a «terminada»,
    **Then** en menos de 5 segundos la tarjeta aparece en la columna «terminada».
+2. **Given** el tablero abierto, **When** recepción abre una orden nueva, **Then** en menos de 5
+   segundos su tarjeta aparece en «recibida» y la carga de su mecánico sube en 1.
+3. **Given** el tablero abierto, **When** se factura una orden terminada, **Then** en menos de 5
+   segundos su tarjeta desaparece y la carga de su mecánico baja en 1.
+4. **Given** el tablero abierto con una orden cuya entrega prometida es hoy, **When** llega la
+   medianoche (00:01 de Madrid, con un minuto de margen, sea cual sea la zona horaria del
+   ordenador), **Then** el tablero se vuelve a pedir y la tarjeta aparece como «Retrasada» sin
+   que cambie ninguna orden.
+5. **Given** el tablero sin conexión y una orden que cambia de estado mientras tanto, **When**
+   vuelve la conexión, **Then** el aviso de desconexión desaparece y el tablero se vuelve a pedir
+   entero, con esa tarjeta ya en su columna nueva.
 
 ### Edge Cases
 
@@ -88,8 +134,15 @@ desde otro y comprobar que la tarjeta cambia de columna sin tocar el tablero.
   retrasada.
 - Muchas órdenes en una columna: todas siguen siendo visibles desplazándose dentro de la
   columna.
-- Se pierde la conexión: el tablero indica que no está actualizado y se recupera solo al volver
-  la conexión.
+- Se pierde la conexión: el tablero indica que no está actualizado y, al volver la conexión, se
+  vuelve a pedir entero, porque los cambios ocurridos mientras tanto no le han llegado.
+- La red se cae «en silencio» (la conexión no llega a cerrarse, así que el tablero no sabe que la
+  ha perdido): **limitación aceptada**. El tablero no muestra el aviso ni recibe cambios mientras
+  tanto; se pone al día con el siguiente evento que le llegue o a medianoche, y un corte real acaba
+  cerrando la conexión, momento en que se reconecta y se pide entero (V1 de
+  [hallazgos.md](hallazgos.md), decidido el 2026-11-12).
+- Pasa la medianoche con el tablero abierto: las órdenes cuya entrega era el día anterior pasan a
+  «Retrasada» sin esperar a ningún cambio de estado.
 
 ## Requirements *(mandatory)*
 
@@ -97,15 +150,23 @@ desde otro y comprobar que la tarjeta cambia de columna sin tocar el tablero.
 
 - **FR-001**: El sistema MUST mostrar un tablero con todas las órdenes abiertas (todas excepto
   las facturadas) agrupadas en columnas por estado: recibida, en diagnóstico, en reparación, en
-  espera de piezas, pendiente de conformidad y terminada.
+  espera de piezas, pendiente de conformidad y terminada. Dentro de cada columna, las tarjetas
+  van por fecha de entrega prometida, de la más antigua a la más reciente, y a igual fecha por
+  número de orden ascendente.
 - **FR-002**: Cada tarjeta MUST mostrar número de orden, matrícula, mecánico asignado y fecha de
   entrega prometida.
-- **FR-003**: El tablero MUST mostrar el número de órdenes abiertas asignadas a cada mecánico.
+- **FR-003**: El tablero MUST mostrar el número de órdenes abiertas asignadas a cada mecánico:
+  todos los mecánicos activos, también con 0, y los inactivos solo si tienen órdenes abiertas,
+  marcados como «(de baja)».
 - **FR-004**: Las órdenes abiertas cuya fecha de entrega prometida sea anterior a hoy MUST
   aparecer destacadas visualmente y con el texto «Retrasada».
-- **FR-005**: El tablero MUST actualizarse solo cuando cambie el estado de cualquier orden, sin
-  recargar la página.
-- **FR-006**: El tablero MUST estar disponible para el jefe de taller.
+- **FR-005**: El tablero MUST actualizarse solo, sin recargar la página, cuando se abra una
+  orden, cuando cualquier orden cambie de estado (incluido facturarla), al cambiar el día a
+  medianoche (00:01 de Madrid, con un minuto de margen) y al recuperar la conexión tras perderla.
+- **FR-006**: El tablero MUST estar disponible solo para el jefe de taller. Los demás roles
+  (recepción, mecánico, almacén) no lo ven en el menú, el sistema les niega los datos del
+  tablero y, si abren su dirección a mano, ven «No tienes permiso para hacer esto» sin ninguna
+  tarjeta, igual que en las demás pantallas protegidas.
 
 ### Key Entities
 
@@ -126,7 +187,10 @@ desde otro y comprobar que la tarjeta cambia de columna sin tocar el tablero.
 
 - La fecha de entrega prometida se registra al abrir la orden (spec-002).
 - El tablero es solo de consulta: no se cambian estados arrastrando tarjetas en la v1.
-- Se considera retrasada una orden cuando hoy es posterior a la fecha prometida (sin hora).
+- Se considera retrasada una orden no facturada cuando hoy (Europe/Madrid) es posterior a la
+  fecha prometida (sin hora). Es la regla común del data-model de la base común, la misma en
+  todas las pantallas (hallazgo I1 de spec-002); por eso una orden terminada sin facturar también
+  puede salir como retrasada.
 - Cada empleado entra con usuario y contraseña propios y un rol (recepción, mecánico, almacén,
   jefe); el jefe puede ver todo. Es base común de todas las specs (decisión Q3-A, 2026-10-15;
   ver `specs/000-base-comun/`).

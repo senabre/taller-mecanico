@@ -1,0 +1,5 @@
+OK    D7 Lo presupuestado de la orden 7: total_presupuestado=110.00; estado=pendiente_conformidad; presupuestos=inicial:aceptado, ampliacion:emitido, ampliacion:rechazado
+OK    D7 Emitir otra ampliación en la orden 7: crear=201 (ampliacion); línea=201; emitir=200 (emitido)
+OK    D7 Tarjeta de la orden 7: entrega prometida=10/11/2026; retrasada hoy=false
+
+3/3 comprobaciones superadas

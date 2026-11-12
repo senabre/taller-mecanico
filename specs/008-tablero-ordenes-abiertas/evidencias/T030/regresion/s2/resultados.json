@@ -1,0 +1,163 @@
+[
+  {
+    "paso": "§2.1 Citas de hoy",
+    "esperado": "1313MMM, 1414NNN y 8888KKK con «Abrir orden»",
+    "observado": "con botón=true,true,true",
+    "ok": true,
+    "img": "01-p1-citas-de-hoy.png"
+  },
+  {
+    "paso": "§2.1 Cita de otro día (1234BCD)",
+    "esperado": "Sin «Abrir orden»",
+    "observado": "sin botón",
+    "ok": true,
+    "img": "02-p1-cita-otro-dia.png"
+  },
+  {
+    "paso": "§2.1 Ayer (Q2, Q5)",
+    "esperado": "1515PPP sin botón; 1111BBB con enlace «Orden Nº 1»",
+    "observado": "1515PPP botón=false; 1111BBB=Orden Nº 1",
+    "ok": true,
+    "img": "03-p1-ayer.png"
+  },
+  {
+    "paso": "§2.1 Abrir por URL una cita de ayer (US1-5)",
+    "esperado": "«Solo se puede abrir la orden el día de la cita»",
+    "observado": "mensaje visible",
+    "ok": true,
+    "img": "04-p1-ayer-por-url.png"
+  },
+  {
+    "paso": "§2.2 Formulario de 1313MMM (US1-1, US1-7)",
+    "esperado": "Matrícula, marca, modelo y motivo; mecánicos Luis y Marta, sin Pedro",
+    "observado": "1313MMM=true; mecánicos=Luis, Marta",
+    "ok": true,
+    "img": "05-p2-formulario.png"
+  },
+  {
+    "paso": "§2.3 Error de danos (US1-8, FR-003, FR-006)",
+    "esperado": "«Describe los daños visibles o escribe “Sin daños visibles”» bajo su campo y no se guarda",
+    "observado": "mensaje=«Describe los daños visibles o escribe “Sin daños visibles”»; página=/ordenes/nueva",
+    "ok": true,
+    "img": "06-p3-danos-vacios.png"
+  },
+  {
+    "paso": "§2.3 Error de km (US1-8, FR-003, FR-006)",
+    "esperado": "«El kilometraje debe ser un número entero igual o mayor que 0» bajo su campo y no se guarda",
+    "observado": "mensaje=«El kilometraje debe ser un número entero igual o mayor que 0»; página=/ordenes/nueva",
+    "ok": true,
+    "img": "07-p3-km-negativo.png"
+  },
+  {
+    "paso": "§2.3 Error de entrega (US1-8, FR-003, FR-006)",
+    "esperado": "«La fecha de entrega prometida no puede ser anterior a hoy» bajo su campo y no se guarda",
+    "observado": "mensaje=«La fecha de entrega prometida no puede ser anterior a hoy»; página=/ordenes/nueva",
+    "ok": true,
+    "img": "08-p3-entrega-ayer.png"
+  },
+  {
+    "paso": "§2.4 Ficha de la orden (US1-2, US1-3, SC-002)",
+    "esperado": "Orden Nº 10, «Recibida», 85.000 km, cita, matrícula y mecánico",
+    "observado": "Orden Nº 10; Recibida=true; 85.000 km=true; url=/ordenes/10",
+    "ok": true,
+    "img": "09-p4-ficha-orden-10.png"
+  },
+  {
+    "paso": "§2.4 SC-001 (tiempo de máquina)",
+    "esperado": "Recorrido desde la lista hasta la ficha",
+    "observado": "5.0 s de máquina con 3 errores intermedios; el cronometraje humano queda pendiente",
+    "ok": true,
+    "img": "09-p4-ficha-orden-10.png"
+  },
+  {
+    "paso": "§2.4 Enlace en Citas (US1-4, Q5)",
+    "esperado": "1313MMM muestra «Orden Nº 10» y lleva a la ficha",
+    "observado": "Orden Nº 10; tras pulsar=/ordenes/10",
+    "ok": true,
+    "img": "10-p4-citas-orden-10.png"
+  },
+  {
+    "paso": "§2.5 Primera pestaña (SC-002, US1-9)",
+    "esperado": "Orden Nº 11 (consecutiva)",
+    "observado": "Orden Nº 11",
+    "ok": true,
+    "img": "11-p5-pestana-1-orden-11.png"
+  },
+  {
+    "paso": "§2.5 Segunda pestaña (US1-4, FR-008)",
+    "esperado": "«Esta cita ya tiene una orden (Nº 11)» con enlace a la orden",
+    "observado": "mensaje=true; enlace=/ordenes/11",
+    "ok": true,
+    "img": "12-p5-pestana-2-ya-tiene-orden.png"
+  },
+  {
+    "paso": "§2.5 «Órdenes» (FR-008)",
+    "esperado": "Una sola orden de 1414NNN; las recién abiertas (11 y 10) primero, por fecha de apertura",
+    "observado": "órdenes de 1414NNN=1; números=11,10,1,4,5,2,3,6,8,7,9",
+    "ok": true,
+    "img": "13-p5-ordenes.png"
+  },
+  {
+    "paso": "Lista: orden 8 retrasada",
+    "esperado": "«Retrasada» en la orden 8",
+    "observado": "8 · 8888KKK · Terminada · Marta · 11/11/2026 Retrasada",
+    "ok": true,
+    "img": "13-p5-ordenes.png"
+  },
+  {
+    "paso": "§2.7 «Mis órdenes» de luis",
+    "esperado": "Título «Mis órdenes», con la 10 y la 11 y sin órdenes de Marta",
+    "observado": "título=Mis órdenes; números=11,10,1,4,2,3,7,9; mecánicos=Luis",
+    "ok": true,
+    "img": "14-p7-mis-ordenes-luis.png"
+  },
+  {
+    "paso": "Ficha como luis (T026)",
+    "esperado": "Datos, Diagnóstico, Presupuesto, Imputaciones y Pedidos; diagnóstico editable",
+    "observado": "secciones=Datos, Diagnóstico, Presupuesto, Imputaciones, Pedidos; textarea de diagnóstico=1",
+    "ok": true,
+    "img": "15-ficha-luis.png"
+  },
+  {
+    "paso": "Ficha: guardar diagnóstico",
+    "esperado": "El estado pasa a «En diagnóstico» sin recargar",
+    "observado": "En diagnóstico=true",
+    "ok": true,
+    "img": "16-ficha-luis-diagnostico.png"
+  },
+  {
+    "paso": "Ficha como ana",
+    "esperado": "Ve las secciones y no puede editar",
+    "observado": "secciones=5; textarea de diagnóstico=0",
+    "ok": true,
+    "img": "17-ficha-ana.png"
+  },
+  {
+    "paso": "Ficha inexistente",
+    "esperado": "«No existe la orden»",
+    "observado": "No existe la orden",
+    "ok": true,
+    "img": "18-ficha-999.png"
+  },
+  {
+    "paso": "Ficha de la orden demo 2",
+    "esperado": "Muestra presupuesto e imputaciones",
+    "observado": "sí",
+    "ok": true,
+    "img": "19-ficha-orden-2.png"
+  },
+  {
+    "paso": "Ficha de la orden demo 6",
+    "esperado": "Muestra un pedido pendiente",
+    "observado": "sí",
+    "ok": true,
+    "img": "20-ficha-orden-6.png"
+  },
+  {
+    "paso": "Ficha de la orden demo 8",
+    "esperado": "Muestra «Retrasada»",
+    "observado": "sí",
+    "ok": true,
+    "img": "21-ficha-orden-8.png"
+  }
+]

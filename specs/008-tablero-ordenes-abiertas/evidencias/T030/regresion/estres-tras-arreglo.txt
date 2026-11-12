@@ -1,0 +1,10 @@
+conexiones: idle=3
+10 inicios de sesión: 204 204 204 204 204 204 204 204 204 204 
+errores en el servidor: 0
+conexiones: idle=3
+10 inicios de sesión: 204 204 204 204 204 204 204 204 204 204 
+errores en el servidor: 0
+conexiones: idle=4
+10 inicios de sesión: 204 204 204 204 204 204 204 204 204 204 
+errores en el servidor: 0
+idle|4

@@ -1,0 +1,207 @@
+//! Respuesta del cliente al presupuesto desde su enlace (spec-004; contrato, sección «spec-004 ·
+//! Respuesta del cliente»). Sin sesión: el token del enlace es lo que da acceso.
+
+use axum::Router;
+use axum::extract::{Path, State};
+use axum::routing::{get, post};
+use chrono::{DateTime, NaiveDate, Utc};
+use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
+use sqlx::PgConnection;
+
+use crate::EstadoApp;
+use crate::config::Config;
+use crate::dinero::Totales;
+use crate::error::{ErrorApi, Json, Resultado};
+use crate::estados::{Estado, cambiar_estado};
+use crate::fechas;
+use crate::lineas::Linea;
+use crate::rutas::presupuestos::caducado;
+
+const ENLACE_NO_VALIDO: &str = "Este enlace no es válido";
+
+pub fn rutas() -> Router<EstadoApp> {
+    Router::new()
+        .route("/publico/presupuestos/{token}", get(ver))
+        .route("/publico/presupuestos/{token}/respuesta", post(responder))
+}
+
+#[derive(Serialize)]
+struct Taller {
+    nombre: String,
+}
+
+/// Lo que ve el cliente. La consulta no une con `cliente`: no puede llevar sus datos (FR-002).
+#[derive(Serialize)]
+struct PresupuestoPublico {
+    taller: Taller,
+    matricula: String,
+    marca: String,
+    modelo: String,
+    diagnostico: Option<String>,
+    tipo: String,
+    lineas: Vec<Linea>,
+    #[serde(flatten)]
+    totales: Totales,
+    caduca_el: NaiveDate,
+    caducado: bool,
+    decision: Option<String>,
+    respondido_en: Option<DateTime<Utc>>,
+}
+
+#[derive(sqlx::FromRow)]
+struct FilaPublica {
+    id: i64,
+    matricula: String,
+    marca: String,
+    modelo: String,
+    diagnostico: Option<String>,
+    tipo: String,
+    estado: String,
+    iva_porcentaje: Decimal,
+    base: Decimal,
+    iva: Decimal,
+    total: Decimal,
+    caduca_el: NaiveDate,
+    respondido_en: Option<DateTime<Utc>>,
+}
+
+async fn presupuesto_publico(
+    conexion: &mut PgConnection,
+    token: &str,
+    config: &Config,
+) -> Resultado<PresupuestoPublico> {
+    let fila: FilaPublica = sqlx::query_as(
+        "SELECT p.id, v.matricula, v.marca, v.modelo, o.diagnostico, p.tipo::text AS tipo,
+                p.estado::text AS estado, p.iva_porcentaje, p.base, p.iva, p.total, p.caduca_el,
+                p.respondido_en
+           FROM presupuesto p
+           JOIN orden o ON o.id = p.orden_id
+           JOIN vehiculo v ON v.id = o.vehiculo_id
+          WHERE p.token = $1",
+    )
+    .bind(token)
+    .fetch_optional(&mut *conexion)
+    .await?
+    .ok_or_else(|| ErrorApi::NoEncontrado(ENLACE_NO_VALIDO.to_string()))?;
+    let lineas: Vec<Linea> = sqlx::query_as(
+        "SELECT id, tipo::text AS tipo, concepto, pieza_id, cantidad, precio_unitario, importe
+           FROM linea_presupuesto WHERE presupuesto_id = $1 ORDER BY id",
+    )
+    .bind(fila.id)
+    .fetch_all(&mut *conexion)
+    .await?;
+
+    Ok(PresupuestoPublico {
+        taller: Taller {
+            nombre: config.taller_nombre.clone(),
+        },
+        matricula: fila.matricula,
+        marca: fila.marca,
+        modelo: fila.modelo,
+        diagnostico: fila.diagnostico,
+        tipo: fila.tipo,
+        lineas,
+        totales: Totales {
+            base: fila.base,
+            iva_porcentaje: fila.iva_porcentaje,
+            iva: fila.iva,
+            total: fila.total,
+        },
+        caduca_el: fila.caduca_el,
+        caducado: caducado(&fila.estado, Some(fila.caduca_el)),
+        decision: (fila.estado != "emitido").then_some(fila.estado),
+        respondido_en: fila.respondido_en,
+    })
+}
+
+async fn ver(
+    State(estado): State<EstadoApp>,
+    Path(token): Path<String>,
+) -> Resultado<Json<PresupuestoPublico>> {
+    let mut conexion = estado.db.acquire().await?;
+    let presupuesto = presupuesto_publico(&mut conexion, &token, &estado.config).await?;
+    Ok(Json(presupuesto))
+}
+
+#[derive(Deserialize)]
+struct Respuesta {
+    decision: Option<String>,
+}
+
+#[derive(sqlx::FromRow)]
+struct Respondido {
+    orden_id: i64,
+    tipo: String,
+}
+
+/// FR-003, FR-004 y FR-006 (research D2 y D3).
+async fn responder(
+    State(estado): State<EstadoApp>,
+    Path(token): Path<String>,
+    Json(respuesta): Json<Respuesta>,
+) -> Resultado<Json<PresupuestoPublico>> {
+    let nuevo_estado = match respuesta.decision.as_deref() {
+        Some("aceptar") => "aceptado",
+        Some("rechazar") => "rechazado",
+        _ => {
+            return Err(ErrorApi::Validacion {
+                mensaje: "Elija aceptar o rechazar".to_string(),
+                detalle: None,
+            });
+        }
+    };
+
+    let mut tx = estado.db.begin().await?;
+    // La única versión de esta regla (research R9): solo cuenta la primera respuesta.
+    let respondido: Option<Respondido> = sqlx::query_as(
+        "UPDATE presupuesto
+            SET estado = $3::estado_presupuesto, respondido_en = now()
+          WHERE token = $1 AND estado = 'emitido' AND caduca_el >= $2
+         RETURNING orden_id, tipo::text AS tipo",
+    )
+    .bind(&token)
+    .bind(fechas::hoy())
+    .bind(nuevo_estado)
+    .fetch_optional(&mut *tx)
+    .await?;
+
+    let Some(respondido) = respondido else {
+        // El motivo (research R9): si sigue emitido y el `UPDATE` no lo ha tocado, es que ha caducado.
+        let motivo: Option<(String, NaiveDate)> =
+            sqlx::query_as("SELECT estado::text, caduca_el FROM presupuesto WHERE token = $1")
+                .bind(&token)
+                .fetch_optional(&mut *tx)
+                .await?;
+        return Err(match motivo {
+            None => ErrorApi::NoEncontrado(ENLACE_NO_VALIDO.to_string()),
+            Some((estado, _)) if estado != "emitido" => {
+                ErrorApi::Conflicto("Este presupuesto ya fue respondido".to_string())
+            }
+            Some((_, caduca_el)) => ErrorApi::Conflicto(format!(
+                "Este presupuesto caducó el {}. Contacte con el taller",
+                caduca_el.format("%d/%m/%Y")
+            )),
+        });
+    };
+
+    // Rechazar no cambia el estado de la orden (Q2). Aceptar solo cambia el estado de origen.
+    let cambio = if nuevo_estado == "aceptado" {
+        let desde = if respondido.tipo == "inicial" {
+            Estado::EnDiagnostico
+        } else {
+            Estado::PendienteConformidad
+        };
+        Some(cambiar_estado(&mut tx, respondido.orden_id, &[desde], Estado::EnReparacion).await?)
+    } else {
+        None
+    };
+    let presupuesto = presupuesto_publico(&mut tx, &token, &estado.config).await?;
+    tx.commit().await?;
+
+    // Después del commit, para que el tablero nunca lea un estado sin confirmar (R11, R14).
+    if let Some(cambio) = cambio {
+        cambio.publicar(&estado.eventos);
+    }
+    Ok(Json(presupuesto))
+}

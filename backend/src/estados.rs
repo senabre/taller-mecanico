@@ -34,12 +34,11 @@ impl Estado {
     }
 }
 
-/// Las 9 transiciones de data-model. Abrir una orden (`— → recibida`) es un `INSERT` de spec-002
+/// Las 8 transiciones de data-model. Abrir una orden (`— → recibida`) es un `INSERT` de spec-002
 /// y no pasa por aquí.
 pub const TRANSICIONES: &[(Estado, Estado)] = &[
     (Estado::Recibida, Estado::EnDiagnostico),
     (Estado::EnDiagnostico, Estado::EnReparacion),
-    (Estado::EnDiagnostico, Estado::EnDiagnostico),
     (Estado::EnReparacion, Estado::PendienteConformidad),
     (Estado::PendienteConformidad, Estado::EnReparacion),
     (Estado::EnReparacion, Estado::EnEsperaPiezas),

@@ -1,0 +1,21 @@
+== T026 · 9 movimientos en 8 llamadas · 2026-11-12 12:41:02 CET
+backend/src/rutas/almacen.rs:430:        cambio.publicar(&estado.eventos);
+backend/src/rutas/almacen.rs:501:        cambio.publicar(&estado.eventos);
+backend/src/rutas/imputaciones.rs:193:        cambio.publicar(&estado.eventos);
+backend/src/rutas/imputaciones.rs:227:    cambio.publicar(&estado.eventos);
+backend/src/rutas/ordenes.rs:403:    .publicar(&estado.eventos);
+backend/src/rutas/facturas.rs:291:    cambio.publicar(&estado.eventos);
+backend/src/rutas/publico_presupuesto.rs:204:        cambio.publicar(&estado.eventos);
+backend/src/rutas/presupuestos.rs:310:        cambio.publicar(&estado.eventos);
+-- llamadas: 8
+-- cada una, después del commit (línea del commit anterior en el mismo fichero):
+backend/src/rutas/almacen.rs:430 ← commit en la línea 426
+backend/src/rutas/almacen.rs:501 ← commit en la línea 497
+backend/src/rutas/imputaciones.rs:193 ← commit en la línea 189
+backend/src/rutas/imputaciones.rs:227 ← commit en la línea 226
+backend/src/rutas/ordenes.rs:403 ← commit en la línea 396
+backend/src/rutas/facturas.rs:291 ← commit en la línea 289
+backend/src/rutas/publico_presupuesto.rs:204 ← commit en la línea 200
+backend/src/rutas/presupuestos.rs:310 ← commit en la línea 306
+-- UPDATE de estado fuera de estados.rs:
+ninguno

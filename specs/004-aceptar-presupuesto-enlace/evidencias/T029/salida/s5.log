@@ -1,0 +1,8 @@
+OK    §5.1 Terminar sin imputar: botón en pantalla=0; API=422 «Primero hay que imputar el trabajo realizado»
+OK    §5.2 Imputar PF-123 × 2 y luego × 3: concepto=true; stock=2; error=«Solo hay 2 unidades en stock de PF-123; el almacén puede pedirla al proveedor»
+OK    §5.3 Imputar 1 h: Acumulado 90,00 € de 110,00 € presupuestados
+OK    §5.4 Imputar 1 h más: Acumulado 130,00 € de 110,00 € presupuestados; pendiente=true; imputar=0; terminar=0
+OK    §5.5 Ampliación de 1 h aceptada desde el correo: correo=true; aceptada=true; en reparación=true; Acumulado 130,00 € de 150,00 € presupuestados
+OK    §5.6 Terminar: terminada=true; imputar=0
+
+6/6 comprobaciones superadas

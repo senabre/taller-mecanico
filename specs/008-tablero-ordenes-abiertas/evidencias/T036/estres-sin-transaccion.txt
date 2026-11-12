@@ -1,0 +1,16 @@
+== T036 · estres.sh contra el código de T034 (sin transacción), base recién cargada · 2026-11-12 14:15:42 CET
+-- tanda 1
+conexiones: idle=3
+en transacción: 0
+10 inicios de sesión de ana: 204 204 204 204 204 204 204 204 204 204 
+errores nuevos en el servidor: 0
+-- tanda 2
+conexiones: 
+en transacción: 0
+10 inicios de sesión de ana: 204 204 204 204 204 204 204 204 204 204 
+errores nuevos en el servidor: 0
+-- tanda 3
+conexiones: idle=3
+en transacción: 0
+10 inicios de sesión de ana: 204 204 204 204 204 204 204 204 204 204 
+errores nuevos en el servidor: 0

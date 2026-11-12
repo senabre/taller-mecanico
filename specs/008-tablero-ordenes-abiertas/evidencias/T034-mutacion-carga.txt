@@ -1,0 +1,20 @@
+== T034 · MUTACIÓN de la condición de la carga (en Rust) · 2026-11-12 14:13:48 CET
+-- original: 100:            ((u.rol == "mecanico" && u.activo) || ordenes_abiertas > 0).then_some(CargaMecanico {
+-- mutado:   100:            (u.rol == "mecanico" && u.activo).then_some(CargaMecanico {
+-- pruebas con la mutación (sin la 9):
+test prueba2_sin_ordenes_seis_columnas_vacias ... ok
+test prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas ... ok
+test prueba4_tarjetas_por_entrega_y_numero ... ok
+test prueba5_carga_por_mecanico_con_los_activos_a_cero ... ok
+test prueba7_retrasada_ayer_si_hoy_no_y_terminada_sin_facturar_si ... ok
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test prueba6_inactivos_solo_con_ordenes_abiertas ... FAILED
+test prueba3_solo_el_jefe ... ok
+thread 'prueba6_inactivos_solo_con_ordenes_abiertas' (195519) panicked at tests/spec008_tablero.rs:301:5:
+  left: [("Luis", 0, true)]
+ right: [("Luis", 0, true), ("Pedro", 1, false)]
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 15.96s
+-- líneas: 12
+cmp: restaurado, idénticos
+-- después de restaurar:
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 15.52s

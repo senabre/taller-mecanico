@@ -1,0 +1,34 @@
+== cargo test --no-fail-fast · 2026-11-12 12:41:45 CET
+     Running unittests src/lib.rs (target/debug/deps/taller-eae9cb43754d94ff)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running unittests src/bin/crear-usuario.rs (target/debug/deps/crear_usuario-efd4e031833333f3)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running unittests src/main.rs (target/debug/deps/taller-b73807ea46e7013e)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/spec000_contador.rs (target/debug/deps/spec000_contador-4715df29474f9cc2)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.92s
+     Running tests/spec000_estados.rs (target/debug/deps/spec000_estados-420a8ed0ace014f2)
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.66s
+     Running tests/spec000_sesion.rs (target/debug/deps/spec000_sesion-1910119c5e19778e)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.94s
+     Running tests/spec001_citas.rs (target/debug/deps/spec001_citas-7e6aa7d4da890786)
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.27s
+     Running tests/spec002_ordenes.rs (target/debug/deps/spec002_ordenes-47074c78125794b0)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 51.49s
+     Running tests/spec003_presupuestos.rs (target/debug/deps/spec003_presupuestos-38e48dce2c8e4c78)
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 52.82s
+     Running tests/spec004_respuesta.rs (target/debug/deps/spec004_respuesta-394fe836a74c50b1)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.92s
+     Running tests/spec005_imputaciones.rs (target/debug/deps/spec005_imputaciones-d1d7c0263cf8f936)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 26.23s
+     Running tests/spec006_pedidos.rs (target/debug/deps/spec006_pedidos-aa564f24d13f472e)
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 43.60s
+     Running tests/spec007_facturas.rs (target/debug/deps/spec007_facturas-ddbd62c5686ff2ae)
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 25.58s
+     Running tests/spec008_tablero.rs (target/debug/deps/spec008_tablero-18c58883589d5347)
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.49s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+== cargo clippy --all-targets -- -D warnings · 2026-11-12 12:47:51 CET
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 17.05s
+código de salida: 0

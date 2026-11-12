@@ -1,0 +1,22 @@
+OK    Preparación (reutiliza §2 y §3): orden 10 y 11; presupuesto 9 emitido, total 133.10
+OK    §4.1 Correo con el enlace (Mailpit): 1794496998.840766.eml para lucia.fernandez@ejemplo.test; enlace http://localhost:3000/presupuesto/-vP0vi7UOrN7SwFb2lPXqzffC4hT8fgBBmkJiMGUWaw
+OK    §4.1 Página pública (escritorio): faltan=[]; datos del cliente=[]; sin scroll lateral=true
+OK    §4.1 Página pública (movil): faltan=[]; datos del cliente=[]; sin scroll lateral=true
+OK    §4.2 Pulsar «Aceptar»: pregunta=true; botones=true/true; confirm() del navegador=false
+OK    §4.2 «Volver»: botones de nuevo=true; estado en la base=emitido
+OK    §4.2 «Sí, aceptar»: mensaje=true; base=aceptado 1794497013190
+OK    §4.2 Volver a abrir el enlace: botones=0; mensaje=true
+OK    §4.3 Orden de 1313MMM (luis): en reparación=true; línea=true; enlace visible=false; estado en la base=en_reparacion
+OK    §4.4 Orden demo 5, «Copiar enlace» (ana, escritorio): enlace=http://localhost:3000/presupuesto/demo-presupuesto-emitido; solo lectura=true; «Copiado»=true; portapapeles igual=true; sin scroll lateral=true
+OK    §4.4 Orden demo 5, «Copiar enlace» (ana, movil): enlace=http://localhost:3000/presupuesto/demo-presupuesto-emitido; solo lectura=true; «Copiado»=true; portapapeles igual=true; sin scroll lateral=true
+OK    §4.4 Orden demo 5 como marta, su mecánica: botón «Imputar»=0; aviso=true; POST directo=409 «La orden está en diagnóstico; solo se puede imputar en órdenes en reparación»
+OK    §4.5 Rechazar el presupuesto de 1414NNN: correo=true; confirmación=true; página=true; ficha en diagnóstico=true; ficha línea=true; estado en la base=en_diagnostico
+OK    §4.6 Orden demo 7 (luis): pendiente=true; caducado=true; enlace=0; copiar=0
+OK    §4.7 Rechazar la ampliación en la primera pestaña: correo=true; título ampliación=true; pendiente=true; inicial=true; ampliación=true
+OK    §4.7 Aceptar en la segunda pestaña: aviso=true; orden|ampliación en la base=pendiente_conformidad|rechazado
+OK    §4.8 Presupuesto caducado (escritorio): mensaje=true; botones=0; sin scroll lateral=true
+OK    §4.9 Enlace inventado (escritorio): texto=«Este enlace no es válido»
+OK    §4.8 Presupuesto caducado (movil): mensaje=true; botones=0; sin scroll lateral=true
+OK    §4.9 Enlace inventado (movil): texto=«Este enlace no es válido»
+
+20/20 comprobaciones superadas

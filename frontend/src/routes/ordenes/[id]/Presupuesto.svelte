@@ -1,19 +1,21 @@
 <script lang="ts">
 	// Sección «Presupuesto» de la ficha de la orden (spec-003 US2 y US3). La ficha (`+page.svelte`,
 	// spec-002) le pasa la orden, sus presupuestos (`presupuestos_de_orden`) y si el usuario es su
-	// mecánico o el jefe. El enlace y «Copiar enlace» los añade spec-004 (FR-008) en esta sección.
+	// mecánico o el jefe. Enseña también las respuestas del cliente y, mientras se puede responder,
+	// el enlace (spec-004 FR-004 y FR-008).
 	import { del, ErrorApi, get, post } from '$lib/api';
 	import FormularioLinea from '$lib/componentes/FormularioLinea.svelte';
 	import TablaLineas from '$lib/componentes/TablaLineas.svelte';
 	import Totales from '$lib/componentes/Totales.svelte';
-	import { fecha, fechaDe } from '$lib/formato';
+	import { fecha, fechaDe, hora } from '$lib/formato';
 	import type {
 		EstadoOrden,
 		EstadoPresupuesto,
 		Linea,
 		NuevaLinea,
 		Presupuesto,
-		PresupuestoResumen
+		PresupuestoResumen,
+		TipoPresupuesto
 	} from '$lib/tipos';
 
 	let {
@@ -35,12 +37,18 @@
 		rechazado: 'Rechazado'
 	};
 
+	const NOMBRE_TIPO: Record<TipoPresupuesto, string> = {
+		inicial: 'Inicial',
+		ampliacion: 'Ampliación'
+	};
+
 	const mensaje = (e: unknown) =>
 		e instanceof ErrorApi ? e.message : 'Ha ocurrido un error inesperado';
 
 	let presupuesto = $state<Presupuesto | null>(null);
 	let error = $state('');
 	let avisoCorreo = $state('');
+	let copiado = $state(false);
 
 	// Se muestra el más reciente; la lista llega del más antiguo al más reciente.
 	const ultimo = $derived(presupuestos.at(-1));
@@ -53,6 +61,11 @@
 			(orden.estado === 'en_diagnostico' || orden.estado === 'pendiente_conformidad')
 	);
 	const enBorrador = $derived(puedeEditar && presupuesto?.estado === 'borrador');
+	const respuestas = $derived(presupuestos.filter((p) => p.respondido_en));
+	// Emitido y vigente: solo entonces se puede responder (spec-004 Q5). Es la condición del enlace y
+	// de «Válido hasta». El enlace solo se oculta en pantalla: la API sigue enviándolo (D6).
+	const vigente = $derived(presupuesto?.estado === 'emitido' && !presupuesto.caducado);
+	const enlace = $derived(vigente ? presupuesto?.enlace : null);
 
 	$effect(() => {
 		const id = ultimo?.id;
@@ -64,6 +77,17 @@
 			.then((p) => (presupuesto = p))
 			.catch((e) => (error = mensaje(e)));
 	});
+
+	async function copiar() {
+		if (!enlace) return;
+		try {
+			await navigator.clipboard.writeText(enlace);
+			copiado = true;
+			setTimeout(() => (copiado = false), 2000);
+		} catch {
+			// Sin HTTPS no hay portapapeles: el enlace sigue en el campo para copiarlo a mano (D6).
+		}
+	}
 
 	async function crear() {
 		error = '';
@@ -134,16 +158,42 @@
 	{:else}
 		{#if presupuesto.emitido_en}
 			<p>
-				Emitido el {fechaDe(presupuesto.emitido_en)} ·
+				Emitido el {fechaDe(presupuesto.emitido_en)}
 				{#if presupuesto.caducado && presupuesto.caduca_el}
-					<strong>Caducado el {fecha(presupuesto.caduca_el)}</strong>
-				{:else if presupuesto.caduca_el}
-					Válido hasta {fecha(presupuesto.caduca_el)}
+					· <strong>Caducado el {fecha(presupuesto.caduca_el)}</strong>
+				{:else if vigente && presupuesto.caduca_el}
+					· Válido hasta {fecha(presupuesto.caduca_el)}
 				{/if}
 			</p>
 		{/if}
 		{#if avisoCorreo}
 			<p class="text-warning-700-300" role="alert">{avisoCorreo}</p>
+		{/if}
+		{#if respuestas.length > 0}
+			<ul class="space-y-1">
+				{#each respuestas as respuesta (respuesta.id)}
+					{#if respuesta.respondido_en}
+						<li>
+							{NOMBRE_TIPO[respuesta.tipo]} · {NOMBRE_ESTADO[respuesta.estado]} el
+							{fechaDe(respuesta.respondido_en)} a las {hora(respuesta.respondido_en)}
+						</li>
+					{/if}
+				{/each}
+			</ul>
+		{/if}
+		{#if enlace}
+			<div class="flex flex-wrap gap-3">
+				<input
+					class="input min-w-0 flex-1 basis-64"
+					type="text"
+					readonly
+					value={enlace}
+					aria-label="Enlace del presupuesto"
+				/>
+				<button type="button" class="btn preset-tonal" onclick={copiar}>
+					{copiado ? 'Copiado' : 'Copiar enlace'}
+				</button>
+			</div>
 		{/if}
 
 		<TablaLineas lineas={presupuesto.lineas} onquitar={enBorrador ? quitar : undefined} />

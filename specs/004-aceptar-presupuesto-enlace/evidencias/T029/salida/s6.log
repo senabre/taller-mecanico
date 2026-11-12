@@ -1,0 +1,11 @@
+OK    §6.1 Alta de FA-9 sin stock y repetida: fila=«FA-9 Filtro aceite 12,00 € 0»; repetida=true
+OK    §6.2 Proveedores: opciones=[Elige un proveedor,Autopartes Norte,Recambios Sur]
+OK    §6.3 Pedido FA-9 para la orden 3: fila=«3 Recambios Sur FA-9 · Filtro aceite 1 09/11/2026 Marcar recibido»; orden=en_espera_piezas
+OK    §6.4 FA-9 otra vez: Ya hay un pedido pendiente de FA-9 para la orden 3
+OK    §6.5 PF-123 para la misma orden: pendientes de 3=2; orden=en_espera_piezas
+OK    §6.6 Pedido para una orden en diagnóstico: La orden 4 está en diagnóstico; solo se puede pedir para órdenes en reparación o en espera de piezas
+OK    §6.7 Orden 3 como luis: FA-9=true; PF-123=true; imputar=0; terminar=0
+OK    §6.8 Recibir FA-9: stock=1; orden=en_espera_piezas; botón=0
+OK    §6.9 Recibir PF-123: orden=en_reparacion; ficha=true
+
+9/9 comprobaciones superadas

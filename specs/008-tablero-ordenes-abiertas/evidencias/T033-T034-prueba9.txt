@@ -1,0 +1,77 @@
+== T033 · prueba 9 · ROJO (código con la transacción de D1) · 2026-11-12 13:54:44 CET
+-- ejecución 1
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 9.23s
+-- ejecución 2
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 9.18s
+-- ejecución 3
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 9.45s
+
+
+== T033 · prueba 9, versión final (corte tras 1–400 vueltas del planificador, ×3) · ROJO esperado con la transacción de D1 · 2026-11-12 13:57:45 CET
+-- ejecución 1
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 23.19s
+-- ejecución 2
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 23.73s
+-- ejecución 3
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 25.13s
+
+== T033 · prueba 9, versión final: corte tras 1–200 vueltas del planificador (×2) y comprobación tras CADA corte con una conexión aparte · ROJO con la transacción de D1 · 2026-11-12 14:01:58 CET
+(las dos versiones anteriores, arriba, daban verde con el código actual: miraban solo al final, y la siguiente petición del tablero limpiaba la conexión con su COMMIT)
+-- ejecución 1
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 23.30s
+-- ejecución 2
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 22.00s
+-- ejecución 3
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 24.00s
+
+== T033 · prueba 9 definitiva: 25 pasadas de 1–200 vueltas (≈4000 cortes), comprobación tras cada corte con una conexión aparte · ROJO con la transacción de D1 · 2026-11-12 14:04:52 CET
+(la versión de 2 pasadas, justo arriba, también daba verde: acertar en el BEGIN ocurre unas 2 veces de cada 1700 cortes, medido aparte)
+-- ejecución 1
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion has been running for over 60 seconds
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... FAILED
+thread 'prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion' (187732) panicked at tests/spec008_tablero.rs:429:5:
+assertion `left == right` failed: de 4592 peticiones cortadas, estas dejaron una conexión dentro de una transacción (pasos del corte)
+  left: [128, 196, 115, 171, 194, 169, 144]
+ right: []
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 96.33s
+error: test failed, to rerun pass `--test spec008_tablero`
+-- ejecución 2
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion has been running for over 60 seconds
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... FAILED
+thread 'prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion' (188744) panicked at tests/spec008_tablero.rs:429:5:
+assertion `left == right` failed: de 4634 peticiones cortadas, estas dejaron una conexión dentro de una transacción (pasos del corte)
+  left: [173, 188, 80, 194, 163, 137]
+ right: []
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 102.39s
+error: test failed, to rerun pass `--test spec008_tablero`
+-- ejecución 3
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion has been running for over 60 seconds
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... FAILED
+thread 'prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion' (189847) panicked at tests/spec008_tablero.rs:429:5:
+assertion `left == right` failed: de 4811 peticiones cortadas, estas dejaron una conexión dentro de una transacción (pasos del corte)
+  left: [168, 200, 170, 181, 175, 165]
+ right: []
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 107.36s
+error: test failed, to rerun pass `--test spec008_tablero`
+
+== T034 · VERDE sin transacción: las 9 pruebas de spec008_tablero · 2026-11-12 14:10:53 CET
+test prueba2_sin_ordenes_seis_columnas_vacias ... ok
+test prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas ... ok
+test prueba4_tarjetas_por_entrega_y_numero ... ok
+test prueba5_carga_por_mecanico_con_los_activos_a_cero ... ok
+test prueba7_retrasada_ayer_si_hoy_no_y_terminada_sin_facturar_si ... ok
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test prueba3_solo_el_jefe ... ok
+test prueba6_inactivos_solo_con_ordenes_abiertas ... ok
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion has been running for over 60 seconds
+test prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion ... ok
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 108.90s

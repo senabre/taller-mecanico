@@ -1,0 +1,35 @@
+== US2 · ROJO (carga vacía de T010) · 2026-11-12 12:31:46 CET
+test prueba2_sin_ordenes_seis_columnas_vacias ... FAILED
+test prueba4_tarjetas_por_entrega_y_numero ... FAILED
+test prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas ... FAILED
+test prueba5_carga_por_mecanico_con_los_activos_a_cero ... FAILED
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test prueba6_inactivos_solo_con_ordenes_abiertas ... FAILED
+test prueba3_solo_el_jefe ... ok
+thread 'prueba2_sin_ordenes_seis_columnas_vacias' (104088) panicked at tests/spec008_tablero.rs:207:5:
+  left: []
+ right: [("luis", 0, true)]
+thread 'prueba4_tarjetas_por_entrega_y_numero' (104090) panicked at tests/spec008_tablero.rs:141:5:
+  left: 0
+ right: 4
+thread 'prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas' (104087) panicked at tests/spec008_tablero.rs:141:5:
+  left: 0
+ right: 6
+thread 'prueba5_carga_por_mecanico_con_los_activos_a_cero' (104183) panicked at tests/spec008_tablero.rs:275:5:
+  left: []
+ right: [("luis", 3, true), ("marta", 1, true), ("nuria", 0, true)]
+thread 'prueba6_inactivos_solo_con_ordenes_abiertas' (104186) panicked at tests/spec008_tablero.rs:299:5:
+  left: []
+ right: [("Luis", 0, true), ("Pedro", 1, false)]
+test result: FAILED. 2 passed; 5 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.32s
+error: test failed, to rerun pass `--test spec008_tablero`
+
+== US2 · VERDE (T015) · 2026-11-12 12:32:16 CET
+test prueba4_tarjetas_por_entrega_y_numero ... ok
+test prueba2_sin_ordenes_seis_columnas_vacias ... ok
+test prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas ... ok
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test prueba5_carga_por_mecanico_con_los_activos_a_cero ... ok
+test prueba3_solo_el_jefe ... ok
+test prueba6_inactivos_solo_con_ordenes_abiertas ... ok
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.46s
