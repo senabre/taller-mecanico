@@ -35,7 +35,7 @@ el frontend común y sus specs (003, 005, 006, 007).
 | I4 | data-model, fila «— → recibida»; plan de 002 | MEDIUM | Abrir una orden es un `INSERT` que no publicaba ningún evento; el tablero no veía las órdenes nuevas | Corregido: el plan de 002 publica `CambioEstado { id, Recibida }` después del `commit`; data-model y la tarea de `eventos.rs` lo recogen | A | Cerrado (verificado en analyze-2) | T014 → T017 |
 | I5 | data-model y tarea de `estados.rs` frente al plan de 004 | LOW | La autotransición `en_diagnostico → en_diagnostico` está en `TRANSICIONES`, pero el plan de 004 dice «sin transición» | Asignado: al implementar la respuesta del cliente, spec-004 decide si la autotransición sobra y, si es así, la quita de data-model y de `estados.rs` (revisan A y B, porque es compartido) **Decidido el 2026-11-04 en el [clarify de spec-004](../004-aceptar-presupuesto-enlace/decisiones-clarify.md), Q2**: sobra. Rechazar no cambia el estado de la orden. Quitada de `estados.rs` (quedan 8 transiciones) y del data-model, con la prueba `en_diagnostico_no_tiene_transicion_a_si_mismo`; `tasks.md` y los analyze no se reescriben, son registro histórico. | A | Cerrado (decidido en el clarify de spec-004; revisión de B pendiente) | T015 → T016 |
 | I6 | Plan de 002 frente al contrato y la tarea de `rutas/sesion.rs` | LOW | `GET /api/mecanicos` figura en los endpoints de 002 y también en la base común | Justificado: el plan de 002 enumera los endpoints que usa; el contrato deja `GET /api/mecanicos` en la base común (T029) y 002 no lo implementa | A | Cerrado (justificado) | T028 → T029 |
-| I7 | spec-008 US2 frente a los usuarios demo | LOW | El ejemplo «Luis 3 · Ana 1» trata a Ana como mecánica; en los datos demo es de recepción | Asignado: spec-008 cambia «Ana» por «Marta» en su US2 cuando revise su spec | A | Asignado a spec-008 | — |
+| I7 | spec-008 US2 frente a los usuarios demo | LOW | El ejemplo «Luis 3 · Ana 1» trata a Ana como mecánica; en los datos demo es de recepción | Asignado: spec-008 cambia «Ana» por «Marta» en su US2 cuando revise su spec **Resuelto (12/11/2026)** en el clarify de spec-008: la US2 dice «Luis 3 · Marta 1» y la spec ya no menciona a «Ana» ([decisiones del clarify de 008](../008-tablero-ordenes-abiertas/decisiones-clarify.md), «Comprobaciones sin pregunta», fila «Ejemplo de la US2»; commit `200b4db`) | A | Cerrado (resuelto en el clarify de spec-008) | — |
 | I8 | plan.md: alcance, estructura y ficheros compartidos | LOW | Dice «unas 12 tablas» (hay 14); faltan `lib.rs`, `rutas/mod.rs`, `tests/comun/mod.rs` y varios ficheros compartidos | Justificado: la lista vigente de ficheros compartidos es la de tasks.md («Después de la fase 0»), y el plan da cifras orientativas («unas 12 tablas»). Para `correo.rs`, ver G7. Nota de la implementación de la fase 2: `plan.md` dice ya «15 tablas», que es la cifra real de la migración 0001 (no 14, como decía analyze-1) | A | Cerrado (justificado) | T017 → T019, T021 → T023 |
 | I9 | Contrato, «Rutas de pantalla» | LOW | Faltan `/` (000) y `/facturas/[id]` (plan de 007) | Asignado: spec-007, al crear `/facturas/[id]`, la añade a las rutas de pantalla del contrato junto con `/` (base común) | B | Asignado a spec-007 | T032 → T036 |
 | I10 | research R3 frente a la tarea de `Cargo.toml` | LOW | La tarea añade crates que R3 no recoge; la feature `uuid` de SQLx no se usa | Corregido al implementar T001: `Cargo.toml` sin la feature `uuid`; R3 recoge todos los crates de `Cargo.toml` (incluidos los auxiliares y los de pruebas) y las versiones elegidas del frontend | A | Cerrado (resuelto en T001) | T001 (sin cambio) |
@@ -81,13 +81,14 @@ el frontend común y sus specs (003, 005, 006, 007).
 - **Cerrados como justificados**: 6 (I6, I8, G7, G8, I12, D3)
 - **Resueltos en su tarea**: 1 (I10, en T001)
 - **Cerrados en el clarify de una spec**: 1 (I11, spec-001, sesión 2026-10-22, Q1)
-- **Asignados a una spec**: 6 (de ellos, G6 resuelto el 12/11/2026: ver abajo)
+- **Asignados a una spec**: 6 (de ellos, I7 y G6 resueltos el 12/11/2026: ver abajo)
   - spec-002: G6
   - spec-004: I5, D1
   - spec-006: D2
   - spec-007: I9
   - spec-008: I7
-- **Resuelto después** (12/11/2026): G6, con la opción b (se usa `NOMBRE_ESTADO` y el plan maestro ya
+- **Resuelto después** (12/11/2026): I7, en el clarify de spec-008 («Luis 3 · Marta 1» en su US2,
+  commit `200b4db`); y G6, con la opción b (se usa `NOMBRE_ESTADO` y el plan maestro ya
   no menciona `EstadoOrden.svelte`; el cambio del plan maestro lo revisa la Persona B).
 - **Abiertos**: 0. No queda nada que bloquee `/speckit-implement` en la base común.
 

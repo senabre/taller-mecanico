@@ -398,16 +398,16 @@ El primer intento de T030 se paró en el §1 por V3
 
 | Registro | Hallazgos | Cerrados | Asignados a otra spec o persona | Abiertos |
 |---|---|---|---|---|
-| [Base común](../specs/000-base-comun/hallazgos.md) | 33 | 30 | 3 (I7 → 008, I9 → 007, D2 → 006) | 0 |
+| [Base común](../specs/000-base-comun/hallazgos.md) | 33 | 31 | 2 (I9 → 007, D2 → 006) | 0 |
 | [spec-001](../specs/001-pedir-cita-en-linea/hallazgos.md) | 21 | 20 | 1 (I4 → 007) | 0 |
 | [spec-002](../specs/002-abrir-orden-reparacion/hallazgos.md) | 17 | 15 | 2 (I5(b) → 003; N3 → T031 de 004) | 0 |
 | [spec-004](../specs/004-aceptar-presupuesto-enlace/hallazgos.md) | 25 | 22 | 2 (G1 e I8 → Persona B) | 1 (V2, pendiente de la Persona B) |
 | [spec-008](../specs/008-tablero-ordenes-abiertas/hallazgos.md) | 17 | 16 | 1 (V2 → Persona B) | 0 |
-| **Total** | **113** | **103** | **9** | **1** |
+| **Total** | **113** | **104** | **8** | **1** |
 | Specs 003, 005, 006 y 007 | *No tienen `hallazgos.md` ni informes de analyze o converge; pendiente de que la Persona B lo indique* | | | |
 
-I7 (el ejemplo «Ana» de la US2 de 008) se corrigió en el clarify de spec-008, pero el registro de la
-base común lo sigue dando por «asignado». G6 (`EstadoOrden.svelte`) se cerró el 12/11/2026: se usa
+I7 (el ejemplo «Ana» de la US2 de 008) se cerró el 12/11/2026: se corrigió en el clarify de spec-008
+(«Luis 3 · Marta 1», commit `200b4db`). G6 (`EstadoOrden.svelte`) se cerró el 12/11/2026: se usa
 `NOMBRE_ESTADO` de `formato.ts` y el plan maestro ya no menciona el componente; ese cambio del plan
 maestro lo revisa la Persona B.
 
@@ -582,8 +582,6 @@ imputaciones».
   - los hallazgos asignados a sus specs en los registros de la Persona A: G1 e I8 de 004, I5(b) de
     002, I4 de 001, e I9 y D2 de la base común. *Pendiente de que la Persona B confirme su estado.*
 - **Persona A**:
-  - actualizar en el registro de la base común I7 (resuelto en el clarify de 008), que sigue como
-    «asignado»;
   - la limitación aceptada de V1(b): una caída silenciosa de la red no se detecta hasta el siguiente
     evento o la medianoche.
 - **Las dos**: completar la revisión cruzada de las filas de la matriz (64 de la Persona A y 54 de la
