@@ -1,0 +1,30 @@
+Pruebas de spec-006 para la matriz de trazabilidad (Persona B)
+Rama: entrega · commit: 48d884b · 12/11/2026 17:26
+Orden: cd backend && cargo test --test spec006_pedidos   (con docker compose up: Postgres y Mailpit)
+
+     Running tests\spec006_pedidos.rs (target\debug\deps\spec006_pedidos-7acfa7ca87593cac.exe)
+running 23 tests
+test alta_con_datos_no_validos_da_422 ... ok
+test lista_de_piezas_ordenada_y_con_busqueda ... ok
+test lista_de_pedidos_pendientes_de_todas_las_ordenes ... ok
+test otro_pedido_con_la_orden_en_espera_se_admite ... ok
+test orden_en_diagnostico_da_409_y_no_cambia ... ok
+test misma_referencia_pendiente_para_la_misma_orden_da_409 ... ok
+test el_jefe_puede_dar_de_alta_piezas ... ok
+test alta_con_stock_y_sin_stock ... ok
+test lista_de_proveedores_ordenada ... ok
+test con_dos_pedidos_la_orden_espera_al_ultimo ... ok
+test orden_en_espera_no_se_puede_terminar_ni_imputar ... ok
+test referencia_repetida_da_409 ... ok
+test pedido_con_datos_no_validos_da_422 ... ok
+test pedidos_de_una_orden_sin_los_de_otras ... ok
+test tras_recibir_se_puede_volver_a_pedir_la_misma_referencia ... ok
+test un_mecanico_no_puede_dar_de_alta_piezas ... ok
+test recibir_dos_veces_da_409_y_no_suma_otra_vez ... ok
+test recibir_un_pedido_que_no_existe_da_404 ... ok
+test recibir_suma_el_stock_y_la_orden_vuelve_a_reparacion ... ok
+test la_ficha_de_la_orden_trae_sus_pedidos ... ok
+test pedido_para_orden_en_reparacion_la_pone_en_espera ... ok
+test un_mecanico_no_puede_pedir ... ok
+test un_mecanico_no_puede_recibir ... ok
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.25s

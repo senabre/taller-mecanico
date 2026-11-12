@@ -14,8 +14,9 @@ historias de la Persona A ([T030 de spec-008](008-tablero-ordenes-abiertas/evide
 
 - **Criterio**: `USn-m` es el escenario *m* de la historia de usuario *n* de la spec; `SC-nnn`, un
   criterio de éxito. Hay una fila por cada escenario y cada SC de la spec, sin saltar ninguno.
-- **Decisión**: `Qn` es la pregunta *n* del clarify (`decisiones-clarify.md` de la spec); `Dn`, la
-  decisión *n* de su `research.md`. «—» si la spec ya lo decía y no hizo falta concretarlo.
+- **Decisión**: `Qn` es la pregunta *n* del clarify (`decisiones-clarify.md` de la spec; en las specs
+  003, 005, 006 y 007, el apartado «Clarifications» de su `spec.md`); `Dn`, la decisión *n* de su
+  `research.md`. «—» si la spec ya lo decía y no hizo falta concretarlo.
 - **Tareas**: las de `tasks.md` de la spec que declaran cubrirlo en su «Cubre:».
 - **Prueba**: el nombre de la prueba automática (`backend/tests/specNNN_*.rs`, o el fichero de Vitest)
   y el paso del [quickstart común](000-base-comun/quickstart.md) que lo comprueba en la aplicación.
@@ -48,7 +49,7 @@ en el navegador: [T032](001-pedir-cita-en-linea/evidencias/T032/verificacion.md)
 | US1-1 · Una matrícula registrada muestra marca y modelo, sin datos del cliente | Q5, D4 | T009, T015, T032 | `prueba_2_vehiculo_conocido_se_reconoce` · §1.4, §1.6 | Pasa; en la app, «Seat Ibiza» sin datos de contacto ([T032](001-pedir-cita-en-linea/evidencias/T032/verificacion.md), filas 9 y 12) | Persona A | Persona B (pendiente) | Verificado |
 | US1-2 · Al confirmar, se ve la fecha (dd/mm/aaaa) y el motivo | — | T009, T016, T032 | `prueba_2_vehiculo_conocido_se_reconoce` · §1.3, §1.6 | Pasa; confirmación con fecha y motivo ([T032](001-pedir-cita-en-linea/evidencias/T032/verificacion.md), filas 8 y 13) | Persona A | Persona B (pendiente) | Verificado |
 | US1-3 · Recepción ve la cita con matrícula, marca, modelo, motivo, nombre y teléfono, sin correo | Q4, D5 | T014, T017, T032 | `prueba_12_lista_de_citas` · §1.7 | Pasa; columnas sin correo ([T032](001-pedir-cita-en-linea/evidencias/T032/verificacion.md), fila 16) | Persona A | Persona B (pendiente) | Verificado |
-| US1-4 · Con una cita pendiente: aviso «Este vehículo ya tiene una cita pendiente.», sin fecha y sin poder confirmar | Q3, D3 | T012, T015, T016, T032 | `prueba_7_una_sola_cita_pendiente`, `prueba_10_concurrencia_cita_pendiente` · §1.4 | Pasa; aviso y Confirmar desactivado ([T032](001-pedir-cita-en-linea/evidencias/T032/verificacion.md), fila 9) | Persona A | Persona B (pendiente) | Verificado |
+| US1-4 · Con una cita pendiente: aviso «Este vehículo ya tiene una cita pendiente.», sin fecha y sin poder confirmar | Q3, D3 | T012, T015, T016, T032 | `prueba_7_una_sola_cita_pendiente`, `prueba_10_concurrencia_cita_pendiente` · §1.4 | Pasa; aviso y Confirmar desactivado ([T032](001-pedir-cita-en-linea/evidencias/T032/verificacion.md), fila 9) | Persona A | Persona B, revisado el 12/11/2026 | Verificado |
 | US1-5 · Matrícula inválida («12#4», «A», 11 caracteres) y límites válidos | Q1, D1 | T001, T010, T015, T032 | `prueba_3_matricula_invalida`; unitarias `matriculas_invalidas`, `limites_de_longitud` · §1.1 | Pasa; las tres inválidas rechazadas y «AB» aceptada ([T032](001-pedir-cita-en-linea/evidencias/T032/verificacion.md), filas 1–4) | Persona A | Persona B (pendiente) | Verificado |
 | US1-6 · Si la cita anterior ya pasó, se puede pedir otra | Q3, D3 | T012, T016, T032 | `prueba_7_una_sola_cita_pendiente` · §1.6 | Pasa; nueva cita de `1111BBB` ([T032](001-pedir-cita-en-linea/evidencias/T032/verificacion.md), fila 13) | Persona A | Persona B (pendiente) | Verificado |
 | US1-7 · Vehículo conocido: solo día y motivo; el propietario no cambia | Q5, D4 | T011, T016, T032 | `prueba_6_vehiculo_conocido_no_cambia` · §1.6, §1.7 | Pasa; sin campos de contacto y datos sin cambiar en la lista ([T032](001-pedir-cita-en-linea/evidencias/T032/verificacion.md), filas 12 y 17) | Persona A | Persona B (pendiente) | Verificado |
@@ -87,7 +88,7 @@ Pruebas: `backend/tests/spec002_ordenes.rs`. Verificación en el navegador:
 | US1-7 · Solo se ofrecen los mecánicos activos | Q3, D4 | T001, T013, T017, T024, T029 | `prueba_8_mecanico` · §2.2 | Pasa; Luis y Marta, sin Pedro ([T029](002-abrir-orden-reparacion/evidencias/T029/verificacion.md), fila 5) | Persona A | Persona B (pendiente) | Verificado |
 | US1-8 · Sin descripción de daños no se guarda | Q4, D4 | T012, T017, T024, T029 | `prueba_7_campos` · §2.3 | Pasa; mensaje bajo el campo ([T029](002-abrir-orden-reparacion/evidencias/T029/verificacion.md), filas 6–8) | Persona A | Persona B (pendiente) | Verificado |
 | US1-9 · Con intentos rechazados entre medias, los números siguen siendo consecutivos | Q6, D2 | T008, T029 | `prueba_2_correlativo_sin_huecos` · §2.3–§2.5 | Pasa; tras tres errores, Nº 10 y Nº 11 ([T029](002-abrir-orden-reparacion/evidencias/T029/verificacion.md), filas 6–9 y 12) | Persona A | Persona B (pendiente) | Verificado |
-| US2-1 · Un km menor que el de la visita anterior se rechaza, con ese valor | D3 | T001, T027, T028, T029 | `prueba_6_kilometraje` · §2.6 (`8888KKK`) | Pasa; «…visita anterior (39.800 km)» ([T029](002-abrir-orden-reparacion/evidencias/T029/verificacion.md), «US2 y ancho de móvil») | Persona A | Persona B (pendiente) | Verificado |
+| US2-1 · Un km menor que el de la visita anterior se rechaza, con ese valor | D3 | T001, T027, T028, T029 | `prueba_6_kilometraje` · §2.6 (`8888KKK`) | Pasa; «…visita anterior (39.800 km)» ([T029](002-abrir-orden-reparacion/evidencias/T029/verificacion.md), «US2 y ancho de móvil») | Persona A | Persona B, revisado el 12/11/2026 | Verificado |
 | US2-2 · Un km igual al anterior se acepta | D3 | T027, T028 | `prueba_6_kilometraje` | Pasa en la prueba automática; la guía no prevé paso en la app ([quickstart de 002](002-abrir-orden-reparacion/quickstart.md)) | Persona A | Persona B (pendiente) | Verificado |
 | US2-3 · Un vehículo sin visitas anteriores acepta cualquier km | D3 | T001, T027, T028, T029 | `prueba_6_kilometraje` · §2.4 (`1313MMM`), §2.5 (`1414NNN`) | Pasa ([T029](002-abrir-orden-reparacion/evidencias/T029/verificacion.md), filas 9 y 12) | Persona A | Persona B (pendiente) | Verificado |
 | SC-001 · La recepcionista abre una orden en menos de 2 minutos | — | T001, T024, T029 | Cronometraje humano · §2.4 | **31 s**, medido por una persona en Chrome en español ([T029](002-abrir-orden-reparacion/evidencias/T029/verificacion.md), «Comprobación humana») | Persona A | Persona B (pendiente) | Verificado |
@@ -99,10 +100,31 @@ Pruebas: `backend/tests/spec002_ordenes.rs`. Verificación en el navegador:
 
 ## HU-03 · Diagnóstico y presupuesto (spec-003)
 
+Documentos: [spec](003-diagnostico-presupuesto/spec.md) (el clarify está en su apartado
+«Clarifications»: Q1 cantidades, Q2 quitar líneas, Q3 cambiar el diagnóstico, Q4 concepto) ·
+[research](003-diagnostico-presupuesto/research.md) · [tareas](003-diagnostico-presupuesto/tasks.md).
+Pruebas: `backend/tests/spec003_presupuestos.rs`; salida de la ejecución para esta matriz:
+[pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt). Verificación en el navegador
+(quickstart §3): anotada en la tarea T035 de [tasks.md](003-diagnostico-presupuesto/tasks.md) (pasos
+1–7 contra la API el 22/10 y en pantalla el 05/11, como `luis` y `paco`, con la Orden Nº 1), sin
+informe con filas aparte.
+
 | Criterio | Decisión | Tareas | Prueba | Resultado y evidencia | Autor | Revisor | Estado |
 |---|---|---|---|---|---|---|---|
-
-Pendiente: las completa la Persona B.
+| US1-1 · Al guardar el diagnóstico de una orden «recibida», queda en la orden y pasa a «en diagnóstico» | Q3, D2 | T010, T012, T013, T031, T035 | `diagnostico_en_orden_recibida_la_pasa_a_en_diagnostico` · §3.1 | Pasa ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)); en la app, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| US1-2 · Sin presupuesto emitido, el diagnóstico se puede cambiar y la orden sigue «en diagnóstico» | Q3, D2 | T010, T012, T013, T035 | `el_diagnostico_se_puede_cambiar_mientras_no_haya_presupuesto_emitido` · §3.1 | Pasa ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)); en la app, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| US1-3 · Con un presupuesto emitido, el diagnóstico no se puede cambiar y se indica el motivo | Q3, D2, D6 | T011, T012, T028, T035 | `con_un_presupuesto_emitido_el_diagnostico_queda_fijo` · §3.7 | Pasa, también con el presupuesto rechazado ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)); en la app, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| US2-1 · Mano de obra 1,5 h a 40,00 € → importe 60,00 € | Q1, D4 | T015, T022, T024, T035 | `lineas_importes_y_totales_del_ejemplo` · §3.2 | Pasa ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)); en la app, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| US2-2 · Pieza PF-123 × 2 a 25,00 € → concepto «PF-123 Pastillas freno», importe 50,00 € | Q4, D3, D4 | T015, T022, T024, T035 | `lineas_importes_y_totales_del_ejemplo`, `el_concepto_enviado_para_una_pieza_se_ignora` · §3.2 | Pasa ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)); en la app, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| US2-3 · Con esas dos líneas: base 110,00 €, IVA (21 %) 23,10 €, total 133,10 € | D4 | T005, T009, T015, T024, T035 | `lineas_importes_y_totales_del_ejemplo` · §3.3 | Pasa ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)); en la app, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| US2-4 · Solo se pueden elegir referencias dadas de alta en el almacén | D3 | T016, T022, T024 | `lineas_no_validas_dan_422` (`pieza_id` inexistente → 422); la búsqueda la prueba spec-006 (`lista_de_piezas_ordenada_y_con_busqueda`) · §3.2 | Pasa ([pruebas de 003](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt), [pruebas de 006](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app se elige con el buscador de `/piezas?q=`, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| US2-5 · Al quitar la mano de obra en borrador: base 50,00 €, IVA 10,50 €, total 60,50 € | Q2 | T017, T023, T024, T035 | `quitar_una_linea_recalcula_los_totales` · §3.5 | Pasa ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)); en la app, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| US3-1 · Al emitir: «Válido hasta» = emisión + 15 días y las líneas ya no se pueden modificar | D6 | T025, T026, T028, T030, T035 | `emitir_fija_totales_caducidad_y_token`, `un_presupuesto_emitido_no_se_puede_modificar` · §3.6 | Pasa ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)); en la app, con el correo en Mailpit, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| US3-2 · Un presupuesto sin líneas no se puede emitir | D6 | T026, T028, T030 | `no_se_emite_sin_lineas_ni_por_otro_mecanico` | Pasa: 422 «El presupuesto no tiene líneas» ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)). La guía no prevé paso en la app (el botón «Emitir» solo sale con al menos una línea, T030) | Persona B | Persona A (pendiente) | Verificado |
+| SC-001 · Un mecánico prepara un presupuesto de 5 líneas en menos de 5 minutos | — | T035 | Cronometraje humano · §3.2–§3.6 | Falta cronometrarlo: la nota de T035 no recoge ningún tiempo | Persona B | Persona A (pendiente) | Pendiente |
+| SC-002 · Base + IVA = total y cada importe es cantidad × precio | D4 | T015, T018 | `lineas_importes_y_totales_del_ejemplo`, `el_iva_se_redondea_una_vez_sobre_la_base` · §3.3 | Pasa, también los casos de redondeo del IVA (4,011 → 4,01; 0,525 → 0,53) ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)) | Persona B | Persona A (pendiente) | Verificado |
+| SC-003 · Todo presupuesto emitido caduca 15 días después de su emisión | D6 | T025, T027, T035 | `emitir_fija_totales_caducidad_y_token`, `presupuestos_de_una_orden_con_su_caducidad` · §3.6 | Pasa ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)); en la app, anotado en T035 | Persona B | Persona A (pendiente) | Verificado |
+| SC-004 · No se puede añadir una pieza que no exista en el almacén | D3 | T016, T022 | `lineas_no_validas_dan_422` | Pasa: 422 «Elige una referencia de pieza dada de alta» y no se crea la línea ([pruebas](003-diagnostico-presupuesto/evidencias/matriz/pruebas.txt)) | Persona B | Persona A (pendiente) | Verificado |
 
 ---
 
@@ -127,7 +149,7 @@ Pruebas: `backend/tests/spec004_respuesta.rs`. Verificación en el navegador:
 | US2-3 · La ficha muestra todas las respuestas, cada una con su fecha y hora | Q1, D6 | T019, T021, T027 | `la_ficha_trae_todas_las_respuestas` · §4.7 | Pasa; inicial y ampliación ([T027](004-aceptar-presupuesto-enlace/evidencias/T027/verificacion.md), fila 15) | Persona A | Persona B (pendiente) | Verificado |
 | US3-1 · Un presupuesto caducado muestra el aviso, sin botones | Q3, D7 | T001, T024, T025, T026, T027, T029 | `un_caducado_no_admite_ninguna_respuesta`, `el_get_marca_el_caducado` · §4.8 | Pasa, en escritorio y a 390 px ([T027](004-aceptar-presupuesto-enlace/evidencias/T027/verificacion.md), filas 17 y 19) | Persona A | Persona B (pendiente) | Verificado |
 | US3-2 · Si caduca con la página abierta, al responder se ve el aviso y no se guarda nada | Q3, Q4 | T024, T025, T026 | `un_caducado_no_admite_ninguna_respuesta`, `el_dia_de_la_caducidad_aun_se_puede_responder`, `un_respondido_no_caduca` | Pasa en las pruebas automáticas; la guía no prevé paso en la app, porque haría falta esperar a la medianoche ([quickstart de 004](004-aceptar-presupuesto-enlace/quickstart.md)) | Persona A | Persona B (pendiente) | Verificado |
-| US4-1 · Sin presupuesto aceptado, el mecánico no puede imputar | — | T023, T027 | `sin_presupuesto_aceptado_no_se_imputa` (con mutación, T023) · §4.4 | Pasa; `marta` no ve «Imputar» y un `POST` directo da 409 ([T027](004-aceptar-presupuesto-enlace/evidencias/T027/verificacion.md), fila 12; [mutación](004-aceptar-presupuesto-enlace/evidencias/T023-mutacion.txt)) | Persona A | Persona B (pendiente) | Verificado |
+| US4-1 · Sin presupuesto aceptado, el mecánico no puede imputar | — | T023, T027 | `sin_presupuesto_aceptado_no_se_imputa` (con mutación, T023) · §4.4 | Pasa; `marta` no ve «Imputar» y un `POST` directo da 409 ([T027](004-aceptar-presupuesto-enlace/evidencias/T027/verificacion.md), fila 12; [mutación](004-aceptar-presupuesto-enlace/evidencias/T023-mutacion.txt)) | Persona A | Persona B, revisado el 12/11/2026 (ver nota) | Verificado |
 | SC-001 · El cliente responde en menos de 1 minuto desde que abre el enlace | D5 | T015, T028 | Cronometraje humano · §4.2 | **13 s**, medido por una persona en Chrome en español ([T028](004-aceptar-presupuesto-enlace/evidencias/T028/informe.md)). **Desviación**: se cronometró con la orden Nº 4 (`4444FFF`) y no con la de `1313MMM` del §4.2; es la misma página y el mismo recorrido | Persona A | Persona B (pendiente) | Verificado con desviación |
 | SC-002 · El 100 % de las respuestas quedan con fecha y hora visibles en la orden | Q1, D6 | T008, T014, T016, T019, T027, T030 | `aceptar_el_inicial_pasa_la_orden_a_reparacion`, `la_ficha_trae_todas_las_respuestas` · §4.3, §4.7 | Pasa; la hora coincide con `respondido_en` en hora de Madrid ([T027](004-aceptar-presupuesto-enlace/evidencias/T027/verificacion.md), filas 9 y 15) | Persona A | Persona B (pendiente) | Verificado |
 | SC-003 · Ningún presupuesto caducado se acepta ni se rechaza | Q3, D7 | T001, T024, T025, T027, T030 | `un_caducado_no_admite_ninguna_respuesta` · §4.8 | Pasa ([T027](004-aceptar-presupuesto-enlace/evidencias/T027/verificacion.md), filas 17 y 19) | Persona A | Persona B (pendiente) | Verificado |
@@ -137,28 +159,88 @@ Pruebas: `backend/tests/spec004_respuesta.rs`. Verificación en el navegador:
 
 ## HU-05 · Imputar tiempo y piezas (spec-005)
 
+Documentos: [spec](005-imputar-tiempo-piezas/spec.md) (clarify en «Clarifications»: Q1 concepto, Q2
+terminar sin imputaciones, Q3 ampliación rechazada) · [research](005-imputar-tiempo-piezas/research.md) ·
+[tareas](005-imputar-tiempo-piezas/tasks.md). Pruebas: `backend/tests/spec005_imputaciones.rs`;
+salida: [pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt). Verificación en el
+navegador (quickstart §5): anotada en la tarea T034 de [tasks.md](005-imputar-tiempo-piezas/tasks.md)
+(pasos 2–6 contra la API el 29/10; en pantalla el 05/11 como `luis` en la Orden Nº 10, `1313MMM`).
+
 | Criterio | Decisión | Tareas | Prueba | Resultado y evidencia | Autor | Revisor | Estado |
 |---|---|---|---|---|---|---|---|
-
-Pendiente: las completa la Persona B.
+| US1-1 · Imputar 2 uds de una pieza con stock 10 deja el stock en 8 en ese momento | D3 | T011, T016, T034 | `imputar_pieza_descuenta_stock_y_suma_al_acumulado` · §5.2 | Pasa ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)); en la app, stock de PF-123 de 4 a 2 en `/almacen` (nota de T034) | Persona B | Persona A (pendiente) | Verificado |
+| US1-2 · Con 110,00 € aceptados, 1 h a 40,00 € y 2 uds a 25,00 € → «Acumulado 90,00 € de 110,00 € presupuestados» | Q1, D3, D5 | T007, T011, T017, T030, T034 | `imputar_pieza_descuenta_stock_y_suma_al_acumulado` · §5.3 | Pasa ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)); en la app, acumulado 90 € (nota de T034) | Persona B | Persona A (pendiente) | Verificado |
+| US1-3 · Con stock 1, imputar 2 uds se rechaza indicando el stock y que puede pedirse al proveedor | D3 | T012, T016, T017, T034 | `sin_stock_suficiente_no_se_imputa` · §5.2 | Pasa: «Solo hay 1 unidad en stock de PF-123; el almacén puede pedirla al proveedor», sin cambiar el stock ni crear la imputación ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)); en la app, anotado en T034 | Persona B | Persona A (pendiente) | Verificado |
+| US2-1 · Con 100,00 € presupuestados, un acumulado de 110,00 € deja la orden «en reparación» | D4 | T018, T019, T020 | `pasar_del_110_por_ciento_bloquea_la_orden`, `el_limite_del_10_por_ciento_es_exacto_al_centimo` | Pasa: 110,00 no bloquea y 110,01 sí ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)). La guía no prevé este límite exacto en la app | Persona B | Persona A (pendiente) | Verificado |
+| US2-2 · La imputación que supera el 110 % se guarda, la orden pasa a «pendiente de conformidad» y no admite más | D4 | T018, T020, T021, T034 | `pasar_del_110_por_ciento_bloquea_la_orden` · §5.4 | Pasa, con el evento al tablero ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)); en la app, 130 € y «Pendiente de conformidad» (nota de T034) | Persona B | Persona A (pendiente) | Verificado |
+| US3-1 · Al aceptar una ampliación de 50,00 €, la orden vuelve a «en reparación» con 150,00 € presupuestados | D7 | T022, T024, T034 | `aceptar_la_ampliacion_suma_lo_presupuestado_y_reanuda` · §5.5 | Pasa ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)). **Desviación**: tanto la prueba como el recorrido de T034 simulan la aceptación del cliente con SQL, porque la página del enlace es de spec-004; la aceptación real por enlace la prueba spec-004 (`la_ampliacion_se_acepta_y_se_rechaza_igual`, HU-04 US2-2) | Persona B | Persona A (pendiente) | Verificado con desviación |
+| US3-2 · Con la ampliación sin respuesta no se puede imputar | Q3, D7 | T022, T023, T024 | `aceptar_la_ampliacion_suma_lo_presupuestado_y_reanuda`, `con_la_ampliacion_rechazada_sigue_bloqueada` | Pasa: 409 con la ampliación emitida y también con la rechazada ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)) | Persona B | Persona A (pendiente) | Verificado |
+| US4-1 · Una orden «en reparación» con imputaciones pasa a «terminada» y no admite más | D6 | T025, T028, T029, T034 | `terminar_una_orden_con_imputaciones` · §5.6 | Pasa ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)); en la app, anotado en T034 | Persona B | Persona A (pendiente) | Verificado |
+| US4-2 · Sin imputaciones no se puede terminar y se indica el motivo | Q2, D6 | T026, T028, T029, T034 | `no_se_termina_sin_imputaciones_ni_fuera_de_reparacion` · §5.1 | Pasa: 422 «Primero hay que imputar el trabajo realizado» ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)); en la app el botón «Terminar reparación» no aparece sin imputaciones (nota de T034) | Persona B | Persona A (pendiente) | Verificado |
+| SC-001 · Tras imputar piezas, el stock del almacén refleja el descuento al instante | D3 | T011, T016, T034 | `imputar_pieza_descuenta_stock_y_suma_al_acumulado` · §5.2 | Pasa ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)); en la app, de 4 a 2 (nota de T034) | Persona B | Persona A (pendiente) | Verificado |
+| SC-002 · El 100 % de las órdenes que superan el 110 % quedan bloqueadas | D4 | T018, T019, T020 | `pasar_del_110_por_ciento_bloquea_la_orden`, `el_limite_del_10_por_ciento_es_exacto_al_centimo` · §5.4 | Pasa ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)) | Persona B | Persona A (pendiente) | Verificado |
+| SC-003 · Un mecánico registra una imputación en menos de 30 segundos | — | T034 | Cronometraje humano · §5.3 | Falta cronometrarlo: la nota de T034 no recoge ningún tiempo | Persona B | Persona A (pendiente) | Pendiente |
+| SC-004 · El acumulado coincide con la suma de las imputaciones | D4, D5 | T007, T011, T015 | `imputar_pieza_descuenta_stock_y_suma_al_acumulado`, `el_resumen_suma_solo_lo_aceptado_de_esa_orden` · §5.3, §5.4 | Pasa ([pruebas](005-imputar-tiempo-piezas/evidencias/matriz/pruebas.txt)); en la app, 90 € y 130 € (nota de T034) | Persona B | Persona A (pendiente) | Verificado |
 
 ---
 
 ## HU-06 · Pedido de pieza al proveedor (spec-006)
 
+Documentos: [spec](006-pedido-pieza-proveedor/spec.md) (clarify en «Clarifications»: Q1 varios pedidos,
+Q2 stock inicial, Q3 sin cambio manual, Q4 misma referencia, Q5 sin aviso) ·
+[research](006-pedido-pieza-proveedor/research.md) · [tareas](006-pedido-pieza-proveedor/tasks.md).
+Pruebas: `backend/tests/spec006_pedidos.rs`; salida:
+[pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt). Verificación en el navegador
+(quickstart §6): anotada en la tarea T032 de [tasks.md](006-pedido-pieza-proveedor/tasks.md) (pasos
+1–6, 8 y 9 como `pepe` el 22/10; paso 7 como `luis` en la Orden Nº 2 el 05/11).
+
 | Criterio | Decisión | Tareas | Prueba | Resultado y evidencia | Autor | Revisor | Estado |
 |---|---|---|---|---|---|---|---|
-
-Pendiente: las completa la Persona B.
+| US1-1 · Alta de «PF-123», 25,00 €, stock 4 → aparece en la lista con esos datos | Q2, D6 | T009, T010, T011, T012, T013 | `alta_con_stock_y_sin_stock`, `lista_de_piezas_ordenada_y_con_busqueda` | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)). En la app, la guía da de alta sin stock (§6.1), no con stock 4 | Persona B | Persona A (pendiente) | Verificado |
+| US1-2 · Alta sin indicar stock → stock 0 | Q2, D6 | T009, T011, T013, T032 | `alta_con_stock_y_sin_stock` · §6.1 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, `FA-9` con stock 0 (nota de T032) | Persona B | Persona A (pendiente) | Verificado |
+| US1-3 · Un código repetido se rechaza indicando que ya existe | D6 | T009, T011, T032 | `referencia_repetida_da_409` · §6.1 | Pasa: 409 «Ya existe la referencia PF-123» ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, anotado en T032 | Persona B | Persona A (pendiente) | Verificado |
+| US2-1 · Un pedido para una orden «en reparación» queda «pendiente» con la fecha de hoy y la orden pasa a «en espera de piezas» | D3, D5, D7 | T014, T018, T019, T032 | `pedido_para_orden_en_reparacion_la_pone_en_espera` · §6.3 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, anotado en T032 | Persona B | Persona A (pendiente) | Verificado |
+| US2-2 · Con la orden ya en espera, otro pedido se admite y sigue en espera | Q1, D3 | T014, T018, T032 | `otro_pedido_con_la_orden_en_espera_se_admite` · §6.5 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, anotado en T032 | Persona B | Persona A (pendiente) | Verificado |
+| US2-3 · Un pedido para una orden en otro estado (p. ej. «en diagnóstico») se rechaza con el motivo | D3 | T015, T018, T032 | `orden_en_diagnostico_da_409_y_no_cambia` · §6.6 | Pasa: 409 con el motivo y la orden no cambia ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, anotado en T032 | Persona B | Persona A (pendiente) | Verificado |
+| US2-4 · Con la orden «en espera de piezas», el mecánico no puede imputar | — | T016, T027 de spec-005, T032 | `orden_en_espera_no_se_puede_terminar_ni_imputar` · §6.7 | Pasa: 409 al imputar y al terminar ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, `luis` en la Orden Nº 2 no puede imputar ni terminar (nota de T032) | Persona B | Persona A (pendiente) | Verificado |
+| US2-5 · Un segundo pedido pendiente de la misma referencia para la misma orden se rechaza con el motivo | Q4, D2 | T015, T018, T032 | `misma_referencia_pendiente_para_la_misma_orden_da_409` · §6.4 | Pasa: «Ya hay un pedido pendiente de PF-123 para la orden 42» ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, anotado en T032 | Persona B | Persona A (pendiente) | Verificado |
+| US3-1 · Al recibir el pedido: «recibido», el stock sube 2 y la orden vuelve a «en reparación» | D3, D4, D7 | T020, T023, T025, T032 | `recibir_suma_el_stock_y_la_orden_vuelve_a_reparacion` · §6.8, §6.9 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, anotado en T032 (la vuelta a «en reparación» se miró en la base de datos) | Persona B | Persona A (pendiente) | Verificado |
+| US3-2 · Con dos pedidos pendientes, recibir uno deja la orden en espera hasta el otro | D4 | T020, T023, T032 | `con_dos_pedidos_la_orden_espera_al_ultimo` · §6.8, §6.9 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, anotado en T032 | Persona B | Persona A (pendiente) | Verificado |
+| US3-3 · Con un pedido pendiente, nadie (tampoco el jefe) puede cambiar el estado de la orden a mano | Q3, D4 | T016, T030 | `orden_en_espera_no_se_puede_terminar_ni_imputar` (como `paco`, jefe) · revisión de T030 | Pasa: el jefe recibe 409 al terminar y al imputar, y la orden sigue en espera ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)). No existe ningún endpoint ni control para cambiar el estado a mano (T030) | Persona B | Persona A (pendiente) | Verificado |
+| US4-1 · La ficha de la orden muestra sus pedidos, recibidos y pendientes, con su estado | — | T026, T027, T028 | `pedidos_de_una_orden_sin_los_de_otras`, `la_ficha_de_la_orden_trae_sus_pedidos` · §6.7 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, la sección Pedidos de la Orden Nº 2 (nota de T028 y T032) | Persona B | Persona A (pendiente) | Verificado |
+| US4-2 · El almacén ve los pedidos pendientes de todas las órdenes, cada uno con su orden | — | T022, T024, T025 | `lista_de_pedidos_pendientes_de_todas_las_ordenes` · §6.8 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, anotado en T032 | Persona B | Persona A (pendiente) | Verificado |
+| SC-001 · El responsable registra un pedido en menos de 1 minuto | — | T032 | Cronometraje humano · §6.3 | Falta cronometrarlo: la nota de T032 no recoge ningún tiempo | Persona B | Persona A (pendiente) | Pendiente |
+| SC-002 · El 100 % de las órdenes con algún pedido pendiente están «en espera de piezas» | D4 | T014, T018, T020 | `pedido_para_orden_en_reparacion_la_pone_en_espera`, `otro_pedido_con_la_orden_en_espera_se_admite`, `con_dos_pedidos_la_orden_espera_al_ultimo` · §6.3 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)) | Persona B | Persona A (pendiente) | Verificado |
+| SC-003 · Al recibir el último pedido, la orden vuelve a «en reparación» sin cambiarla nadie | D4 | T020, T023 | `recibir_suma_el_stock_y_la_orden_vuelve_a_reparacion`, `con_dos_pedidos_la_orden_espera_al_ultimo` · §6.9 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)) | Persona B | Persona A (pendiente) | Verificado |
+| SC-004 · Tras recibir un pedido, el stock sube exactamente la cantidad pedida | D3 | T020, T021 | `recibir_suma_el_stock_y_la_orden_vuelve_a_reparacion`, `recibir_dos_veces_da_409_y_no_suma_otra_vez` · §6.8 | Pasa, y recibir dos veces no suma otra vez ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)); en la app, stock de FA-9 = 1 (nota de T032) | Persona B | Persona A (pendiente) | Verificado |
+| SC-005 · El 100 % de los pedidos sobre órdenes en un estado no permitido se rechazan con el motivo | D3 | T015, T018 | `orden_en_diagnostico_da_409_y_no_cambia` · §6.6 | Pasa ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)). La prueba usa una orden «en diagnóstico»; el código rechaza todo estado distinto de «en reparación» y «en espera de piezas» (T018) | Persona B | Persona A (pendiente) | Verificado |
+| SC-006 · No puede haber dos referencias con el mismo código | D6 | T002, T009, T011 | `referencia_repetida_da_409` · §6.1 | Pasa; además, `referencia` es `UNIQUE` en la base de datos (T002) ([pruebas](006-pedido-pieza-proveedor/evidencias/matriz/pruebas.txt)) | Persona B | Persona A (pendiente) | Verificado |
 
 ---
 
 ## HU-07 · Facturar y avisar al cliente (spec-007)
 
+Documentos: [spec](007-facturar-avisar-cliente/spec.md) (clarify en «Clarifications»: Q1 imprimir la
+factura, Q2 numeración, Q3 logo) · [research](007-facturar-avisar-cliente/research.md) ·
+[tareas](007-facturar-avisar-cliente/tasks.md). Pruebas: `backend/tests/spec007_facturas.rs`; salida:
+[pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt). Verificación en el navegador
+(quickstart §7): anotada en la tarea T028 de [tasks.md](007-facturar-avisar-cliente/tasks.md) (por la
+API el 29/10; en el navegador el 05/11 como `ana` y `luis`, Orden Nº 10, `1313MMM`).
+
 | Criterio | Decisión | Tareas | Prueba | Resultado y evidencia | Autor | Revisor | Estado |
 |---|---|---|---|---|---|---|---|
-
-Pendiente: las completa la Persona B.
+| US1-1 · Con 2 h a 40,00 € y PF-123 × 2 a 25,00 €, la factura muestra esas líneas, base 130,00 €, IVA 27,30 € y total 157,30 € | D1, D6 | T009, T013, T015, T016, T017, T028 | `facturar_copia_las_imputaciones_y_cierra_la_orden` · §7.2 | Pasa ([pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt)); en la app, Factura nº 2 con 130,00 / 27,30 / 157,30 € (nota de T028) | Persona B | Persona A (pendiente) | Verificado |
+| US1-2 · La factura tiene número, fecha, datos del cliente y matrícula | Q2, D4 | T009, T010, T012, T015 | `facturar_copia_las_imputaciones_y_cierra_la_orden`, `los_numeros_de_factura_son_correlativos_y_sin_repetir`, `ver_la_factura_y_su_orden` · §7.2 | Pasa, también con dos facturas a la vez ([pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt)); en la app, anotado en T028 | Persona B | Persona A (pendiente) | Verificado |
+| US1-3 · «Imprimir» abre la impresión del navegador con la factura sola, sin menú ni botones | Q1, D3 | T015, T028 | Sin prueba automática (es la hoja de estilos de impresión) · §7.3 | En la app, vista previa de impresión sin menú (nota de T028) | Persona B | Persona A (pendiente) | Verificado |
+| US1-4 · Con logo configurado sale en la cabecera; sin él, la factura sale sin logo | Q3, D8 | T029, T030, T031, T032 | `con_logo_configurado_la_factura_lo_muestra`, `sin_logo_o_con_un_archivo_que_no_existe_no_hay_logo` · §7.3 | La API pasa: `taller.logo` y `GET /api/taller/logo` con el logo, y `null` sin él o con un archivo que no existe ([pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt)). Falta la evidencia en pantalla: la nota de T028 no dice que se probara con `TALLER_LOGO` | Persona B | Persona A (pendiente) | Pendiente |
+| US1-5 · En una orden que no está «terminada», «Facturar» no está disponible | D1, D7 | T011, T016, T028 | `solo_se_factura_una_vez_y_solo_si_esta_terminada` · §7.1 | Pasa: 409 en «en reparación», «pendiente de conformidad» y «en diagnóstico» ([pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt)); en la app, sin «Facturar» en una orden en reparación (nota de T028) | Persona B | Persona A (pendiente) | Verificado |
+| US2-1 · Al emitir la factura, el cliente recibe «Su vehículo 1234BCD está listo para recoger» con el total | D2 | T018, T019, T020, T028 | `el_aviso_se_anota_si_sale_el_correo`, `si_el_correo_falla_la_factura_se_emite_igual` · §7.4 | Pasa ([pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt)); en la app, el correo llega a Mailpit (nota de T028, con `1313MMM`) | Persona B | Persona A (pendiente) | Verificado |
+| US3-1 · Con dos reparaciones facturadas, el historial las muestra con la más reciente primero, con fecha, km, diagnóstico y líneas | D5 | T021, T023, T024, T028 | `historial_con_la_reparacion_mas_reciente_primero` · §7.5 | Pasa ([pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt)); en la app, historial de `1313 mmm` y `9999LLL` (nota de T028) | Persona B | Persona A (pendiente) | Verificado |
+| US3-2 · Una matrícula sin reparaciones facturadas indica que no hay historial | D5 | T022, T023, T024, T028 | `historial_por_matricula_escrita_de_cualquier_forma` · §7.5 | Pasa: un vehículo sin facturas da `reparaciones: []` y una matrícula que no existe, 404 ([pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt)); en la app, «No hay historial para esa matrícula» con una matrícula inexistente (nota de T028) | Persona B | Persona A (pendiente) | Verificado |
+| SC-001 · La recepcionista emite una factura en menos de 30 segundos sin escribir nada | — | T028 | Cronometraje humano · §7.2 | Falta cronometrarlo: la nota de T028 no recoge ningún tiempo | Persona B | Persona A (pendiente) | Pendiente |
+| SC-002 · El 100 % de las líneas imputadas aparecen en la factura con el importe correcto | D1, D6 | T009, T013 | `facturar_copia_las_imputaciones_y_cierra_la_orden` · §7.2 | Pasa: las dos líneas, en el orden en que se imputaron ([pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt)) | Persona B | Persona A (pendiente) | Verificado |
+| SC-003 · Ninguna orden que no esté «terminada» puede facturarse | D1 | T011, T013 | `solo_se_factura_una_vez_y_solo_si_esta_terminada`, `sin_imputaciones_o_sin_permiso_no_se_factura` · §7.1 | Pasa ([pruebas](007-facturar-avisar-cliente/evidencias/matriz/pruebas.txt)) | Persona B | Persona A (pendiente) | Verificado |
+| SC-004 · El historial se consulta en menos de 10 segundos escribiendo la matrícula | — | T028 | Cronometraje humano · §7.5 | Falta cronometrarlo: la nota de T028 no recoge ningún tiempo | Persona B | Persona A (pendiente) | Pendiente |
 
 ---
 
@@ -178,7 +260,7 @@ esta matriz: [matriz](008-tablero-ordenes-abiertas/evidencias/matriz/informe.md)
 | Criterio | Decisión | Tareas | Prueba | Resultado y evidencia | Autor | Revisor | Estado |
 |---|---|---|---|---|---|---|---|
 | US1-1 · Seis columnas y cada orden en la de su estado | D1 | T006, T010, T012, T028 | `prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas` · §8.2 | Pasa (rojo antes del verde: [salida](008-tablero-ordenes-abiertas/evidencias/T006-T010-US1.txt)); en la app, 6 columnas en orden y cada tarjeta en la suya ([T028](008-tablero-ordenes-abiertas/evidencias/T028/verificacion.md), fila 4) | Persona A | Persona B (pendiente) | Verificado |
-| US1-2 · Una orden facturada no aparece | D1, D3 | T006, T010, T012, T028 | `prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas` · §8.2, §8.8 | Pasa; `9999LLL` no sale y `2222CCC` desaparece al facturar ([T028](008-tablero-ordenes-abiertas/evidencias/T028/verificacion.md), filas 4 y 10) | Persona A | Persona B (pendiente) | Verificado |
+| US1-2 · Una orden facturada no aparece | D1, D3 | T006, T010, T012, T028 | `prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas` · §8.2, §8.8 | Pasa; `9999LLL` no sale y `2222CCC` desaparece al facturar ([T028](008-tablero-ordenes-abiertas/evidencias/T028/verificacion.md), filas 4 y 10) | Persona A | Persona B, revisado el 12/11/2026 | Verificado |
 | US1-3 · Recepción, mecánico y almacén: sin menú, «No tienes permiso para hacer esto» y 403 | Q2, D4 | T008, T010, T012, T025, T028 | `prueba3_solo_el_jefe` · §8.1 | Pasa; además, con un 403 no se abre `/api/eventos` ([T028](008-tablero-ordenes-abiertas/evidencias/T028/verificacion.md), filas 1–3; [complemento](008-tablero-ordenes-abiertas/evidencias/T028/complemento.md)) | Persona A | Persona B (pendiente) | Verificado |
 | US1-4 · Tarjetas por fecha de entrega y, a igual fecha, por número | Q4, D1, D8 | T001, T009, T010, T012, T028 | `prueba4_tarjetas_por_entrega_y_numero` · §8.5 | Pasa; `3333DDD` (hoy) encima de `2222CCC` ([T028](008-tablero-ordenes-abiertas/evidencias/T028/verificacion.md), fila 7) | Persona A | Persona B (pendiente) | Verificado |
 | US2-1 · «Luis 3 · Marta 1», y los mecánicos activos sin órdenes con 0 | Q1, D2 | T013, T015, T016, T028, T034 | `prueba5_carga_por_mecanico_con_los_activos_a_cero`, `prueba2_sin_ordenes_seis_columnas_vacias` · §8.3 | Pasa ([salida](008-tablero-ordenes-abiertas/evidencias/T013-T015-US2.txt)); en la app, «Luis 5 · Marta 3», igual que las tarjetas ([T028](008-tablero-ordenes-abiertas/evidencias/T028/verificacion.md), fila 5) | Persona A | Persona B (pendiente) | Verificado |
@@ -199,8 +281,7 @@ esta matriz: [matriz](008-tablero-ordenes-abiertas/evidencias/matriz/informe.md)
 
 ## Resumen
 
-Recuento de las filas de la Persona A, para el balance de la memoria. Las historias de la Persona B
-quedan por completar.
+Recuento de las filas, para el balance de la memoria.
 
 | Historia | Criterios | Verificados | Verificados con desviación | Pendientes |
 |---|---|---|---|---|
@@ -209,7 +290,30 @@ quedan por completar.
 | HU-04 · Responder al presupuesto (spec-004) | 15 (11 + 4) | 14 | 1 | 0 |
 | HU-08 · Tablero (spec-008) | 17 (13 + 4) | 16 | 1 | 0 |
 | **Total de la Persona A** | **68** | **66** | **2** | **0** |
-| HU-03, HU-05, HU-06 y HU-07 (Persona B) | Pendiente | — | — | — |
+| HU-03 · Diagnóstico y presupuesto (spec-003) | 14 (10 + 4) | 13 | 0 | 1 |
+| HU-05 · Imputar (spec-005) | 13 (9 + 4) | 11 | 1 | 1 |
+| HU-06 · Pedidos (spec-006) | 19 (13 + 6) | 18 | 0 | 1 |
+| HU-07 · Factura e historial (spec-007) | 12 (8 + 4) | 9 | 0 | 3 |
+| **Total de la Persona B** | **58** | **51** | **1** | **6** |
+| **Total del grupo** | **126** | **117** | **3** | **6** |
 
-**Revisión (apartado 5.2)**: las 68 filas de la Persona A están pendientes de revisión por la
-Persona B.
+Pendientes de la Persona B: cinco cronometrajes humanos (003 SC-001, 005 SC-003, 006 SC-001, 007
+SC-001 y SC-004), que las notas de verificación no recogen, y la comprobación en pantalla del logo de
+la factura (007 US1-4). La salida de las pruebas automáticas de sus cuatro specs (66 pruebas, todas en
+verde) se obtuvo sobre la rama `entrega`, commit `48d884b`, el 12/11/2026.
+
+**Revisión (apartado 5.2)**: la Persona B revisó el 12/11/2026 un criterio de cada historia de la
+Persona A (ver abajo). Las demás filas de la Persona A siguen pendientes de revisión. Las 58 filas
+de la Persona B están pendientes de revisión por la Persona A.
+
+### Revisión de la Persona B sobre las filas de la Persona A (12/11/2026)
+
+Para cada historia se eligió un criterio, se leyó la prueba citada, se comprobó que sus
+aserciones cubren lo que dice el criterio y se ejecutó sobre `48d884b` (las cuatro pasan).
+
+| Historia · criterio | Qué se comprobó | Resultado |
+|---|---|---|
+| HU-01 · US1-4 (cita pendiente) | `prueba_7_una_sola_cita_pendiente` comprueba, con una cita de hoy y otra futura, que el `GET` público da `cita_pendiente: true` sin la fecha y que pedir otra da 409 con el texto exacto «Este vehículo ya tiene una cita pendiente.» La parte de pantalla (Confirmar desactivado) la cubre T032, fila 9 | Correcta |
+| HU-02 · US2-1 (km menor) | `prueba_6_kilometraje` comprueba el 422 con «…visita anterior (85.000 km)», que no se crea la orden ni se gasta número, y que la «visita anterior» es la más reciente y no la de más km | Correcta |
+| HU-04 · US4-1 (sin presupuesto aceptado no se imputa) | `sin_presupuesto_aceptado_no_se_imputa` usa órdenes «en diagnóstico», así que el 409 sale de la comprobación del estado de spec-005 (lo confirma su [mutación](004-aceptar-presupuesto-enlace/evidencias/T023-mutacion.txt)). La otra rama, una orden «en reparación» sin presupuesto aceptado → 409 «La orden no tiene un presupuesto aceptado», la cubre spec-005 (`solo_se_imputa_en_reparacion_con_presupuesto_aceptado`, T014), que también pasa | Correcta; se podría citar también la prueba de spec-005 en la fila |
+| HU-08 · US1-2 (la facturada no aparece) | `prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas` crea una orden por estado más una facturada y comprueba que hay 6 tarjetas y que la facturada no está; la desaparición al facturar en directo la cubre T028, fila 10 | Correcta |
