@@ -269,3 +269,25 @@ export interface EventoOrden {
 	id: number;
 	estado: EstadoOrden;
 }
+
+// --- spec-008 · Tablero ---
+
+/** Una fila de la carga por mecánico: los activos aunque tengan 0; los inactivos solo con órdenes abiertas. */
+export interface CargaMecanico {
+	id: number;
+	nombre: string;
+	activo: boolean;
+	ordenes_abiertas: number;
+}
+
+/** Una columna del tablero: un estado abierto y sus órdenes, por entrega y número ascendentes. */
+export interface ColumnaTablero {
+	estado: EstadoOrden;
+	ordenes: OrdenResumen[];
+}
+
+/** GET /api/tablero: siempre los 6 estados abiertos, en orden, aunque estén vacíos. */
+export interface Tablero {
+	columnas: ColumnaTablero[];
+	carga_mecanicos: CargaMecanico[];
+}
