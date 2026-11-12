@@ -119,7 +119,7 @@ frontend/
     │   ├── api.ts                    # fetch tipado + manejo de {"error"} (base común)
     │   ├── formato.ts                # euros, fechas, nombres de estado (base común)
     │   ├── tipos.ts                  # tipos TS del contrato (base común)
-    │   └── componentes/              # TablaLineas.svelte, Totales.svelte, EstadoOrden.svelte
+    │   └── componentes/              # TablaLineas.svelte, Totales.svelte, FormularioLinea.svelte
     └── routes/
         ├── +layout.svelte            # menú por rol (base común)
         ├── entrar/                   # 000

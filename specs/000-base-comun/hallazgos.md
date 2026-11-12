@@ -47,7 +47,7 @@ el frontend común y sus specs (003, 005, 006, 007).
 | G3 | Plan de 002 (85.000 km); plan de 005 (1,25 h); `formato.ts` | MEDIUM | No había formato de números en español ni en el frontend ni en el backend | Corregido: `numero()` en `formato.ts` con sus pruebas y `backend/src/formato.rs`; el plan de 002 lo usa | B | Cerrado (verificado en analyze-2) | T019 → T021, T024 → T026, nueva T015 |
 | G4 | Datos demo frente a data-model y a los planes de 005 y 007 | MEDIUM | Orden en espera de piezas sin pedido pendiente (atascada); orden terminada sin imputaciones; pendiente de conformidad sin acumulado > 110 % | Corregido: pedido pendiente e imputaciones coherentes con cada estado; el stock de PF-123 se queda en 4 | A | Cerrado (verificado en analyze-2) | T035 → T039, T036 → T040 |
 | G5 | Página de inicio por rol frente a quickstart §0 | MEDIUM | En la fase 0, tras entrar, cada rol va a una página que todavía no existe | Justificado: sin páginas de relleno; `+error.svelte` en español dentro del layout, con el menú visible | B | Cerrado (verificado en analyze-2) | nueva T035 |
-| G6 | plan.md, `componentes/EstadoOrden.svelte` | LOW | Ninguna spec ni tarea crea `EstadoOrden.svelte` | Asignado: spec-002 crea `EstadoOrden.svelte`, o lo quita del plan si basta con `NOMBRE_ESTADO` | A | Asignado a spec-002 | — |
+| G6 | plan.md, `componentes/EstadoOrden.svelte` | LOW | Ninguna spec ni tarea crea `EstadoOrden.svelte` | Asignado: spec-002 crea `EstadoOrden.svelte`, o lo quita del plan si basta con `NOMBRE_ESTADO` **Resuelto (12/11/2026)**: se usa `NOMBRE_ESTADO` de `formato.ts` y el plan ya no menciona el componente (opción b del hallazgo). Comprobado: ninguna tarea vigente menciona `EstadoOrden.svelte`, el componente no existe y todas las pantallas que muestran el estado de una orden (lista de órdenes, ficha, imputaciones y tablero) usan `NOMBRE_ESTADO`. En la estructura de carpetas del plan maestro, `EstadoOrden.svelte` se ha sustituido por `FormularioLinea.svelte`; **ese cambio del plan maestro lo revisa la Persona B** | A | Cerrado (resuelto; revisión de B del plan maestro) | — |
 | G7 | `correo.rs` frente a los planes de 003 y 007 | LOW | Las dos personas añadirán funciones a `correo.rs`, que no está en la lista de ficheros compartidos | Justificado: solo amplían `correo.rs` spec-003 y spec-007, las dos de la Persona B, así que no lo editan las dos personas. (analyze-2 decía, por error, que tasks.md ya lo recogía como compartido; no es así) | B | Cerrado (justificado) | T016 → T018 |
 | G8 | Arranque (`ServeDir("../frontend/build")`) frente al plan (Linux o Docker) | LOW | La ruta del frontend depende del directorio desde el que se arranca | Justificado: el despliegue no está en ninguna spec de la v1 (principio III); en desarrollo se arranca desde `backend/`, como indica el quickstart. Se revisará cuando se planifique el despliegue | B | Cerrado (justificado) | T017 → T019 |
 | T1 | Tareas de `eventos.rs` y `estados.rs` | MEDIUM | Dependencia circular: `eventos.rs` usaba `Estado` y `estados.rs` dependía de `eventos.rs` | Corregido: `estados.rs` va primero y `CambioEstado::publicar` está en `eventos.rs` | B | Cerrado (verificado en analyze-2) | T015 → T016, T014 → T017 |
@@ -81,12 +81,14 @@ el frontend común y sus specs (003, 005, 006, 007).
 - **Cerrados como justificados**: 6 (I6, I8, G7, G8, I12, D3)
 - **Resueltos en su tarea**: 1 (I10, en T001)
 - **Cerrados en el clarify de una spec**: 1 (I11, spec-001, sesión 2026-10-22, Q1)
-- **Asignados a una spec**: 6
+- **Asignados a una spec**: 6 (de ellos, G6 resuelto el 12/11/2026: ver abajo)
   - spec-002: G6
   - spec-004: I5, D1
   - spec-006: D2
   - spec-007: I9
   - spec-008: I7
+- **Resuelto después** (12/11/2026): G6, con la opción b (se usa `NOMBRE_ESTADO` y el plan maestro ya
+  no menciona `EstadoOrden.svelte`; el cambio del plan maestro lo revisa la Persona B).
 - **Abiertos**: 0. No queda nada que bloquee `/speckit-implement` en la base común.
 
 ## Correspondencia de numeración (tasks.md)
