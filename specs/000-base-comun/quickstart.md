@@ -206,11 +206,11 @@ con un reloj para los pasos 4 y 6 (SC-001 y SC-002). La correspondencia con la s
    tarjeta desaparece y la carga pasa a «Luis 5».
 9. Parar el servidor (Ctrl+C en la terminal de `cargo run`) → en el navegador de `paco` aparece
    «Sin conexión, reintentando…». Volver a arrancarlo (`cargo run`) → en unos segundos el aviso
-   desaparece solo, sin recargar, y el tablero sigue al día. *Con las herramientas de desarrollo*
-   (opcional) se comprueba además que no se pierde nada: en el navegador de `paco`, poner la red en
-   «Sin conexión»; mientras tanto, como `luis`, terminar la orden de `3333DDD`; volver a poner la
-   red → el aviso desaparece y `3333DDD` ya está en «Terminada», sin recargar. (Si no se hace esta
-   parte, terminar `3333DDD` después, con el tablero conectado: la tarjeta pasa a «Terminada».)
+   desaparece solo, sin recargar, y el tablero sigue al día. Después, como `luis`, terminar la
+   orden de `3333DDD` → con el tablero ya conectado, la tarjeta pasa sola a «Terminada». (Que lo que
+   cambie mientras el tablero está sin conexión aparezca al volver lo comprueban las pruebas
+   automáticas; cortar la red desde las herramientas de desarrollo no sirve, porque no corta una
+   conexión de eventos ya abierta: V1 de spec-008.)
 10. En un **móvil** conectado a la misma red, abrir `http://<IP del ordenador>:3000/tablero` como
     `paco` (o, con las herramientas de desarrollo, a **390 px** de ancho): se ve una columna entera y
     el borde de la siguiente; las columnas se desplazan con el dedo en horizontal **dentro del tablero**, la

@@ -177,3 +177,20 @@ editando este archivo y la spec afectada.
   cambio esté guardado y seguir viendo el estado antiguo; si la transacción falla, no se publica
   nada. `#[must_use]` hace que el compilador avise si alguien olvida publicar.
 - **Alternativas descartadas**: publicar dentro de `cambiar_estado`, por la carrera descrita.
+- **Aviso: una transacción cancelada a mitad** (añadido el 2026-11-12 por el hallazgo V3 de
+  spec-008; para la Persona B). Cuando el navegador corta una petición (cambiar de pantalla, cerrar
+  la pestaña), Axum cancela el manejador en el punto en que esté. Si eso ocurre **mientras se espera
+  la respuesta del `BEGIN`**, SQLx 0.8.6 no encola el `ROLLBACK`: su guardián solo lo hace con
+  `transaction_depth > 0`, y la profundidad no sube hasta que llega esa respuesta. La conexión vuelve
+  al *pool* dentro de la transacción, y las peticiones siguientes que la reciben trabajan dentro de
+  ella: con `READ ONLY` fallan al escribir y dejan la transacción abortada; con un `BEGIN` normal,
+  sus cambios quedan sin confirmar y bloquean filas (por ejemplo, de `sesion`) hasta que otra
+  petición hace `COMMIT` o `ROLLBACK` sobre esa conexión. Si la cancelación llega después, cuando
+  el `Transaction` ya existe, SQLx sí deshace la transacción al devolver la conexión.
+  - **En spec-008** se quitó la transacción de `GET /api/tablero`, porque el tablero se vuelve a
+    pedir muchas veces y se corta al navegar; su prueba 9 corta unas 4600 peticiones en todos sus
+    puntos de espera y comprueba tras cada corte que ninguna conexión queda «idle in transaction».
+  - **Las demás transacciones** (`POST` de citas, órdenes, presupuestos, imputaciones, facturas,
+    pedidos y sesión) pueden sufrir lo mismo, aunque es mucho menos probable: no se repiten solas
+    ni se cortan al navegar, y la ventana es de una décima de milisegundo. Queda a criterio de la
+    Persona B si alguna lo necesita; spec-008 no cambia sus ficheros.
