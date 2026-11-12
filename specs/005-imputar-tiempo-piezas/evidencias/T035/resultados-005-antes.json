@@ -1,0 +1,23 @@
+[
+  {
+    "fase": "antes",
+    "paso": "(a) En reparación sin imputaciones",
+    "esperado": "el motivo «Primero hay que imputar el trabajo realizado.» y ningún botón «Terminar reparación»",
+    "observado": "motivo=0; botón=0",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(b) Terminar reparación",
+    "esperado": "pregunta en la página con «Sí, terminar» y «Volver», sin diálogo del navegador; Volver no termina; Sí, terminar termina",
+    "observado": "diálogo del navegador=«¿Marcar la reparación como terminada? Ya no se podrán imputar más horas ni piezas.»; pregunta=0; Sí, terminar=0; Volver=0; tras Volver sigue=false; terminada=false",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(c) Confirmación a 390 px",
+    "esperado": "cabe sin desplazamiento horizontal",
+    "observado": "ancho del documento=0px",
+    "ok": false
+  }
+]

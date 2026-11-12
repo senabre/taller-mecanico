@@ -54,7 +54,7 @@ las decisiones abiertas en [research.md](research.md).
 | I. Simplicidad | Acumulado y presupuestado calculados al vuelo, sin guardarlos. Stock y umbral protegidos por la base de datos (`UPDATE … WHERE stock >= n`, `CHECK`) y `FOR UPDATE`. Una sola validación de líneas (D1) y un solo formulario (D8) para presupuesto e imputación. | ✅ |
 | II. Español y euro | Mensajes en español; importes con `formato.ts`; horas «1,25 h». | ✅ |
 | III. Cero alcance fantasma | Sin anular ni corregir imputaciones, sin control horario, sin salida para una ampliación rechazada (límite conocido escrito en la spec). No hay endpoints nuevos para ampliaciones. | ✅ |
-| IV. Verificable sin código | Cada SC tiene su paso en [quickstart §5](../000-base-comun/quickstart.md); el acumulado se comprueba con calculadora y el stock en `/almacen`. | ✅ |
+| IV. Verificable sin código | SC-001, SC-002 y SC-004 tienen su paso en [quickstart §5](../000-base-comun/quickstart.md); el acumulado se comprueba con calculadora y el stock en `/almacen`. SC-003 (una imputación en menos de 30 s) no tiene paso de cronometraje: se midió con un navegador automático y se acepta como desviación ([hallazgos](hallazgos.md), G1). | ✅ |
 | V. Datos | Solo se guarda qué mecánico imputa y cuándo (entidad «Imputación» de la spec). | ✅ |
 
 **Re-check post-diseño**: la migración `0003` solo añade un `CHECK` que concreta FR-002; mover la

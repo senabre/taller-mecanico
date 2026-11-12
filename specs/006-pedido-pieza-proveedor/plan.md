@@ -54,7 +54,7 @@ No queda ningún NEEDS CLARIFICATION. Las decisiones abiertas se cierran en [res
 | I. Simplicidad | Las reglas las garantiza la base de datos: índice parcial (D2), `FOR UPDATE` (D3), `CHECK` de stock. Sin capas: `almacen.rs` hace sus consultas SQLx. La orden se indica por número, sin abrir endpoints de otra persona (D5). | ✅ |
 | II. Español y euro | Mensajes de error en español; precio en € con `formato.ts`; fechas dd/mm/aaaa. | ✅ |
 | III. Cero alcance fantasma | Se **quita** `POST /api/proveedores` (FR-010, D1). No hay catálogos, envío al proveedor, edición o baja de referencias, recepción parcial, cancelación ni avisos al mecánico (D8). | ✅ |
-| IV. Verificable sin código | Cada SC tiene su paso en [quickstart §6](../000-base-comun/quickstart.md). | ✅ |
+| IV. Verificable sin código | SC-002…SC-006 tienen su paso en [quickstart §6](../000-base-comun/quickstart.md). SC-001 (un pedido en menos de 1 minuto) no tiene paso de cronometraje: se midió con un navegador automático y se acepta como desviación ([hallazgos](hallazgos.md), G1). | ✅ |
 | V. Datos | Solo datos de piezas y pedidos; ningún dato personal. | ✅ |
 
 **Re-check post-diseño**: los cambios al modelo y al contrato compartidos solo quitan alcance

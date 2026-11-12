@@ -1,0 +1,5 @@
+OK    (a) Diagnóstico vacío: aplicación=«Escribe el diagnóstico»; navegador=«»
+OK    (b) Con un presupuesto emitido: cuadro=0; botón=0; motivo=1; diagnóstico visible=1
+OK    (c) Sin presupuesto emitido: error=0; cuadro=«Sensor de oxígeno y sonda lambda defectuosos»
+OK    (b) A 390 px: ancho del documento=390px
+4 correctas y 0 fallos

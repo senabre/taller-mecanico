@@ -1,0 +1,4 @@
+FALLA (a) 2,5 unidades de PF-123: aplicación=«»; navegador=«Introduce un valor válido. Los dos valores válidos más aproximados son 2 y 3.»; líneas=0
+FALLA (b) Mano de obra sin concepto: aplicación=«»; navegador=«Completa este campo»
+FALLA (c) Emitir presupuesto: diálogo del navegador=«Una vez emitido no se podrá modificar. ¿Emitir el presupuesto?»; pregunta=0; Sí, emitir=0; Volver=0; tras Volver sigue en borrador=false; emitido=false
+0 correctas y 3 fallos

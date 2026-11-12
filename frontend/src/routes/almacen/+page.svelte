@@ -10,8 +10,8 @@
 	let referencia = $state('');
 	let descripcion = $state('');
 	let precio = $state('');
-	// Campo numérico: vacío es null (sin stock inicial → el servidor pone 0).
-	let stock: number | null = $state(null);
+	// Sin stock inicial (vacío), el servidor pone 0.
+	let stock = $state('');
 	let enviando = $state(false);
 	let error = $state('');
 	let aviso = $state('');
@@ -29,6 +29,14 @@
 		cargar();
 	});
 
+	// Los números se escriben en campos de texto: si lo escrito es un entero viaja como número y, si
+	// no, tal cual, para que el servidor responda con su motivo en español (principio II; spec-006
+	// analyze-1 C1). Vacío es null.
+	const entero = (texto: string) => {
+		const t = texto.trim();
+		return t === '' ? null : /^-?\d+$/.test(t) ? Number(t) : t;
+	};
+
 	async function guardar(evento: SubmitEvent) {
 		evento.preventDefault();
 		enviando = true;
@@ -41,14 +49,14 @@
 				descripcion,
 				precio_venta: precio.trim().replace(',', '.')
 			};
-			if (stock != null) cuerpo.stock = stock;
+			if (stock.trim() !== '') cuerpo.stock = entero(stock);
 			const nueva = await post<Pieza>('/piezas', cuerpo);
 			piezas = [...piezas, nueva].sort((a, b) => (a.referencia < b.referencia ? -1 : 1));
 			aviso = `Referencia ${nueva.referencia} dada de alta`;
 			referencia = '';
 			descripcion = '';
 			precio = '';
-			stock = null;
+			stock = '';
 		} catch (e) {
 			error = e instanceof ErrorApi ? e.message : 'Ha ocurrido un error inesperado';
 		} finally {
@@ -64,7 +72,8 @@
 
 	<section class="card bg-surface-100-900 max-w-3xl space-y-4 p-6">
 		<h2 class="h4">Dar de alta una referencia</h2>
-		<form class="grid gap-4 sm:grid-cols-2" onsubmit={guardar}>
+		<!-- `novalidate`: los mensajes los da el servidor, en español, no el navegador. -->
+		<form class="grid gap-4 sm:grid-cols-2" novalidate onsubmit={guardar}>
 			<label class="label">
 				<span class="label-text">Referencia</span>
 				<input class="input" name="referencia" required bind:value={referencia} />
@@ -89,9 +98,7 @@
 				<input
 					class="input"
 					name="stock"
-					type="number"
-					min="0"
-					step="1"
+					inputmode="numeric"
 					placeholder="0"
 					bind:value={stock}
 				/>

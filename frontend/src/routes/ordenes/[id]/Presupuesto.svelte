@@ -49,6 +49,10 @@
 	let error = $state('');
 	let avisoCorreo = $state('');
 	let copiado = $state(false);
+	// La confirmación de «Emitir» va en la página y no con `confirm()`, cuyos botones salen en el
+	// idioma del navegador (principio II; igual que spec-004 D5; analyze-1 C1).
+	let confirmandoEmision = $state(false);
+	let emitiendo = $state(false);
 
 	// Se muestra el más reciente; la lista llega del más antiguo al más reciente.
 	const ultimo = $derived(presupuestos.at(-1));
@@ -119,9 +123,9 @@
 
 	async function emitir() {
 		if (!presupuesto) return;
-		if (!confirm('Una vez emitido no se podrá modificar. ¿Emitir el presupuesto?')) return;
 		error = '';
 		avisoCorreo = '';
+		emitiendo = true;
 		try {
 			const emitido = await post<Presupuesto>(`/presupuestos/${presupuesto.id}/emitir`);
 			presupuesto = emitido;
@@ -129,6 +133,9 @@
 			onCambio();
 		} catch (e) {
 			error = mensaje(e);
+		} finally {
+			emitiendo = false;
+			confirmandoEmision = false;
 		}
 	}
 </script>
@@ -202,11 +209,39 @@
 		{#if enBorrador}
 			<FormularioLinea titulo="Añadir línea" textoBoton="Añadir línea" onenviar={anadir} />
 			{#if presupuesto.lineas.length > 0}
-				<div class="flex justify-end">
-					<button type="button" class="btn preset-filled-primary-500" onclick={emitir}>
-						Emitir presupuesto
-					</button>
-				</div>
+				{#if confirmandoEmision}
+					<section class="card bg-surface-100-900 space-y-4 p-4 sm:p-6">
+						<p>Una vez emitido no se podrá modificar. ¿Emitir el presupuesto?</p>
+						<div class="flex flex-wrap gap-3">
+							<button
+								type="button"
+								class="btn preset-filled-primary-500"
+								disabled={emitiendo}
+								onclick={emitir}
+							>
+								Sí, emitir
+							</button>
+							<button
+								type="button"
+								class="btn preset-tonal"
+								disabled={emitiendo}
+								onclick={() => (confirmandoEmision = false)}
+							>
+								Volver
+							</button>
+						</div>
+					</section>
+				{:else}
+					<div class="flex justify-end">
+						<button
+							type="button"
+							class="btn preset-filled-primary-500"
+							onclick={() => (confirmandoEmision = true)}
+						>
+							Emitir presupuesto
+						</button>
+					</div>
+				{/if}
 			{/if}
 		{/if}
 	{/if}

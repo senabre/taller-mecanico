@@ -21,6 +21,9 @@
 	let factura = $state<Factura | null>(null);
 	let enviando = $state(false);
 	let error = $state('');
+	// La confirmación de «Facturar» va en la página y no con `confirm()`, cuyos botones salen en el
+	// idioma del navegador (principio II; analyze-1 C1, como spec-003 T036 y spec-004 D5).
+	let confirmando = $state(false);
 
 	$effect(() => {
 		if (!puedeFacturar || facturaId === null) {
@@ -33,7 +36,6 @@
 	});
 
 	async function facturar() {
-		if (!confirm('¿Emitir la factura? Ya no se podrá modificar.')) return;
 		enviando = true;
 		error = '';
 		try {
@@ -43,6 +45,7 @@
 			error = e instanceof ErrorApi ? e.message : 'Ha ocurrido un error inesperado';
 		} finally {
 			enviando = false;
+			confirmando = false;
 		}
 	}
 </script>
@@ -64,14 +67,35 @@
 					No se pudo avisar al cliente por correo: llámale para decirle que puede recoger el coche.
 				</p>
 			{/if}
+		{:else if confirmando}
+			<div class="card bg-surface-100-900 space-y-4 p-4 sm:p-6">
+				<p>¿Emitir la factura? Ya no se podrá modificar.</p>
+				<div class="flex flex-wrap gap-3">
+					<button
+						type="button"
+						class="btn preset-filled-primary-500"
+						disabled={enviando}
+						onclick={facturar}
+					>
+						{enviando ? 'Facturando…' : 'Sí, facturar'}
+					</button>
+					<button
+						type="button"
+						class="btn preset-tonal"
+						disabled={enviando}
+						onclick={() => (confirmando = false)}
+					>
+						Volver
+					</button>
+				</div>
+			</div>
 		{:else}
 			<button
 				type="button"
 				class="btn preset-filled-primary-500"
-				disabled={enviando}
-				onclick={facturar}
+				onclick={() => (confirmando = true)}
 			>
-				{enviando ? 'Facturando…' : 'Facturar'}
+				Facturar
 			</button>
 		{/if}
 	</section>

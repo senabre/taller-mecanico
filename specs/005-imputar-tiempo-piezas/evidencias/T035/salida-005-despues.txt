@@ -1,0 +1,4 @@
+OK    (a) En reparación sin imputaciones: motivo=1; botón=0
+OK    (b) Terminar reparación: diálogo del navegador=«»; pregunta=1; Sí, terminar=1; Volver=1; tras Volver sigue=true; terminada=true
+OK    (c) Confirmación a 390 px: ancho del documento=390px
+3 correctas y 0 fallos

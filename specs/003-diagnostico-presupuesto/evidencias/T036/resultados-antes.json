@@ -1,0 +1,23 @@
+[
+  {
+    "fase": "antes",
+    "paso": "(a) 2,5 unidades de PF-123",
+    "esperado": "«Las unidades de pieza deben ser un número entero», sin mensaje del navegador",
+    "observado": "aplicación=«»; navegador=«Introduce un valor válido. Los dos valores válidos más aproximados son 2 y 3.»; líneas=0",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(b) Mano de obra sin concepto",
+    "esperado": "«Escribe el concepto de la mano de obra», sin mensaje del navegador",
+    "observado": "aplicación=«»; navegador=«Completa este campo»",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(c) Emitir presupuesto",
+    "esperado": "pregunta en la página con «Sí, emitir» y «Volver», sin diálogo del navegador; Volver no emite; Sí, emitir emite",
+    "observado": "diálogo del navegador=«Una vez emitido no se podrá modificar. ¿Emitir el presupuesto?»; pregunta=0; Sí, emitir=0; Volver=0; tras Volver sigue en borrador=false; emitido=false",
+    "ok": false
+  }
+]

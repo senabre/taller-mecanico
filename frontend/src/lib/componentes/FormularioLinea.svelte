@@ -21,7 +21,7 @@
 	let tipo: 'mano_obra' | 'pieza' = $state('mano_obra');
 	let concepto = $state('');
 	let horas = $state('');
-	let unidades: number | null = $state(1);
+	let unidades = $state('1');
 	let busqueda = $state('');
 	let resultados: Pieza[] = $state([]);
 	let pieza = $state<Pieza | null>(null);
@@ -61,15 +61,16 @@
 		}
 		enviando = true;
 		try {
-			// Las horas se escriben con coma («1,5») y viajan con punto («1.5»), como dice el contrato.
+			// Las cantidades se escriben con coma («1,5») y viajan con punto («1.5»), como dice el
+			// contrato. Las valida el servidor, que responde con el motivo en español.
 			await onenviar(
 				tipo === 'mano_obra'
 					? { tipo, concepto, cantidad: horas.trim().replace(',', '.') }
-					: { tipo, pieza_id: pieza!.id, cantidad: String(unidades ?? '') }
+					: { tipo, pieza_id: pieza!.id, cantidad: unidades.trim().replace(',', '.') }
 			);
 			concepto = '';
 			horas = '';
-			unidades = 1;
+			unidades = '1';
 			busqueda = '';
 			pieza = null;
 		} catch (e) {
@@ -80,7 +81,9 @@
 	}
 </script>
 
-<form class="card bg-surface-100-900 grid gap-4 p-4 sm:grid-cols-2" onsubmit={enviar}>
+<!-- `novalidate`: los mensajes los da la aplicación (el servidor), no el navegador, que los pone en
+     su idioma (principio II; analyze-1 C1 de spec-003). -->
+<form class="card bg-surface-100-900 grid gap-4 p-4 sm:grid-cols-2" novalidate onsubmit={enviar}>
 	<h3 class="h5 sm:col-span-2">{titulo}</h3>
 	<label class="label">
 		<span class="label-text">Tipo</span>
@@ -142,9 +145,8 @@
 			<input
 				class="input"
 				name="unidades"
-				type="number"
-				min="1"
-				step="1"
+				inputmode="numeric"
+				placeholder="1"
 				required
 				bind:value={unidades}
 			/>

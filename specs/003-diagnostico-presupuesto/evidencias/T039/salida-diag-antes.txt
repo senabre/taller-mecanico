@@ -1,0 +1,4 @@
+FALLA (a) Diagnóstico vacío: aplicación=«»; navegador=«Completa este campo»
+FALLA (b) Con un presupuesto emitido: cuadro=1; botón=1; motivo=0; diagnóstico visible=0
+OK    (c) Sin presupuesto emitido: error=0; cuadro=«Sensor de oxígeno y sonda lambda defectuosos»
+1 correctas y 2 fallos

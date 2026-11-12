@@ -1,0 +1,30 @@
+[
+  {
+    "fase": "despues",
+    "paso": "(a) Facturar la orden 8",
+    "esperado": "pregunta en la página con «Sí, facturar» y «Volver», sin diálogo del navegador; Volver no factura; Sí, facturar emite la factura",
+    "observado": "diálogo del navegador=«»; pregunta=1; Sí, facturar=1; Volver=1; tras Volver sigue=true; resultado=«Factura nº 2 · 12/11/2026 · 133,10 € · Ver e imprimir»",
+    "ok": true
+  },
+  {
+    "fase": "despues",
+    "paso": "(a) Confirmación a 390 px",
+    "esperado": "cabe sin desplazamiento horizontal",
+    "observado": "ancho del documento=390px",
+    "ok": true
+  },
+  {
+    "fase": "despues",
+    "paso": "(b) Historial sin matrícula",
+    "esperado": "«Escribe la matrícula», sin mensaje del navegador",
+    "observado": "aplicación=«Escribe la matrícula»; navegador=«»",
+    "ok": true
+  },
+  {
+    "fase": "despues",
+    "paso": "(c) Historial de «9999 lll»",
+    "esperado": "aparece la reparación facturada",
+    "observado": "reparaciones=1",
+    "ok": true
+  }
+]

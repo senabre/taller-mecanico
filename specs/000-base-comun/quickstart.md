@@ -107,10 +107,10 @@ las pruebas automáticas (`cargo test`).
 3. Comprobar: base **110,00 €**, IVA 21 % **23,10 €**, total **133,10 €**.
 4. Intentar añadir 1,3 h o 2,5 unidades de una pieza → se rechaza explicando el motivo.
 5. Añadir una línea «Prueba» de 1 h y quitarla → los totales vuelven a 110,00 / 23,10 / 133,10.
-6. Emitir → «Válido hasta» = hoy + 15 días; ya no se pueden añadir ni quitar líneas, y en
+6. Emitir y confirmar con «Sí, emitir» → «Válido hasta» = hoy + 15 días; ya no se pueden añadir ni quitar líneas, y en
    Mailpit llega el correo con el enlace.
-7. Intentar cambiar el diagnóstico → «Ya se ha emitido un presupuesto para esta orden; el
-   diagnóstico no se puede cambiar».
+7. El diagnóstico ya no se puede cambiar: se ve sin «Guardar diagnóstico» y con el aviso «Ya se ha
+   emitido un presupuesto para esta orden; el diagnóstico no se puede cambiar.»
 
 ## §4 spec-004 · Respuesta del cliente
 1. En Mailpit, abrir el correo del presupuesto y pulsar el enlace → se ven el vehículo, el
@@ -138,8 +138,8 @@ las pruebas automáticas (`cargo test`).
 9. (Enlace modificado) Abrir `/presupuesto/enlace-inventado` → solo «Este enlace no es válido».
 
 ## §5 spec-005 · Imputar
-1. Orden de 1313MMM, intentar terminarla sin imputar nada → «Primero hay que imputar el trabajo
-   realizado».
+1. Orden de 1313MMM, sin imputar nada: no aparece «Terminar reparación» y se ve «Primero hay que
+   imputar el trabajo realizado.»
 2. Imputar PF-123 × 2 → concepto «PF-123 Pastillas freno»; en `/almacen` el stock de PF-123 pasa
    de 4 a **2**. Intentar imputar PF-123 × 3 → «Solo hay 2 unidades en stock de PF-123…».
 3. Imputar «Cambio de pastillas» 1 h → «Acumulado 90,00 € de 110,00 €».
@@ -147,7 +147,7 @@ las pruebas automáticas (`cargo test`).
    conformidad» y ya no deja imputar ni terminar.
 5. Crear una ampliación de 1 h (40,00 €), emitirla y aceptarla desde Mailpit → la orden vuelve a
    «En reparación» con 150,00 € presupuestados.
-6. Marcar como terminada → «Terminada» y ya no deja imputar.
+6. Marcar como terminada y confirmar con «Sí, terminar» → «Terminada» y ya no deja imputar.
 
 ## §6 spec-006 · Almacén y pedidos
 1. Como `pepe`, en `/almacen` dar de alta `FA-9 Filtro aceite`, 12,00 €, **sin** indicar stock →
@@ -167,7 +167,7 @@ las pruebas automáticas (`cargo test`).
 
 ## §7 spec-007 · Factura e historial
 1. Como `ana`, en una orden «En reparación» → **no** aparece «Facturar».
-2. En la orden de 1313MMM («Terminada») pulsar Facturar → «Factura nº N» con su número correlativo, las líneas
+2. En la orden de 1313MMM («Terminada») pulsar Facturar y confirmar con «Sí, facturar» → «Factura nº N» con su número correlativo, las líneas
    imputadas, base, IVA y total que cuadran con la calculadora. Sin escribir nada.
 3. Pulsar «Ver e imprimir» y después «Imprimir» → la vista previa de impresión muestra solo la factura (sin menú),
    y se puede guardar como PDF. Sin `TALLER_LOGO` en el `.env` sale sin logo; con `TALLER_LOGO` apuntando a una

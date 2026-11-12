@@ -142,8 +142,8 @@ y que ya no se pueden editar sus líneas.
   emitido pasada su fecha de caducidad se considera caducado), fecha de emisión, fecha de caducidad, base imponible, IVA y total.
 - **Línea de presupuesto**: tipo (mano de obra o pieza), concepto, cantidad, precio unitario,
   importe; las de pieza apuntan a una referencia del almacén.
-- **Referencia de pieza**: código, descripción, precio de venta y stock (se da de alta en
-  spec-006).
+- **Referencia de pieza**: referencia (p. ej. «PF-123»), descripción, precio de venta y stock (se da
+  de alta en spec-006).
 
 ## Success Criteria *(mandatory)*
 

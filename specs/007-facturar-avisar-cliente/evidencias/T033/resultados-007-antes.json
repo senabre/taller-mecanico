@@ -1,0 +1,30 @@
+[
+  {
+    "fase": "antes",
+    "paso": "(a) Facturar la orden 8",
+    "esperado": "pregunta en la página con «Sí, facturar» y «Volver», sin diálogo del navegador; Volver no factura; Sí, facturar emite la factura",
+    "observado": "diálogo del navegador=«¿Emitir la factura? Ya no se podrá modificar.»; pregunta=0; Sí, facturar=0; Volver=0; tras Volver sigue=false; resultado=«»",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(a) Confirmación a 390 px",
+    "esperado": "cabe sin desplazamiento horizontal",
+    "observado": "ancho del documento=0px",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(b) Historial sin matrícula",
+    "esperado": "«Escribe la matrícula», sin mensaje del navegador",
+    "observado": "aplicación=«»; navegador=«Completa este campo»",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(c) Historial de «9999 lll»",
+    "esperado": "aparece la reparación facturada",
+    "observado": "reparaciones=1",
+    "ok": true
+  }
+]

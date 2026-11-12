@@ -1,0 +1,51 @@
+[
+  {
+    "fase": "antes",
+    "paso": "(a1) Referencia vacía",
+    "esperado": "«Indica la referencia de la pieza», sin mensaje del navegador",
+    "observado": "aplicación=«»; navegador=«Completa este campo»",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(a2) Stock -1",
+    "esperado": "«El stock debe ser un número entero de 0 o más», sin mensaje del navegador",
+    "observado": "aplicación=«»; navegador=«El valor debe ser superior o igual a 0»",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(a3) Alta de FA-9 sin stock",
+    "esperado": "aparece con stock 0",
+    "observado": "fila=«FA-9Filtro aceite12,00 €0»",
+    "ok": true
+  },
+  {
+    "fase": "antes",
+    "paso": "(b1) Cantidad 0",
+    "esperado": "«La cantidad debe ser un número entero mayor que 0», sin mensaje del navegador",
+    "observado": "aplicación=«»; navegador=«El valor debe ser superior o igual a 1»",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(b2) Sin nº de orden",
+    "esperado": "«Indica el número de la orden», sin mensaje del navegador",
+    "observado": "aplicación=«»; navegador=«Completa este campo»",
+    "ok": false
+  },
+  {
+    "fase": "antes",
+    "paso": "(b3) Pedido de FA-9 para la orden 3",
+    "esperado": "«Pedido registrado: 1 × FA-9 para la orden 3»",
+    "observado": "aviso=«Pedido registrado: 1 × FA-9 para la orden 3»",
+    "ok": true
+  },
+  {
+    "fase": "antes",
+    "paso": "(c) /pedidos a 390 px",
+    "esperado": "sin desplazamiento horizontal",
+    "observado": "ancho del documento=390px",
+    "ok": true
+  }
+]

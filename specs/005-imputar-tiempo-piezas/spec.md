@@ -144,7 +144,7 @@ ya no admite imputaciones.
 
 ### Key Entities
 
-- **Imputación**: pertenece a una orden; tipo (horas o pieza), concepto, cantidad, precio
+- **Imputación**: pertenece a una orden; tipo (mano de obra, en horas, o pieza), concepto, cantidad, precio
   unitario, importe, fecha y hora, mecánico que la hace.
 - **Ampliación de presupuesto**: presupuesto adicional de una orden, con las mismas reglas de
   líneas, IVA, caducidad y respuesta por enlace que el presupuesto inicial.
