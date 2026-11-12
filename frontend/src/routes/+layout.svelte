@@ -22,6 +22,9 @@
 	// Pedir cita, responder al presupuesto y entrar se usan sin sesión (FR-003).
 	const publica = $derived(esRutaPublica(page.url.pathname));
 	const menu = $derived(data.yo ? MENU.filter((e) => e.roles.includes(data.yo!.rol)) : []);
+	// El tablero usa todo el ancho de la pantalla del taller (spec-008 research D7); las demás
+	// pantallas siguen con max-w-6xl.
+	const ancho = $derived(page.url.pathname.startsWith('/tablero'));
 
 	$effect(() => {
 		if (!publica && !data.yo) goto('/entrar', { replaceState: true });
@@ -41,7 +44,10 @@
 	{@render children()}
 {:else if data.yo}
 	<header class="bg-surface-100-900 border-surface-200-800 border-b">
-		<nav class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
+		<nav
+			class="mx-auto flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3"
+			class:max-w-6xl={!ancho}
+		>
 			<a href="/" class="text-lg font-bold">Talleres Rueda</a>
 			<ul class="flex flex-wrap gap-4">
 				{#each menu as entrada (entrada.texto)}
@@ -62,7 +68,7 @@
 			</div>
 		</nav>
 	</header>
-	<main class="mx-auto max-w-6xl px-4 py-6">
+	<main class="mx-auto px-4 py-6" class:max-w-6xl={!ancho}>
 		{@render children()}
 	</main>
 {/if}
