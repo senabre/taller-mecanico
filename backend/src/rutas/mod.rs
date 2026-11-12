@@ -8,6 +8,7 @@ pub mod ordenes;
 pub mod presupuestos;
 pub mod publico_presupuesto;
 pub mod sesion;
+pub mod tablero;
 
 use axum::Router;
 
@@ -24,4 +25,5 @@ pub fn api() -> Router<EstadoApp> {
         .merge(ordenes::rutas())
         .merge(publico_presupuesto::rutas())
         .merge(facturas::rutas())
+        .merge(tablero::rutas())
 }
