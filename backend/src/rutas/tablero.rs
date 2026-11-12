@@ -1,6 +1,8 @@
 //! spec-008 · Tablero de órdenes abiertas (HU-08): `GET /api/tablero`, solo para el jefe
 //! (research D1, D2 y D4 de spec-008). Solo lee: no cambia ningún estado.
 
+use std::collections::HashMap;
+
 use axum::Router;
 use axum::extract::State;
 use axum::routing::get;
@@ -32,12 +34,21 @@ struct Columna {
     ordenes: Vec<OrdenResumen>,
 }
 
-#[derive(Serialize, sqlx::FromRow)]
+#[derive(Serialize)]
 struct CargaMecanico {
     id: i64,
     nombre: String,
     activo: bool,
     ordenes_abiertas: i64,
+}
+
+/// Un usuario que puede salir en la carga: los mecánicos y quien tenga órdenes abiertas.
+#[derive(sqlx::FromRow)]
+struct UsuarioCarga {
+    id: i64,
+    nombre: String,
+    activo: bool,
+    rol: String,
 }
 
 /// El objeto de `GET /api/tablero` del contrato.
@@ -53,16 +64,48 @@ async fn ver_tablero(
 ) -> Resultado<Json<Tablero>> {
     usuario.exigir_rol(&[Rol::Jefe])?;
 
-    // Una sola foto para las tarjetas y la carga: si entre las dos consultas se abre o se factura
-    // una orden, la carga sigue cuadrando con las tarjetas (D1, SC-003).
-    let mut tx = estado
-        .db
-        .begin_with("BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY")
-        .await?;
+    // Sin transacción (hallazgo V3): si el navegador corta la petición a mitad de un `BEGIN`, la
+    // conexión podía volver al pool dentro de la transacción y hacer fallar a toda la aplicación.
+    // La carga se cuenta en Rust a partir de la misma lista de órdenes que las columnas, así que
+    // cuadra con las tarjetas por construcción (D1, SC-003).
+    let mut conexion = estado.db.acquire().await?;
 
     // Las tarjetas son `OrdenResumen` de spec-002, con `retrasada` ya calculada (I1 e I2).
-    let mut abiertas = ordenes::resumenes(&mut tx, None, true).await?;
+    let mut abiertas = ordenes::resumenes(&mut conexion, None, true).await?;
     abiertas.sort_by_key(|o| (o.fecha_entrega_prometida, o.numero));
+
+    // Órdenes abiertas por mecánico, de esa misma lista.
+    let mut por_mecanico: HashMap<i64, i64> = HashMap::new();
+    for orden in &abiertas {
+        *por_mecanico.entry(orden.mecanico.id).or_default() += 1;
+    }
+
+    // A la base, solo los usuarios de la carga: los mecánicos y quien tenga órdenes abiertas, por
+    // nombre (D2).
+    let con_ordenes: Vec<i64> = por_mecanico.keys().copied().collect();
+    let usuarios: Vec<UsuarioCarga> = sqlx::query_as(
+        "SELECT id, nombre, activo, rol::text AS rol FROM usuario
+          WHERE rol = 'mecanico' OR id = ANY($1)
+          ORDER BY nombre, id",
+    )
+    .bind(&con_ordenes)
+    .fetch_all(&mut *conexion)
+    .await?;
+    // Los mecánicos activos aunque tengan 0, y cualquier usuario con órdenes abiertas, aunque esté
+    // de baja (Q1).
+    let carga_mecanicos: Vec<CargaMecanico> = usuarios
+        .into_iter()
+        .filter_map(|u| {
+            let ordenes_abiertas = por_mecanico.get(&u.id).copied().unwrap_or(0);
+            ((u.rol == "mecanico" && u.activo) || ordenes_abiertas > 0).then_some(CargaMecanico {
+                id: u.id,
+                nombre: u.nombre,
+                activo: u.activo,
+                ordenes_abiertas,
+            })
+        })
+        .collect();
+
     let mut columnas: Vec<Columna> = ESTADOS_ABIERTOS
         .into_iter()
         .map(|estado| Columna {
@@ -76,21 +119,6 @@ async fn ver_tablero(
         }
     }
 
-    // Carga (D2): los mecánicos activos aunque tengan 0 y cualquier usuario con órdenes abiertas,
-    // aunque esté de baja. El `HAVING` no filtra por rol a quien tiene órdenes, así que la suma es
-    // siempre el número de tarjetas (SC-003).
-    let carga_mecanicos: Vec<CargaMecanico> = sqlx::query_as(
-        "SELECT u.id, u.nombre, u.activo, count(o.id) AS ordenes_abiertas
-           FROM usuario u
-           LEFT JOIN orden o ON o.mecanico_id = u.id AND o.estado <> 'facturada'
-          GROUP BY u.id
-         HAVING (u.rol = 'mecanico' AND u.activo) OR count(o.id) > 0
-          ORDER BY u.nombre, u.id",
-    )
-    .fetch_all(&mut *tx)
-    .await?;
-
-    tx.commit().await?;
     Ok(Json(Tablero {
         columnas,
         carga_mecanicos,

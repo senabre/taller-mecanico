@@ -4,10 +4,12 @@
 
 mod comun;
 
+use std::future::Future;
+
 use axum::Router;
 use axum::http::StatusCode;
 use serde_json::Value;
-use sqlx::PgPool;
+use sqlx::{Connection, PgConnection, PgPool};
 use taller::estados::Estado;
 use taller::fechas;
 
@@ -337,4 +339,105 @@ async fn prueba7_retrasada_ayer_si_hoy_no_y_terminada_sin_facturar_si(pool: PgPo
         true,
         "terminada sin facturar con la entrega ayer: retrasada"
     );
+}
+
+/// Pide el tablero y lo abandona tras `pasos` vueltas del planificador, como un navegador que corta
+/// la petición. Entre una vuelta y otra, `yield_now` deja que avance la red. Devuelve si se cortó.
+async fn cortar_tras(app: &Router, cookie: &str, pasos: usize) -> bool {
+    let peticion = comun::peticion(app, "GET", "/api/tablero", Some(cookie), None);
+    let mut peticion = std::pin::pin!(peticion);
+    for _ in 0..pasos {
+        let lista = std::future::poll_fn(|cx| {
+            std::task::Poll::Ready(peticion.as_mut().poll(cx).is_ready())
+        })
+        .await;
+        if lista {
+            return false;
+        }
+        tokio::task::yield_now().await;
+    }
+    true
+}
+
+// ---------------------------------------------------------------------------------------------
+// Prueba 9 · V3: una petición cortada a mitad no deja ninguna conexión dentro de una transacción.
+// ---------------------------------------------------------------------------------------------
+
+#[sqlx::test]
+#[ignore = "tarda ~100 s; lanzar con: cargo test --test spec008_tablero -- --ignored"]
+async fn prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion(pool: PgPool) {
+    let app = comun::app_prueba(pool.clone());
+    let jefe = sesion(&pool, &app, "paco", "jefe").await;
+    let luis = comun::insertar_usuario(&pool, "luis", "mecanico").await;
+    let marta = comun::insertar_usuario(&pool, "marta", "mecanico").await;
+    for (numero, estado, mecanico) in [
+        (1, Estado::Recibida, luis),
+        (2, Estado::EnReparacion, luis),
+        (3, Estado::Terminada, marta),
+        (4, Estado::Facturada, marta),
+    ] {
+        comun::crear_orden(&pool, numero, estado, mecanico).await;
+    }
+
+    // Una conexión aparte, fuera del pool de la aplicación, para mirar `pg_stat_activity` sin
+    // recibir nunca una de las conexiones que se comprueban.
+    let mut observador = PgConnection::connect_with(&pool.connect_options())
+        .await
+        .unwrap();
+
+    // Como el navegador al cambiar de pantalla: la petición se corta a mitad. El temporizador de
+    // tokio va de milisegundo en milisegundo, demasiado grueso para la ventana en que se espera la
+    // respuesta del `BEGIN` (una décima de milisegundo); por eso se corta tras `pasos` vueltas del
+    // planificador, recorriendo todos los puntos de espera de la petición. Acertar justo en esa
+    // ventana es poco frecuente (unas 2 de cada 1700 peticiones cortadas con la transacción de D1),
+    // así que se recorre 25 veces: unos 4000 cortes, con una probabilidad de fallar de verdad de
+    // más del 99 % si la transacción vuelve. Se comprueba
+    // después de **cada** corte: la siguiente petición podría limpiar la conexión de rebote.
+    let mut cortadas = 0;
+    let mut en_transaccion = Vec::new();
+    for _ in 0..25 {
+        for pasos in 1..=200 {
+            if !cortar_tras(&app, &jefe, pasos).await {
+                continue;
+            }
+            cortadas += 1;
+            // Lo que hubiera que deshacer al soltar la conexión ya ha tenido tiempo de hacerse.
+            tokio::time::sleep(std::time::Duration::from_millis(2)).await;
+            let n: i64 = sqlx::query_scalar(
+                "SELECT count(*) FROM pg_stat_activity
+                  WHERE datname = current_database() AND state LIKE 'idle in transaction%'",
+            )
+            .fetch_one(&mut observador)
+            .await
+            .unwrap();
+            if n > 0 {
+                en_transaccion.push(pasos);
+                // Se deja la base como estaba para que el resto del recorrido siga midiendo.
+                sqlx::query(
+                    "SELECT pg_terminate_backend(pid) FROM pg_stat_activity
+                      WHERE datname = current_database() AND state LIKE 'idle in transaction%'",
+                )
+                .execute(&mut observador)
+                .await
+                .unwrap();
+            }
+        }
+    }
+    assert!(
+        cortadas > 0,
+        "ninguna petición se cortó: la prueba no estaría probando nada"
+    );
+    assert_eq!(
+        en_transaccion,
+        Vec::<usize>::new(),
+        "de {cortadas} peticiones cortadas, estas dejaron una conexión dentro de una transacción \
+         (pasos del corte)"
+    );
+
+    // Y la aplicación sigue escribiendo: entrar actualiza la tabla de sesiones.
+    let (_, contrasena) = comun::crear_usuario(&pool, "ana", "recepcion", true).await;
+    for _ in 0..10 {
+        comun::entrar(&app, "ana", &contrasena).await;
+    }
+    assert_eq!(tablero(&app, Some(&jefe)).await.0, StatusCode::OK);
 }
