@@ -1,0 +1,49 @@
+== US4 · Vitest · ROJO (sin medianoche.ts, recarga.ts ni eventos.ts) · 2026-11-12 12:38:17 CET
+ FAIL  src/lib/eventos.test.ts [ src/lib/eventos.test.ts ]
+Error: Cannot find module './eventos' imported from /Users/elsavicedomilla/Documents/taller-mecanico/frontend/src/lib/eventos.test.ts
+ FAIL  src/lib/medianoche.test.ts [ src/lib/medianoche.test.ts ]
+Error: Cannot find module './medianoche' imported from /Users/elsavicedomilla/Documents/taller-mecanico/frontend/src/lib/medianoche.test.ts
+ FAIL  src/lib/recarga.test.ts [ src/lib/recarga.test.ts ]
+Error: Cannot find module './recarga' imported from /Users/elsavicedomilla/Documents/taller-mecanico/frontend/src/lib/recarga.test.ts
+ Test Files  3 failed (3)
+      Tests  no tests
+
+== US4 · Vitest · ROJO con esqueletos que lanzan «sin implementar» (las pruebas se ejecutan) · 2026-11-12 12:38:33 CET
+     × tres avisos durante una petición dan una sola petición más, nunca dos a la vez 15ms
+     × un aviso sin nada en curso lanza la petición enseguida 1ms
+     × si la petición falla, el siguiente aviso vuelve a pedir 2ms
+     × cuenta hasta la siguiente 00:00 de Madrid, no la del proceso 11ms
+     × cuenta bien los días de cambio de hora 2ms
+     × a las 23:59 de Madrid llama a fn a las 00:01, una sola vez 5ms
+     × después de saltar se vuelve a programar para la medianoche siguiente 12ms
+     × el 28/03/2027, día de 23 h salta a las 00:01 de Madrid del día siguiente 2ms
+     × el 31/10/2027, día de 25 h salta a las 00:01 de Madrid del día siguiente 1ms
+     × la función que devuelve cancela el temporizador 2ms
+     × se conecta a /api/eventos y onopen llama a alAbrir, la primera vez y tras reconectar 18ms
+     × un evento orden llama a alEvento 4ms
+     × con onerror y CONNECTING llama a alError(false) y no crea otra conexión 4ms
+     × con onerror y CLOSED llama a alError(true) y crea una sola conexión nueva pasada la espera 2ms
+     × la función de cierre cierra la conexión y cancela la espera pendiente 1ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  3 failed (3)
+      Tests  15 failed (15)
+   2       2|  throw new Error('sin implementar');
+   4       5|  throw new Error('sin implementar');
+   6 Error: sin implementar
+
+== US4 · Vitest · VERDE (T022–T024) · 2026-11-12 12:39:15 CET
+ Test Files  3 passed (3)
+      Tests  15 passed (15)
+
+== US4 · Vitest · VERDE con vi.stubEnv('TZ') en lugar de process.env (sin @types/node) · 2026-11-12 12:39:44 CET
+ Test Files  3 passed (3)
+      Tests  15 passed (15)
+
+== A2 · la protección de la zona: con TZ=Europe/Madrid la prueba debe fallar entera
+      Tests  7 skipped (7)
+     17|    `El proceso no está en America/New_York (desfase ${desfase} min; Ma…
+ Test Files  1 failed (1)
+Error: El proceso no está en America/New_York (desfase -120 min; Madrid sería -120): la prueba no estaría comprobando nada
+-- líneas: 4
+cmp: restaurado, idénticos
+      Tests  7 passed (7)

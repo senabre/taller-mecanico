@@ -1,0 +1,13 @@
+== npm run check · 2026-11-12 12:43:50 CET
+1794483858212 COMPLETED 244 FILES 0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS
+
+== npm test
+ Test Files  4 passed (4)
+      Tests  21 passed (21)
+
+== npm run build
+✓ built in 3.35s
+.svelte-kit/output/server/entries/pages/_error.svelte.js                       0.45 kB │ gzip:  0.30 kB
+✓ built in 22.03s
+  Wrote site to "build"
+  ✔ done

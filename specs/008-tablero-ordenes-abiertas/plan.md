@@ -147,7 +147,7 @@ pruebas, una pantalla y un módulo de frontend, y toca los ficheros compartidos 
 - **Medianoche** (D6): `programarMedianoche` salta a medianoche, a las 00:01 de Madrid (00:00 + 60 s de margen
   para la diferencia de reloj con el servidor), calculadas con `Intl`, nunca con la zona del
   navegador, y se vuelve a programar en cada salto.
-- **Eventos que mueven el tablero** (comprobado en la rama spec-008): 9 movimientos en 8 llamadas. `ordenes.rs:399` (abrir →
+- **Eventos que mueven el tablero** (comprobado en la rama spec-008): 9 movimientos en 8 llamadas. `ordenes.rs:403` (abrir →
   recibida, spec-002); `presupuestos.rs:310` (recibida → en diagnóstico, 003);
   `publico_presupuesto.rs:204` (aceptar el inicial: en diagnóstico → en reparación; aceptar la
   ampliación: pendiente de conformidad → en reparación, 004); `imputaciones.rs:193` (→ pendiente de
@@ -178,8 +178,8 @@ demo, principio V). En todas las que devuelven el tablero se comprueba además q
 8. `resumenes(…, false)` sigue devolviendo también las facturadas, en el mismo orden que antes: la
    lista de órdenes de spec-002 no cambia (D3).
 
-`frontend/src/lib/medianoche.test.ts` (Vitest, `vi.useFakeTimers`, `process.env.TZ =
-'America/New_York'`): primero comprueba que la zona del proceso es de verdad otra y, si no, falla
+`frontend/src/lib/medianoche.test.ts` (Vitest, `vi.useFakeTimers`, `vi.stubEnv('TZ',
+'America/New_York')`, sin `@types/node`): primero comprueba que la zona del proceso es de verdad otra y, si no, falla
 (A2); después, los 4 casos de [research](research.md) D6 (US4-4).
 `frontend/src/lib/recarga.test.ts` (Vitest, promesas que se resuelven a mano y reloj simulado): los
 3 casos de [research](research.md) D5 (US4-1 a US4-5, SC-002).

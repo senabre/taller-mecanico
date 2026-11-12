@@ -1,0 +1,52 @@
+== T001 · ROJO (seed anterior) · 2026-11-12 12:23:40 CET
+Applied 2/migrate spec003 lineas (7.316144ms)
+Applied 3/migrate spec005 imputaciones (5.583984ms)
+INSERT 0 1
+COMMIT
+ abiertas_entrega_hoy 
+----------------------
+                    0
+(1 row)
+
+
+== T001 · VERDE (seed nuevo) · 2026-11-12 12:24:04 CET
+Applied 3/migrate spec005 imputaciones (3.805961ms)
+seed: código 0 · errores: 0 · última línea: COMMIT
+ numero |        estado         | login | entrega_dias | imputado 
+--------+-----------------------+-------+--------------+----------
+      1 | recibida              | luis  |            3 |        0
+      2 | en_reparacion         | luis  |            2 |    90.00
+      3 | en_reparacion         | luis  |            0 |    40.00
+      4 | en_diagnostico        | luis  |            5 |        0
+      5 | en_diagnostico        | marta |            3 |        0
+      6 | en_espera_piezas      | marta |            2 |    40.00
+      7 | pendiente_conformidad | luis  |            1 |   130.00
+      8 | terminada             | marta |           -1 |   110.00
+      9 | facturada             | luis  |          -15 |   110.00
+(9 rows)
+
+-- diferencias con el seed anterior:
+5c5
+<       3 | en_reparacion         | luis  |            4 |    40.00
+---
+>       3 | en_reparacion         | luis  |            0 |    40.00
+ abiertas_entrega_hoy | cuales 
+----------------------+--------
+                    1 | 3
+(1 row)
+
+ retrasadas 
+------------
+ 8
+(1 row)
+
+ nombre  | ultimo 
+---------+--------
+ factura |      1
+ orden   |      9
+(2 rows)
+
+
+-- §6 (la orden 3 es la «R»): ficheros de backend/src que leen fecha_entrega_prometida:
+backend/src/rutas/ordenes.rs
+(solo ordenes.rs: almacen.rs, imputaciones.rs y los pedidos no la usan; research D8)

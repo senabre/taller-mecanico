@@ -1,0 +1,22 @@
+== T017 · MUTACIÓN < por <= en COLUMNAS_RESUMEN (ordenes.rs) · 2026-11-12 12:35:40 CET
+-- original: 98:       (o.estado <> 'facturada' AND o.fecha_entrega_prometida < $1) AS retrasada";
+-- mutado:   98:       (o.estado <> 'facturada' AND o.fecha_entrega_prometida <= $1) AS retrasada";
+-- pruebas con la mutación:
+test prueba2_sin_ordenes_seis_columnas_vacias ... ok
+test prueba1_seis_columnas_cada_orden_en_la_suya_y_sin_facturadas ... ok
+test prueba4_tarjetas_por_entrega_y_numero ... ok
+test prueba7_retrasada_ayer_si_hoy_no_y_terminada_sin_facturar_si ... FAILED
+test prueba5_carga_por_mecanico_con_los_activos_a_cero ... ok
+test prueba8_la_lista_de_ordenes_sigue_trayendo_las_facturadas_en_el_mismo_orden ... ok
+test prueba6_inactivos_solo_con_ordenes_abiertas ... ok
+test prueba3_solo_el_jefe ... ok
+thread 'prueba7_retrasada_ayer_si_hoy_no_y_terminada_sin_facturar_si' (110696) panicked at tests/spec008_tablero.rs:331:5:
+assertion `left == right` failed: entrega hoy: no retrasada
+  left: Bool(true)
+ right: false
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.11s
+-- líneas de salida: 13
+-- restaurado:
+cmp: idénticos
+-- pruebas después de restaurar:
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.20s

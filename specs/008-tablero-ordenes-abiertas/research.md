@@ -162,7 +162,8 @@ referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
   diferencia sin que nadie lo note (escenario 4 de la US4). Volver a programarse en cada salto, en
   lugar de usar un `setInterval` de 24 h, sigue siendo correcto los días de 23 y 25 horas.
 - **Prueba** (`frontend/src/lib/medianoche.test.ts`, Vitest con `vi.useFakeTimers` y
-  `vi.setSystemTime`, sin dependencias nuevas): con `process.env.TZ = 'America/New_York'`, para que
+  `vi.setSystemTime`, sin dependencias nuevas): con `vi.stubEnv('TZ', 'America/New_York')` (escribe en `process.env` sin necesitar los
+  tipos de Node, que el proyecto no tiene; cambiado al implementar), para que
   el navegador simulado esté en otra zona. **Antes de nada**, la prueba comprueba que la zona del
   proceso es de verdad otra: si `new Date('2026-07-01T12:00:00Z').getTimezoneOffset()` no es el de
   Nueva York (240) o coincide con el de Madrid (−120), falla con un mensaje claro, en lugar de dar
