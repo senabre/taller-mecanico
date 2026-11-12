@@ -94,6 +94,8 @@ backend/seed/demo.sql                        # COMPARTIDO: entrega de la orden 3
 frontend/src/lib/tipos.ts                    # COMPARTIDO: Tablero, ColumnaTablero, CargaMecanico
 frontend/src/lib/medianoche.ts               # msHastaMedianocheMadrid y programarMedianoche (D6)
 frontend/src/lib/medianoche.test.ts          # Vitest con reloj simulado y TZ de otra zona (D6)
+frontend/src/lib/recarga.ts                  # crearRecarga: una sola petición a la vez, más una (D5)
+frontend/src/lib/recarga.test.ts             # Vitest con promesas manuales y reloj simulado (D5)
 frontend/src/routes/tablero/+page.svelte     # la pantalla (D5, D7)
 frontend/src/routes/+layout.svelte           # COMPARTIDO: <main> a todo el ancho en /tablero (D7)
 ```
@@ -107,7 +109,7 @@ pruebas, una pantalla y un módulo de frontend, y toca los ficheros compartidos 
 |---|---|---|---|
 | `specs/000-base-comun/contracts/api.md` | `GET /api/tablero`: `activo` en `carga_mecanicos`, orden de la carga y de las tarjetas, la suma igual a las tarjetas, 401 y 403 con su texto; cuándo vuelve a pedirse el tablero | Q1, Q2, Q3, Q4 | Hecho (clarify y plan) |
 | `specs/000-base-comun/quickstart.md` | §8 reescrito: 11 pasos, con SC-001 y SC-002 cronometrados, dos navegadores, desconexión, 390 px y la medianoche en `npm test` | Principio IV | Hecho |
-| `specs/000-base-comun/research.md` | R13: Vitest también para `medianoche.ts` | Q3, D6 | Hecho |
+| `specs/000-base-comun/research.md` | R13: Vitest también para `medianoche.ts` y `recarga.ts` | Q3, D5, D6 | Hecho |
 | `specs/002-abrir-orden-reparacion/hallazgos.md` | N1 cerrado | N1 | Hecho en el clarify |
 | `backend/seed/demo.sql` | Parte 3: orden 3 con la entrega hoy; `fecha_entrega_prometida` con el «hoy» de Madrid; comentario de la orden 3 | D8. La orden 3 es la «R» del §6 y de la regresión T029 de spec-004: comprobado que la entrega no interviene en nada de lo que esperan (tabla en D8) | **Pendiente**: primera tarea, antes de recorrer el §8 |
 | `backend/src/rutas/ordenes.rs` (spec-002, Persona A) | `resumenes(conexion, mecanico_id, solo_abiertas)`; `listar_ordenes` pasa `false` | D3 | **Pendiente**: al implementar, con su prueba antes. Lo usan las pantallas de B (lista y ficha), así que B lo revisa |
@@ -131,7 +133,7 @@ pruebas, una pantalla y un módulo de frontend, y toca los ficheros compartidos 
      abiertas, aunque esté inactivo; por nombre (Q1). La suma es el número de tarjetas (SC-003).
 - **Frontend `/tablero`** (D5, D7): `cargar()` pide el tablero entero al abrir, en cada `onopen` del
   `EventSource('/api/eventos')`, con cada evento `orden` y con `programarMedianoche(cargar)`. Solo
-  una petición a la vez, más una si llega otro aviso mientras tanto. `onerror` muestra «Sin
+  una petición a la vez, más una si llega otro aviso mientras tanto (`crearRecarga`, en `recarga.ts`). `onerror` muestra «Sin
   conexión, reintentando…». Al salir, se cierran el `EventSource` y el temporizador. Con un 403,
   solo el mensaje.
 - **Medianoche** (D6): `programarMedianoche` salta a las 00:01 de Madrid (00:00 + 60 s de margen
@@ -170,6 +172,8 @@ demo, principio V). En todas las que devuelven el tablero se comprueba además q
 
 `frontend/src/lib/medianoche.test.ts` (Vitest, `vi.useFakeTimers`, `process.env.TZ =
 'America/New_York'`): los 4 casos de [research](research.md) D6 (US4-4).
+`frontend/src/lib/recarga.test.ts` (Vitest, promesas que se resuelven a mano y reloj simulado): los
+3 casos de [research](research.md) D5 (US4-1 a US4-5, SC-002).
 
 Lo que depende del navegador y del tiempo real (el `EventSource`, la reconexión y los 5 s) se
 comprueba en el quickstart §8 con dos navegadores (D9), no con pruebas E2E (R13).

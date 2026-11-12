@@ -87,7 +87,11 @@ referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
   4. al pasar la medianoche de Madrid (D6).
 
   Solo hay una petición en curso a la vez: si llega otro aviso mientras tanto, se apunta y se hace
-  **una** petición más al terminar. `onerror` muestra «Sin conexión, reintentando…» y `onopen` lo
+  **una** petición más al terminar. Esa regla va en `frontend/src/lib/recarga.ts`
+  (`crearRecarga(fn): () => void`, que envuelve `cargar()`), para poder probarla con Vitest sin
+  montar la página: `recarga.test.ts` comprueba, con promesas que se resuelven a mano y reloj
+  simulado, que tres avisos durante una petición dan **una** sola petición más, que nunca hay dos a
+  la vez y que un fallo de la petición no bloquea las siguientes. `onerror` muestra «Sin conexión, reintentando…» y `onopen` lo
   quita. La reconexión la hace `EventSource` solo. Al salir de la página se cierran el
   `EventSource` y el temporizador.
 - **Motivo**: todo lo que cambia el tablero pasa por el mismo camino. Con una sola petición en curso,
@@ -129,7 +133,7 @@ referencia: rama `spec-008`, que incluye `origin/spec-004`. Fecha: 2026-11-12.
      después;
   4. la función que devuelve cancela el temporizador.
 - **Cambio compartido**: [R13](../000-base-comun/research.md) decía «Vitest solo para `formato.ts`».
-  Ahora dice «para `formato.ts` y `medianoche.ts`», por Q3. Lo revisa la Persona B.
+  Ahora dice «para `formato.ts`, `medianoche.ts` y `recarga.ts`», por Q3 y D5. Lo revisa la Persona B.
 - **Alternativas descartadas**: `new Date().setHours(24, 0, 0, 0)`, que usa la zona del navegador;
   una prueba de la página con `@testing-library/svelte` y `jsdom`, que añade dependencias solo para
   esto (principio I): la página solo llama a `programarMedianoche(cargar)`, y eso se comprueba en el
