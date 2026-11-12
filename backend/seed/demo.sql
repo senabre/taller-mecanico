@@ -38,7 +38,7 @@ INSERT INTO proveedor (nombre) VALUES
 --   nº  estado                 mecánico  para qué
 --   1   recibida               luis      B: diagnóstico (spec-003)
 --   2   en_reparacion          luis      B: imputaciones y pedidos (005, 006)
---   3   en_reparacion          luis      B: imputaciones y pedidos (005, 006)
+--   3   en_reparacion          luis      B: imputaciones y pedidos (005, 006); entrega hoy: no sale retrasada (008)
 --   4   en_diagnostico         luis      B: presupuesto (003); pedido rechazado (006)
 --   5   en_diagnostico         marta     A: presupuesto emitido con token conocido (004)
 --   6   en_espera_piezas       marta     pedido pendiente de BJ-7 (006)
@@ -84,10 +84,12 @@ SELECT ve.id, current_date - d.dias, d.motivo
        ) AS d (matricula, dias, motivo)
   JOIN vehiculo ve USING (matricula);
 
--- La orden se abre el día de su cita. «entrega»: días desde hoy (negativo = ya pasó).
+-- La orden se abre el día de su cita. «entrega»: días desde hoy en Madrid (negativo = ya pasó;
+-- research R12: con la base en UTC, current_date aún sería ayer entre las 00:00 y las 02:00).
 INSERT INTO orden (numero, cita_id, vehiculo_id, mecanico_id, km, danos, fecha_entrega_prometida,
                    diagnostico, estado, abierta_en, terminada_en)
-SELECT o.numero, ci.id, ve.id, u.id, o.km, o.danos, current_date + o.entrega, o.diagnostico,
+SELECT o.numero, ci.id, ve.id, u.id, o.km, o.danos,
+       (now() AT TIME ZONE 'Europe/Madrid')::date + o.entrega, o.diagnostico,
        o.estado::estado_orden,
        (ci.fecha + time '09:30') AT TIME ZONE 'Europe/Madrid',
        CASE WHEN o.estado IN ('terminada', 'facturada')
@@ -95,7 +97,7 @@ SELECT o.numero, ci.id, ve.id, u.id, o.km, o.danos, current_date + o.entrega, o.
   FROM (VALUES
         (1, '1111BBB', 'luis',   60120, 'Sin daños visibles',              3, NULL::text,                           'recibida'),
         (2, '2222CCC', 'luis',   98500, 'Rayón en el paragolpes trasero',  2, 'Pastillas delanteras desgastadas',   'en_reparacion'),
-        (3, '3333DDD', 'luis',   45200, 'Sin daños visibles',              4, 'Discos de freno deformados',         'en_reparacion'),
+        (3, '3333DDD', 'luis',   45200, 'Sin daños visibles',              0, 'Discos de freno deformados',         'en_reparacion'),
         (4, '4444FFF', 'luis',  132000, 'Golpe en la puerta delantera',    5, 'Sensor de oxígeno defectuoso',       'en_diagnostico'),
         (5, '5555GGG', 'marta',  71300, 'Sin daños visibles',              3, 'Pastillas delanteras desgastadas',   'en_diagnostico'),
         (6, '6666HHH', 'marta',  88700, 'Faro derecho rajado',             2, 'Bujías en mal estado',               'en_espera_piezas'),
