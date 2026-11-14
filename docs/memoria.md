@@ -589,12 +589,47 @@ imputaciones».
 
 ## 11. Demo
 
-Pendiente: se completa cuando esté DemoSSD_GXX.zip.
+La demo está en [demo/](../demo/LEEME.md) y se entrega como `DemoSSD_GXX.zip`, con este contenido:
 
-Estructura prevista:
-- Nombre y contenido del fichero `DemoSSD_GXX.zip` (vídeo y guion).
-- Guion de la demo, siguiendo los recorridos R1 (de la cita a la factura) y R2 (presupuesto rechazado).
-- Duración, quién presenta cada parte y versión del código usada.
+- **`index.html`**: la página de la demo. Se abre con doble clic, sin servidor. Muestra el vídeo y, al
+  lado, las 8 historias con sus escenas y su minuto. Pulsar una escena salta a ella, y «Reproducir»
+  en una historia reproduce solo esa historia y se para al terminar. También tiene escena
+  anterior/siguiente, velocidad 0,75× y descarga del vídeo.
+- **`demo.mp4`**: el vídeo, de 15:29 (H.264, 1280 × 800, 11,8 MB).
+- **`capitulos.json`**: el momento en que empieza cada historia y cada escena, con sus criterios.
+
+**Versión y datos.** Grabada el 13/11/2026 sobre `main` en `1c347b0` (las 8 specs integradas), con
+una base recién migrada y los datos demo (`backend/seed/demo.sql`), siguiendo el quickstart común
+§1–§8. La grabación es automática (Playwright, `demo/grabar-demo.mjs`), así que se puede repetir
+igual con los pasos del [LEEME](../demo/LEEME.md).
+
+**Formato.** No hay narración. Cada historia empieza con un rótulo con su título y su objetivo, y cada
+escena lleva un subtítulo con la historia y sus criterios (`HU-05 · US2-2 …`). Un punto rojo marca
+dónde se pulsa y un recuadro naranja resalta el resultado. Lo que hace otra persona a la vez (otra
+pestaña, otro navegador) se hace entre bastidores y el subtítulo lo dice.
+
+**Guion.** El vídeo sigue el recorrido R1 (de la cita a la factura) con la Orden Nº 10 (1313MMM):
+se abre en HU-02, se diagnostica y presupuesta en HU-03, el cliente la acepta en HU-04, se imputa,
+se amplía y se termina en HU-05, y se factura en HU-07. El recorrido R2 (presupuesto rechazado) va
+con la Orden Nº 11 (1414NNN) en HU-04. Además, cada historia recorre sus escenarios de error y sus
+casos límite.
+
+| Historia | Empieza | Dura | Escenas | Criterios que se ven |
+|---|---|---|---|---|
+| HU-01 · Pedir cita en línea | 0:06 | 2:21 | 15 | US1-1 a US1-10, US2-1 a US2-4, US3-1 |
+| HU-02 · Abrir la orden | 2:27 | 1:52 | 10 | US1-1 a US1-9, US2-1 (US2-2 y US2-3, indicados) |
+| HU-03 · Diagnóstico y presupuesto | 4:20 | 1:29 | 10 | US1-1 a US1-3, US2-1 a US2-5, US3-1 (US3-2, indicado), horas en cuartos |
+| HU-04 · Aceptar/rechazar por enlace | 5:49 | 2:35 | 10 | US1-1 a US1-5, US2-1 a US2-3, US3-1, US4-1, enlace no válido |
+| HU-05 · Imputar tiempo y piezas | 8:25 | 1:54 | 8 | US1-1 a US1-3, US2-2, US3-1, US4-1, US4-2 (US2-1 y US3-2, indicados) |
+| HU-06 · Pedido al proveedor | 10:19 | 2:26 | 12 | US1-1 a US1-3, US2-1 a US2-5, US3-1 a US3-3, US4-1, US4-2 |
+| HU-07 · Facturar y avisar | 12:45 | 1:08 | 7 | US1-1 a US1-5, US2-1, US3-1, US3-2 |
+| HU-08 · Tablero | 13:54 | 1:27 | 10 | US1-1 a US1-4, US2-1, US3-1, US3-2, US4-1 a US4-3, US4-5 |
+
+«Indicado» quiere decir que el subtítulo lo explica pero no se recorre en pantalla. El vídeo cierra
+(15:21) con lo que no se aprecia en un vídeo y comprueban las pruebas automáticas: dos clientes a la
+vez por la última plaza, números de orden y de factura sin huecos con peticiones simultáneas, el
+límite exacto del 10 %, el redondeo del IVA, el correo que no sale, el cambio de día a medianoche y
+un mecánico de baja con órdenes en el tablero.
 
 ## 12. Anexos
 

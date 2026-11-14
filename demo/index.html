@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo Talleres Rueda</title>
+<style>
+  :root {
+    --fondo: #f6f7f9; --superficie: #ffffff; --borde: #e2e5ea; --texto: #18202e; --suave: #5b6576;
+    --acento: #1d4ed8; --acento-suave: #e6edfd; --dorado: #b7791f; --activo: #fff7e0; --sombra: 0 1px 2px rgba(16,24,40,.06), 0 4px 16px rgba(16,24,40,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fondo: #0f141c; --superficie: #171e29; --borde: #273142; --texto: #e7ebf1; --suave: #9aa5b6;
+      --acento: #7aa2ff; --acento-suave: #1d2a46; --dorado: #f2c14e; --activo: #2b2716; --sombra: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --fondo: #0f141c; --superficie: #171e29; --borde: #273142; --texto: #e7ebf1; --suave: #9aa5b6;
+    --acento: #7aa2ff; --acento-suave: #1d2a46; --dorado: #f2c14e; --activo: #2b2716; --sombra: none;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--fondo); color: var(--texto); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 20px 16px 8px; max-width: 1400px; margin: 0 auto; }
+  header .marca { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); font-weight: 600; }
+  header h1 { margin: 4px 0 6px; font-size: clamp(22px, 3vw, 30px); }
+  header p { margin: 0; color: var(--suave); max-width: 80ch; }
+  main { max-width: 1400px; margin: 0 auto; padding: 12px 16px 32px; display: grid; gap: 20px;
+         grid-template-columns: minmax(0, 1fr) 400px; align-items: start; }
+  @media (max-width: 980px) { main { grid-template-columns: minmax(0, 1fr); } }
+  .reproductor { position: sticky; top: 12px; }
+  @media (max-width: 980px) { .reproductor { position: static; } }
+  video { width: 100%; display: block; border-radius: 10px; background: #000; box-shadow: var(--sombra); aspect-ratio: 16 / 10; }
+  .ahora { margin-top: 12px; background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; padding: 12px 14px; min-height: 64px; }
+  .ahora .hu { color: var(--dorado); font-weight: 700; font-size: 13px; }
+  .ahora .txt { margin-top: 2px; }
+  .controles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  button { font: inherit; cursor: pointer; }
+  .boton { border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); border-radius: 8px; padding: 6px 12px; }
+  .boton:hover { border-color: var(--acento); }
+  a.boton { text-decoration: none; display: inline-flex; align-items: center; }
+  .boton.primario { background: var(--acento); border-color: var(--acento); color: #fff; }
+  .boton[aria-pressed="true"] { background: var(--acento-suave); border-color: var(--acento); }
+  .modo { font-size: 13px; color: var(--suave); margin-top: 8px; min-height: 20px; }
+  aside { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; box-shadow: var(--sombra);
+          max-height: calc(100vh - 24px); overflow: auto; position: sticky; top: 12px; }
+  @media (max-width: 980px) { aside { max-height: none; position: static; } }
+  aside > h2 { font-size: 14px; margin: 0; padding: 12px 14px; border-bottom: 1px solid var(--borde); position: sticky; top: 0; background: var(--superficie); z-index: 1; }
+  .historia { border-bottom: 1px solid var(--borde); }
+  .historia:last-child { border-bottom: 0; }
+  .cab { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px 6px; }
+  .cab .id { font-weight: 700; color: var(--dorado); font-size: 13px; white-space: nowrap; padding-top: 2px; }
+  .cab .tit { font-weight: 650; }
+  .cab .quien { font-size: 12px; color: var(--suave); }
+  .cab .boton { margin-left: auto; font-size: 13px; padding: 4px 10px; white-space: nowrap; }
+  .det { margin: 0 14px 6px; font-size: 13px; color: var(--suave); }
+  ol { list-style: none; margin: 0; padding: 0 6px 10px; }
+  li button { width: 100%; text-align: left; background: none; border: 0; color: var(--texto); border-radius: 6px;
+              padding: 6px 8px; display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 8px; }
+  li button:hover { background: var(--acento-suave); }
+  li button.actual { background: var(--activo); }
+  .t { font-variant-numeric: tabular-nums; color: var(--acento); font-size: 13px; padding-top: 1px; }
+  .crit { display: inline-block; font-size: 11px; font-weight: 700; color: var(--suave); margin-right: 6px; }
+  .esc { font-size: 13.5px; }
+  footer { max-width: 1400px; margin: 0 auto; padding: 0 16px 28px; color: var(--suave); font-size: 13px; }
+  :focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">SI-26 · Spec-Driven Development</div>
+  <h1>Talleres Rueda · demo de la aplicación</h1>
+  <p>Las 8 historias de usuario, de la cita a la factura, con los datos de demostración. Cada escena lleva arriba
+     su historia y sus criterios de aceptación (<b>USn-m</b>: escenario <i>m</i> de la historia de usuario <i>n</i> de su spec).
+     Pulsa una escena para ir a ella, o «Reproducir» para ver solo esa historia.</p>
+</header>
+<main>
+  <section class="reproductor" aria-label="Vídeo">
+    <video id="video" src="demo.mp4" controls preload="metadata" playsinline></video>
+    <div class="ahora" aria-live="polite"><div class="hu" id="ahora-hu">—</div><div class="txt" id="ahora-txt">Pulsa reproducir o elige una escena.</div></div>
+    <div class="controles">
+      <button class="boton primario" id="todo">▶ Ver la demo entera</button>
+      <button class="boton" id="anterior">⏮ Escena anterior</button>
+      <button class="boton" id="siguiente">Escena siguiente ⏭</button>
+      <button class="boton" id="lento" aria-pressed="false">Velocidad 0,75×</button>
+      <a class="boton" href="demo.mp4" download>⬇ Descargar vídeo</a>
+    </div>
+    <div class="modo" id="modo"></div>
+  </section>
+  <aside aria-label="Historias y escenas">
+    <h2>Historias de usuario</h2>
+    <div id="lista"></div>
+  </aside>
+</main>
+<footer id="pie"></footer>
+<script>
+const DATOS = {"fecha":"2026-11-13","duracion":928.8,"historias":[{"hu":"Inicio","titulo":"Talleres Rueda","detalle":"","inicio":1,"escenas":[]},{"hu":"HU-01","titulo":"Pedir cita en línea","detalle":"El cliente pide cita por su cuenta con la matrícula y el motivo; si el coche ya vino, sus datos aparecen solos. Hay un cupo diario de coches.","inicio":6.1,"escenas":[{"t":12.3,"criterios":"US1-5","texto":"Una matrícula no válida se rechaza y no deja confirmar"},{"t":21.8,"criterios":"US1-5","texto":"«AB» sí es válida: pide los datos del vehículo nuevo"},{"t":26.2,"criterios":"US2-1","texto":"Matrícula nueva «1234-bcd»: pide marca, modelo, nombre, teléfono y correo"},{"t":32.2,"criterios":"US2-3","texto":"Un teléfono incorrecto da su mensaje"},{"t":42.1,"criterios":"US2-3","texto":"Con el teléfono bien, un correo incorrecto también da su mensaje"},{"t":49.9,"criterios":"US2-2 · US1-2","texto":"Con todo bien, se dan de alta cliente, vehículo y cita, y se ve la fecha y el motivo"},{"t":57.6,"criterios":"US1-4","texto":"Con una cita pendiente: aviso, sin fecha y sin poder confirmar"},{"t":66.6,"criterios":"US2-4 · US3-1","texto":"Otro coche nuevo para el mismo día, con teléfono «+34 612 345 678»: completa el cupo (2 coches)"},{"t":83.2,"criterios":"US3-1","texto":"El 16/11/2026 ya está completo: deja de ofrecerse"},{"t":91.7,"criterios":"US1-1 · US1-7 · US1-6","texto":"Un coche que ya vino (1111BBB): salen marca y modelo, sin datos del cliente; solo pide día y motivo"},{"t":104.5,"criterios":"US1-8","texto":"Recepción ve la lista de citas de hoy por defecto"},{"t":115.3,"criterios":"US1-3","texto":"Cada cita con matrícula, marca, modelo, motivo, nombre y teléfono, sin el correo, en el orden en que se pidieron"},{"t":121.8,"criterios":"US1-7","texto":"El propietario de 1111BBB no ha cambiado: María López"},{"t":127.8,"criterios":"US1-9","texto":"Un día sin citas"},{"t":133.5,"criterios":"US1-10","texto":"Un mecánico no tiene «Citas» en el menú ni ve la lista"}]},{"hu":"HU-02","titulo":"Recibir el vehículo y abrir la orden","detalle":"El día de la cita, recepción abre la orden con número correlativo, los kilómetros y los daños visibles. El kilometraje no puede bajar.","inicio":147.8,"escenas":[{"t":159,"criterios":"US1-5","texto":"Solo se abre la orden el día de la cita: las de hoy tienen «Abrir orden»"},{"t":172.8,"criterios":"US1-6","texto":"Un cliente sin cita no está en la lista: no puede tener orden"},{"t":176.8,"criterios":"US1-7","texto":"Solo se ofrecen los mecánicos activos (Luis y Marta, no Pedro, que está de baja)"},{"t":184.7,"criterios":"US1-8","texto":"Sin descripción de daños no se guarda"},{"t":192,"criterios":"US1-9","texto":"Otros datos incorrectos: kilómetros negativos y entrega en el pasado"},{"t":204.9,"criterios":"US1-1 · US1-2 · US1-3","texto":"Con todo bien: Orden Nº 10 en «Recibida», con su cita, vehículo y mecánico (los errores no gastaron número)"},{"t":212.7,"criterios":"US1-4","texto":"En «Citas», 1313MMM ya enlaza con su orden y no deja abrir otra"},{"t":218.9,"criterios":"US1-4","texto":"Dos pestañas con la misma cita: si otra recepcionista la abre antes, la segunda no crea otra orden"},{"t":232.4,"criterios":"US2-1","texto":"Un kilometraje menor que el de la visita anterior se rechaza, con ese valor"},{"t":246.9,"criterios":"Mis órdenes","texto":"El mecánico ve sus órdenes nuevas (Nº 10 y Nº 11) en «Mis órdenes»"}]},{"hu":"HU-03","titulo":"Registrar el diagnóstico y preparar el presupuesto","detalle":"El mecánico asignado escribe el diagnóstico y prepara el presupuesto línea a línea, con mano de obra, piezas e IVA desglosado. Al emitirlo vale 15 días.","inicio":260,"escenas":[{"t":264.7,"criterios":"US1-1","texto":"Luis guarda el diagnóstico de la Orden Nº 10: pasa a «En diagnóstico»"},{"t":274.8,"criterios":"US1-2","texto":"Sin presupuesto emitido, el diagnóstico se puede cambiar"},{"t":282.2,"criterios":"US2-1","texto":"Nuevo presupuesto: mano de obra «Cambio de pastillas», 1,5 h a 40,00 € → 60,00 €"},{"t":292.2,"criterios":"US2-4 · US2-2","texto":"Las piezas se eligen del almacén: PF-123 × 2 → «PF-123 Pastillas freno», 50,00 €"},{"t":301.1,"criterios":"US2-3","texto":"Base imponible 110,00 €, IVA (21 %) 23,10 € y total 133,10 €"},{"t":306.4,"criterios":"Casos límite","texto":"Las horas van en cuartos: 1,3 h se rechaza explicando el motivo"},{"t":314.5,"criterios":"US2-5","texto":"En borrador se puede quitar una línea: se añade «Prueba» 1 h y se quita, y los totales vuelven a 110,00 / 23,10 / 133,10"},{"t":325.3,"criterios":"US3-1","texto":"Emitir pide confirmación en la página; al confirmar: «Válido hasta» = hoy + 15 días, y ya no se pueden añadir ni quitar líneas"},{"t":337.6,"criterios":"US1-3","texto":"Con el presupuesto emitido, el diagnóstico queda fijo: sin «Guardar diagnóstico» y con el motivo"},{"t":342.7,"criterios":"Emisión","texto":"El cliente recibe por correo el enlace al presupuesto"}]},{"hu":"HU-04","titulo":"Aceptar o rechazar el presupuesto desde un enlace","detalle":"El cliente abre el enlace, ve el presupuesto y lo acepta o lo rechaza; queda guardado el momento exacto. No se toca un coche sin presupuesto aceptado.","inicio":349.6,"escenas":[{"t":354.3,"criterios":"US1-1","texto":"El enlace muestra el presupuesto completo, sin datos personales del cliente"},{"t":360.7,"criterios":"US1-2","texto":"Aceptar pide confirmación con el total; «Volver» lo deja como estaba"},{"t":373.5,"criterios":"US1-3","texto":"Al volver a abrir el enlace se ve la decisión, sin botones"},{"t":379.6,"criterios":"US1-2 · US1-5","texto":"La orden pasa a «En reparación», con la fecha y hora de la aceptación, y ya no muestra el enlace"},{"t":393.6,"criterios":"US1-5","texto":"Mientras el presupuesto está vigente, el personal ve el enlace y puede copiarlo"},{"t":409.9,"criterios":"US4-1","texto":"Sin presupuesto aceptado, la mecánica no puede imputar trabajo"},{"t":423.1,"criterios":"US2-1","texto":"Rechazo: Luis emite el presupuesto de 1414NNN y el cliente lo rechaza"},{"t":451.7,"criterios":"US3-1","texto":"Un presupuesto caducado: la ampliación de la Orden Nº 7 sale «Caducado el…», sin enlace"},{"t":462.9,"criterios":"US1-4 · US2-2 · US2-3","texto":"Dos pestañas con el mismo enlace: solo cuenta la primera respuesta"},{"t":499,"criterios":"Enlace no válido","texto":"Un enlace modificado no muestra nada"}]},{"hu":"HU-05","titulo":"Imputar tiempo y piezas","detalle":"El mecánico carga el tiempo real y las piezas que monta, que se descuentan del almacén al momento. Si el coste supera en más de un 10 % lo presupuestado, el trabajo se detiene.","inicio":505.1,"escenas":[{"t":509.7,"criterios":"US4-2","texto":"Sin imputaciones no se puede terminar: no aparece «Terminar reparación» y se indica el motivo"},{"t":515.9,"criterios":"US1-1","texto":"Luis monta PF-123 × 2: la pieza se descuenta del almacén en ese momento"},{"t":538.3,"criterios":"US1-3","texto":"Sin stock suficiente no se imputa, y se indica que puede pedirse al proveedor"},{"t":556.4,"criterios":"US1-2","texto":"Una hora de «Cambio de pastillas»: «Acumulado 90,00 € de 110,00 € presupuestados»"},{"t":565.8,"criterios":"US2-2","texto":"Otra hora: 130,00 € supera el 110 % (121,00 €) → «Pendiente de conformidad» y no se puede seguir"},{"t":578.3,"criterios":"US3-1","texto":"Luis prepara y emite una ampliación de 1 h (40,00 €)"},{"t":595.8,"criterios":"US3-1","texto":"El cliente la acepta desde el enlace: la orden vuelve a «En reparación» con 150,00 € presupuestados"},{"t":608.3,"criterios":"US4-1","texto":"Luis marca la reparación como terminada (con confirmación en la página): ya no admite imputaciones"}]},{"hu":"HU-06","titulo":"Pedir una pieza al proveedor","detalle":"Si una pieza no está, el almacén la pide vinculada a la orden; la orden queda en espera de piezas y vuelve sola a reparación al recibir el pedido.","inicio":619.4,"escenas":[{"t":632.3,"criterios":"US1-2","texto":"Alta a mano de «FA-9 Filtro aceite», 12,00 €, sin indicar stock → stock 0"},{"t":640.8,"criterios":"US1-3","texto":"La misma referencia otra vez se rechaza"},{"t":649.3,"criterios":"US1-1","texto":"Alta con stock inicial: «AC-5 Aceite 5W30», 9,50 €, stock 4"},{"t":659.7,"criterios":"US2-1","texto":"Pedido a «Recambios Sur» (proveedores precargados) de FA-9 para la Orden Nº 2, en reparación: queda «pendiente» y la orden pasa a «En espera de piezas»"},{"t":669.4,"criterios":"US2-5","texto":"Otro pedido de FA-9 para la misma orden con el primero pendiente se rechaza"},{"t":679.1,"criterios":"US2-2","texto":"Otra pieza (PF-123) para la misma orden en espera sí se admite"},{"t":688.7,"criterios":"US2-3","texto":"Un pedido para una orden que no está en reparación (Nº 4, en diagnóstico) se rechaza con el motivo"},{"t":698.6,"criterios":"US4-2","texto":"La lista de pedidos pendientes de todas las órdenes, cada uno con su orden"},{"t":703.6,"criterios":"US2-4 · US4-1","texto":"Luis ve los dos pedidos en la ficha de la Orden Nº 2 y no puede imputar ni terminar"},{"t":718.9,"criterios":"US3-3","texto":"Nadie puede sacar la orden de la espera a mano, tampoco el jefe: no hay botón para cambiar el estado"},{"t":731.7,"criterios":"US3-2","texto":"El almacén recibe FA-9: el stock sube, pero la orden sigue esperando el otro pedido"},{"t":748.2,"criterios":"US3-1","texto":"Al recibir el último (PF-123), la orden vuelve sola a «En reparación»"}]},{"hu":"HU-07","titulo":"Facturar y avisar al cliente","detalle":"Recepción genera la factura con lo imputado, sin teclear nada, y el cliente recibe un aviso para recoger el coche. Cada vehículo guarda su historial.","inicio":765.6,"escenas":[{"t":776.9,"criterios":"US1-5","texto":"Una orden que no está terminada (Nº 3, en reparación) no se puede facturar"},{"t":783.1,"criterios":"US1-1 · US1-2","texto":"La Orden Nº 10 está terminada: «Facturar» genera la factura con las líneas imputadas"},{"t":794.4,"criterios":"US1-2 · US1-4","texto":"La factura: número correlativo, fecha, taller con su logo, cliente, matrícula, líneas, base, IVA y total"},{"t":801.5,"criterios":"US1-3","texto":"Al imprimir sale la factura sola, sin el menú de la aplicación (se puede guardar como PDF)"},{"t":807.2,"criterios":"US2-1","texto":"El cliente recibe «Su vehículo 1313MMM está listo para recoger», con el total"},{"t":814,"criterios":"US3-1","texto":"Historial por matrícula, escrita de cualquier forma («1313 mmm»): fecha, km, diagnóstico y líneas"},{"t":827.9,"criterios":"US3-2","texto":"Una matrícula sin reparaciones facturadas"}]},{"hu":"HU-08","titulo":"Tablero de órdenes abiertas","detalle":"Paco jubila su pizarra: ve todas las órdenes abiertas por estado, cuántas lleva cada mecánico y, destacadas, las que pasan de la fecha prometida. Se actualiza solo.","inicio":834.5,"escenas":[{"t":839.2,"criterios":"US1-3","texto":"Recepción, mecánicos y almacén no tienen tablero: «No tienes permiso para hacer esto»"},{"t":845.2,"criterios":"US1-1 · US1-2","texto":"Paco ve 6 columnas, una por estado; las facturadas (1313MMM, 9999LLL) no aparecen"},{"t":860.3,"criterios":"US2-1","texto":"Arriba, cuántas órdenes abiertas lleva cada mecánico"},{"t":865.4,"criterios":"US3-1 · US3-2","texto":"Destacada y con «Retrasada» la que pasó su fecha de entrega (8888KKK, ayer); la de hoy (3333DDD) no"},{"t":873.2,"criterios":"US1-4","texto":"En cada columna, las tarjetas van por fecha de entrega"},{"t":878.2,"criterios":"US4-1","texto":"En otro navegador, Luis termina la Orden Nº 2 (2222CCC): la tarjeta pasa a «Terminada» sin recargar"},{"t":884.8,"criterios":"US4-2","texto":"Recepción abre una orden para 8888KKK con Marta: aparece en «Recibida» y Marta suma 1"},{"t":892.8,"criterios":"US4-3","texto":"Recepción factura la Orden Nº 2: su tarjeta desaparece y Luis resta 1"},{"t":901,"criterios":"US4-5","texto":"Si se corta la conexión con el servidor, el tablero lo avisa y reintenta…"},{"t":913.6,"criterios":"US4-1","texto":"Ya reconectado, Luis termina la Orden Nº 3 (3333DDD) y la tarjeta se mueve sola"}]},{"hu":"Cierre","titulo":"Lo que comprueban las pruebas automáticas","detalle":"","inicio":921.5,"escenas":[]}]};
+const RESPONSABLE = { 'HU-01': 'Persona A', 'HU-02': 'Persona A', 'HU-04': 'Persona A', 'HU-08': 'Persona A',
+                      'HU-03': 'Persona B', 'HU-05': 'Persona B', 'HU-06': 'Persona B', 'HU-07': 'Persona B' };
+const video = document.getElementById('video');
+const lista = document.getElementById('lista');
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+// Todas las escenas en orden, con su historia; el final de cada historia es el inicio de la siguiente.
+const historias = DATOS.historias;
+historias.forEach((h, i) => { h.fin = i + 1 < historias.length ? historias[i + 1].inicio : DATOS.duracion; });
+const escenas = [];
+historias.forEach((h) => h.escenas.forEach((e) => escenas.push({ ...e, h })));
+
+let hasta = null; // si se reproduce una sola historia, dónde parar
+const modo = document.getElementById('modo');
+function ir(t, fin = null, etiqueta = '') {
+  hasta = fin;
+  modo.textContent = etiqueta;
+  video.currentTime = t;
+  actualizar(t);
+  video.play().catch(() => {});
+}
+
+for (const h of historias) {
+  const div = document.createElement('div');
+  div.className = 'historia';
+  const esHU = /^HU-/.test(h.hu);
+  div.innerHTML = `
+    <div class="cab">
+      <span class="id">${h.hu === 'Inicio' ? 'INICIO' : h.hu === 'Cierre' ? 'CIERRE' : h.hu}</span>
+      <div><div class="tit"></div>${esHU ? `<div class="quien">${RESPONSABLE[h.hu] ?? ''} · ${h.escenas.length} escenas · ${mmss(h.fin - h.inicio)}</div>` : ''}</div>
+      <button class="boton" type="button">▶ ${esHU ? 'Reproducir' : 'Ver'}</button>
+    </div>
+    ${h.detalle ? '<p class="det"></p>' : ''}
+    <ol></ol>`;
+  div.querySelector('.tit').textContent = h.titulo;
+  if (h.detalle) div.querySelector('.det').textContent = h.detalle;
+  div.querySelector('.cab .boton').addEventListener('click', () =>
+    ir(h.inicio, h.fin, esHU ? `Reproduciendo solo ${h.hu} · ${h.titulo} (${mmss(h.fin - h.inicio)}). Se parará al final de la historia.` : ''));
+  const ol = div.querySelector('ol');
+  for (const e of h.escenas) {
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = `<span class="t">${mmss(e.t)}</span><span><span class="crit"></span><span class="esc"></span></span>`;
+    b.querySelector('.crit').textContent = e.criterios;
+    b.querySelector('.esc').textContent = e.texto;
+    b.addEventListener('click', () => ir(e.t, null, ''));
+    e.boton = b;
+    escenas.find((x) => x.t === e.t && x.h === h).boton = b;
+    li.appendChild(b);
+    ol.appendChild(li);
+  }
+  lista.appendChild(div);
+}
+
+let actual = null;
+video.addEventListener('timeupdate', () => {
+  const t = video.currentTime;
+  if (hasta !== null && t >= hasta - 0.15) { video.pause(); hasta = null; modo.textContent = 'Fin de la historia. «Ver la demo entera» sigue desde el principio.'; }
+  actualizar(t);
+});
+function actualizar(t) {
+  let e = null;
+  for (const x of escenas) { if (x.t <= t + 0.05) e = x; else break; }
+  if (e === actual) return;
+  if (actual) actual.boton.classList.remove('actual');
+  actual = e;
+  const hu = historias.filter((h) => h.inicio <= t + 0.05).pop();
+  document.getElementById('ahora-hu').textContent = hu ? (hu.hu.startsWith('HU') ? `${hu.hu} · ${hu.titulo}` : hu.titulo) : '—';
+  document.getElementById('ahora-txt').textContent = e && e.h === hu ? `${e.criterios} · ${e.texto}` : (hu?.detalle || '');
+  if (e && e.h === hu) {
+    e.boton.classList.add('actual');
+    const caja = lista.parentElement, r = e.boton.getBoundingClientRect(), rc = caja.getBoundingClientRect();
+    if (caja.scrollHeight > caja.clientHeight && (r.top < rc.top + 50 || r.bottom > rc.bottom)) caja.scrollTop += r.top - rc.top - rc.height / 3;
+  }
+}
+document.getElementById('todo').addEventListener('click', () => ir(0, null, ''));
+const indiceActual = () => escenas.findIndex((x) => x === actual);
+document.getElementById('anterior').addEventListener('click', () => {
+  const i = indiceActual();
+  const destino = i > 0 && video.currentTime - escenas[i].t < 1.5 ? escenas[i - 1] : escenas[Math.max(i, 0)];
+  ir(destino.t, hasta, modo.textContent);
+});
+document.getElementById('siguiente').addEventListener('click', () => {
+  const s = escenas[indiceActual() + 1];
+  if (s) ir(s.t, hasta, modo.textContent);
+});
+const lento = document.getElementById('lento');
+lento.addEventListener('click', () => {
+  const on = lento.getAttribute('aria-pressed') !== 'true';
+  lento.setAttribute('aria-pressed', String(on));
+  video.playbackRate = on ? 0.75 : 1;
+});
+const totalEsc = escenas.length, totalHU = historias.filter((h) => /^HU-/.test(h.hu)).length;
+document.getElementById('pie').textContent =
+  `${totalHU} historias · ${totalEsc} escenas · ${mmss(DATOS.duracion)} de vídeo · grabado el ${DATOS.fecha.split('-').reverse().join('/')} con los datos de demostración (backend/seed/demo.sql), siguiendo el quickstart común §1–§8.`;
+</script>
+</body>
+</html>
