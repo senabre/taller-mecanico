@@ -8,7 +8,7 @@
 
 | Comprobación | Resultado |
 |---|---|
-| `cargo test --no-fail-fast` | **155 de 155** en verde (`salida/cargo-main.txt`). La prueba `el_aviso_se_anota_si_sale_el_correo` (007) necesita un servidor de correo en el puerto 1025, como Mailpit: en la primera pasada no estaba arrancado y falló; con él, `spec007_facturas` da 11 de 11 |
+| `cargo test --no-fail-fast` | **155 de 155** en verde (`salida/cargo-main.txt`). La prueba `el_aviso_se_anota_si_sale_el_correo` (007) necesita un servidor de correo en el puerto 1025, como Mailpit: en la primera pasada no estaba arrancado y falló (154 de 155 en esa salida); con él, `spec007_facturas` da 11 de 11 (`salida/cargo-spec007-con-correo.txt`) |
 | `cargo test --test spec008_tablero -- --ignored` (prueba 9) | 1 de 1 |
 | `cargo clippy --all-targets -- -D warnings` | Sin avisos |
 | `npm run check` | 0 errores, 0 avisos |

@@ -7,8 +7,8 @@
 | | |
 |---|---|
 | Autores | Persona A · @evm60-ua (HU-01, HU-02, HU-04 y HU-08) · Persona B · @senabre (HU-03, HU-05, HU-06 y HU-07) |
-| Fecha | 12/11/2026 |
-| Versión del código | rama `entrega`, commit `2a7dfce` |
+| Fecha | 14/11/2026 |
+| Versión del código | `main`, commit `1c347b0`; la verificación final, en la rama `cierre` (`52c7024`) |
 | Repositorio | https://github.com/senabre/taller-mecanico |
 
 **Resumen.** Talleres Rueda es una aplicación web que acompaña a cada vehículo desde que el cliente
@@ -17,22 +17,24 @@ presupuesto desde un enlace sin entrar en la aplicación, y el personal del tall
 almacén y el jefe de taller, que ve todas las órdenes abiertas en un tablero que se actualiza solo. Se
 ha construido con desarrollo guiado por especificaciones (Spec Kit): una base común y **8
 especificaciones**, una por historia de usuario, repartidas entre dos personas. El resultado:
-- **326 tareas**, de las que solo quedan 2: las revisiones finales de la Persona B (T031 de 004 y T032 de 008).
-- **177 pruebas automáticas en verde**: 156 de backend (155 con `cargo test` y una más que se lanza
-  aparte porque tarda unos 100 s) y 21 de frontend (Vitest).
-- La guía de validación (quickstart común) se recorrió en un navegador real automatizado. La regresión
-  final, §0–§8, no tuvo ningún fallo de la aplicación, y el recorrido completo de la cita a la factura
-  (§9) dio 10 de 10.
-- De los **126 criterios** de aceptación y de éxito de las 8 historias, **118 están verificados** y
-  **8 verificados con desviación** (ninguno pendiente), según la
+- **336 tareas, todas hechas**, incluidas las revisiones finales de la Persona B.
+- **177 pruebas automáticas en verde** según la verificación final: 156 de backend (155 con `cargo
+  test` y una más que se lanza aparte porque tarda unos 100 s) y 21 de frontend (Vitest).
+- La guía de validación (quickstart común) se recorrió en un navegador real automatizado. La
+  verificación final sobre `main` (§0–§8, 123 de 124) no tuvo ningún fallo de la aplicación. El
+  recorrido de la cita a la factura (§9) dio 10 de 10 y el de error, permiso y estado (R2), 9 de 9.
+- De los **126 criterios** de aceptación y de éxito de las 8 historias, **119 están verificados** y
+  **7 verificados con desviación** (ninguno pendiente), según la
   [matriz de trazabilidad](../specs/matriz-trazabilidad.md).
+- **135 hallazgos** registrados en los analyze y converge: 128 cerrados, 7 asignados y ninguno
+  abierto.
 
 ## 2. Repositorio
 
 - **URL**: https://github.com/senabre/taller-mecanico
-- **Rama principal**: `main`, a la que se fusionan las specs. La rama `entrega` contiene `main` más la
-  documentación final (matriz, recorridos, agrupamiento, revisión cruzada y esta memoria), todavía sin
-  fusionar.
+- **Rama principal**: `main` (`1c347b0`), con las 8 specs y la documentación final (matriz,
+  recorridos, agrupamiento, revisión cruzada y esta memoria), que entró con el PR #6. La rama `cierre`
+  añade la verificación final (`52c7024`), todavía sin fusionar.
 
 ## 3. Introducción
 
@@ -237,7 +239,7 @@ De la [constitución](../.specify/memory/constitution.md), el
 
 ### Pila tecnológica
 
-Versiones de `Cargo.lock` y `package-lock.json` en `2a7dfce`:
+Versiones de `Cargo.lock` y `package-lock.json` (sin cambios entre `2a7dfce` y `1c347b0`):
 
 | Capa | Tecnología | Versión |
 |---|---|---|
@@ -258,7 +260,7 @@ Persona A se usaron rustc 1.99.0, Node 25.8.0 y Docker 28.5.1.
 .specify/memory/constitution.md   constitución
 specs/000-base-comun/             plan maestro, research común, data-model, contrato y quickstart comunes
 specs/00N-…/                      una spec por HU: spec, plan, research, tasks, evidencias…
-specs/matriz-trazabilidad.md · specs/revision-cruzada.md · specs/recorridos/
+specs/matriz-trazabilidad.md · specs/revision-cruzada.md · specs/recorridos/ · specs/verificacion-final/
 backend/migrations/               0001 esquema · 0002 líneas (003) · 0003 imputaciones (005)
 backend/seed/demo.sql             datos demo
 backend/src/                      auth, config, contador, correo, dinero, error, estados, eventos,
@@ -293,7 +295,8 @@ docs/                             agrupamiento.md y esta memoria
 | **Con cupo 0 no se ofrece ningún día** | spec-001, hallazgo H1 · T041 | La verificación en el navegador encontró días ofrecidos que el servidor rechazaba |
 | **La orden solo se abre el día de la cita** | spec-002, clarify Q2 | Evita órdenes sin coche presente; obligó a crear citas de «hoy» en los datos demo |
 | **La entrega de la orden demo 3, hoy** | spec-008, research D8 · T001 | Para ver en la app una orden con la entrega de hoy, que no sale retrasada |
-| **`confirm()` del navegador en emitir, terminar y facturar** | specs 003, 005 y 007 · V2 de spec-008 · [revisión cruzada](../specs/revision-cruzada.md) (O1) | Los botones salen en el idioma del navegador (principio II). Queda como trabajo futuro de la Persona B |
+| **Confirmación dentro de la página en «Emitir presupuesto», «Terminar reparación» y «Facturar»** | specs 003, 005 y 007 · V2 de [spec-008](../specs/008-tablero-ordenes-abiertas/hallazgos.md) · C1 de [003](../specs/003-diagnostico-presupuesto/hallazgos.md), [005](../specs/005-imputar-tiempo-piezas/hallazgos.md) y [007](../specs/007-facturar-avisar-cliente/hallazgos.md) | Usaban `confirm()` del navegador, cuyos botones salen en el idioma del navegador (principio II), lo que spec-004 había descartado en D5. Lo detectó la verificación de spec-008 (V2) y la revisión cruzada (O1); los analyze de la Persona B lo clasificaron como CRITICAL y lo corrigió con «Sí, emitir», «Sí, terminar» y «Sí, facturar» dentro de la página (T036 de 003, T035 de 005, T033 de 007). V2 queda cerrado |
+| **Formularios sin la validación del navegador y mensajes del servidor en español** | specs 003, 006 y 007 · C1 de [006](../specs/006-pedido-pieza-proveedor/hallazgos.md) | Los avisos de validación del navegador salen en su idioma; los formularios llevan `novalidate` y muestran los mensajes del servidor |
 
 ## 7. Pruebas y validación
 
@@ -313,8 +316,10 @@ docs/                             agrupamiento.md y esta memoria
 
 ### Resultados de las pruebas automáticas
 
-Ejecutadas el 12/11/2026 sobre `2a7dfce`, con `cd backend && cargo test --no-fail-fast`, aparte
-`cargo test --test spec008_tablero -- --ignored`, y `cd frontend && npm test`:
+Según la [verificación final](../specs/verificacion-final/verificacion.md) del 14/11/2026 sobre `main`
+(`1c347b0`), con `cd backend && cargo test --no-fail-fast`, aparte `cargo test --test spec008_tablero
+-- --ignored`, y `cd frontend && npm test`. Los recuentos por fichero coinciden con los del 12/11 sobre
+`2a7dfce`:
 
 | Fichero | Spec | Persona | Pruebas | Resultado |
 |---|---|---|---|---|
@@ -328,14 +333,21 @@ Ejecutadas el 12/11/2026 sobre `2a7dfce`, con `cd backend && cargo test --no-fai
 | `spec004_respuesta.rs` | 004 | A | 16 | 16 pasan |
 | `spec005_imputaciones.rs` | 005 | B | 12 | 12 pasan |
 | `spec006_pedidos.rs` | 006 | B | 23 | 23 pasan |
-| `spec007_facturas.rs` | 007 | B | 11 | 11 pasan |
+| `spec007_facturas.rs` | 007 | B | 11 | 11 pasan con el servidor de correo arrancado (ver la nota de abajo) |
 | `spec008_tablero.rs` | 008 | A | 9 | 8 pasan; la 9 lleva `#[ignore]` y pasa al lanzarla aparte (unos 158 s) |
 | **Backend** | | | **156** | **156 pasan** (155 con `cargo test` y 1 aparte) |
 | Vitest: `formato.test.ts`, `medianoche.test.ts`, `recarga.test.ts` y `eventos.test.ts` | Base común y 008 | Las dos | 21 | 21 pasan |
 | **Total** | | | **177** | **177 pasan, 0 fallan** |
 
 Además, `cargo clippy --all-targets -- -D warnings` sin avisos, y `npm run check` y `npm run build`
-correctos ([comprobaciones de converge-1 de 008](../specs/008-tablero-ordenes-abiertas/evidencias/T033-T038-comprobaciones.txt)).
+correctos ([verificación final](../specs/verificacion-final/verificacion.md)).
+
+**Nota sobre `spec007_facturas`**: la prueba `el_aviso_se_anota_si_sale_el_correo` necesita un
+servidor de correo en el puerto 1025, como Mailpit. En la primera pasada de la verificación final no
+estaba arrancado y falló
+([`cargo-main.txt`](../specs/verificacion-final/salida/cargo-main.txt), 154 de 155). Con él,
+`spec007_facturas` da 11 de 11
+([`cargo-spec007-con-correo.txt`](../specs/verificacion-final/salida/cargo-spec007-con-correo.txt)).
 
 ### Validación en el navegador (Persona A)
 
@@ -354,11 +366,12 @@ correctos ([comprobaciones de converge-1 de 008](../specs/008-tablero-ordenes-ab
 
 **Validación de la Persona B**:
 - Las verificaciones en pantalla de 003, 005, 006 y 007 constan como notas en sus `tasks.md` (T035, T034,
-  T032 y T028).
+  T032 y T028), y sus secciones del quickstart (§3, §5, §6 y §7) las recorrió en el navegador la
+  regresión T030 y la verificación final, con capturas: 7/7, 6/6, 9/9 y 5/5.
 - Los criterios de tiempo se midieron con el navegador automático
-  ([matriz B](../specs/recorridos/matriz-B/informe.md), 7/7).
-- *Pendiente de que lo complete la Persona B*: si hay un informe de verificación en el navegador de sus
-  quickstart con su resultado.
+  ([matriz B](../specs/recorridos/matriz-B/informe.md), 7/7). Sus analyze los registraron como G1 de
+  cada spec y los justificaron.
+- No consta un informe de verificación en el navegador propio de la Persona B, aparte de la matriz B.
 
 ### Recorridos integrados (apartado 5.4)
 
@@ -376,8 +389,10 @@ historias de las dos personas y están revisados por las dos.
 |---|---|---|---|
 | T029 de spec-004 | Quickstart §0–§7 con los datos demo de 004 (`8d64285`) | 111 comprobaciones: 109 a la primera y las 2 de §7.3 y §7.4 al repetirlas (eran fallos del script). §8 y §9 quedaron pendientes de spec-008 | [T029 de 004](../specs/004-aceptar-presupuesto-enlace/evidencias/T029/verificacion.md) |
 | T030 de spec-008 | Quickstart §0–§8 con todo el código (`02e9868`), después de arreglar V3 | 123/124, sin ningún fallo de la aplicación (la que falla es la parte opcional del §8.9, que se quitó del quickstart). `estres.sh`: 0 errores | [T030 de 008](../specs/008-tablero-ordenes-abiertas/evidencias/T030/regresion/verificacion.md) |
+| **Verificación final** | Quickstart §0–§8 y R2 sobre `main` (`1c347b0`), después de los cambios de la Persona B del 12/11 (confirmación dentro de la página y mensajes en español) | §0–§8: 123/124, sin ningún fallo de la aplicación (otra vez la parte opcional del §8.9). R2: 9/9. `estres.sh`: 0 errores | [verificación final](../specs/verificacion-final/verificacion.md) |
 
-El primer intento de T030 se paró en el §1 por V3
+La verificación final es la última regresión: la Persona B cambió pantallas de 003, 005 y 007 después
+de T030, y esos cambios los atraviesan las historias de la Persona A. El primer intento de T030 se paró en el §1 por V3
 ([hallazgo](../specs/008-tablero-ordenes-abiertas/evidencias/T030/hallazgo-conexiones.md)).
 
 ### Balance de la iteración
@@ -391,7 +406,7 @@ El primer intento de T030 se paró en el §1 por V3
 | 002 | 6 | [decisiones](../specs/002-abrir-orden-reparacion/decisiones-clarify.md) |
 | 004 | 5 | [decisiones](../specs/004-aceptar-presupuesto-enlace/decisiones-clarify.md) |
 | 008 | 4 | [decisiones](../specs/008-tablero-ordenes-abiertas/decisiones-clarify.md) |
-| 003, 005, 006 y 007 | 4, 3, 5 y 3 (sección «Clarifications» de cada spec) | *Las specs de la Persona B no tienen `decisiones-clarify.md`; pendiente de que la Persona B indique si lo hay en otro sitio* |
+| 003, 005, 006 y 007 | 4, 3, 5 y 3 | Sección «Clarifications» de cada spec ([003](../specs/003-diagnostico-presupuesto/spec.md), [005](../specs/005-imputar-tiempo-piezas/spec.md), [006](../specs/006-pedido-pieza-proveedor/spec.md), [007](../specs/007-facturar-avisar-cliente/spec.md)); sus specs no tienen `decisiones-clarify.md` aparte |
 | **Total** | **38** (más la aclaración de 001) | |
 
 **Hallazgos de los analyze y converge**, en los `hallazgos.md`:
@@ -401,32 +416,57 @@ El primer intento de T030 se paró en el §1 por V3
 | [Base común](../specs/000-base-comun/hallazgos.md) | 33 | 31 | 2 (I9 → 007, D2 → 006) | 0 |
 | [spec-001](../specs/001-pedir-cita-en-linea/hallazgos.md) | 21 | 20 | 1 (I4 → 007) | 0 |
 | [spec-002](../specs/002-abrir-orden-reparacion/hallazgos.md) | 17 | 15 | 2 (I5(b) → 003; N3 → T031 de 004) | 0 |
-| [spec-004](../specs/004-aceptar-presupuesto-enlace/hallazgos.md) | 25 | 22 | 2 (G1 e I8 → Persona B) | 1 (V2, pendiente de la Persona B) |
-| [spec-008](../specs/008-tablero-ordenes-abiertas/hallazgos.md) | 17 | 16 | 1 (V2 → Persona B) | 0 |
-| **Total** | **113** | **104** | **8** | **1** |
-| Specs 003, 005, 006 y 007 | *No tienen `hallazgos.md` ni informes de analyze o converge; pendiente de que la Persona B lo indique* | | | |
+| [spec-003](../specs/003-diagnostico-presupuesto/hallazgos.md) | 8 | 8 | 0 | 0 |
+| [spec-004](../specs/004-aceptar-presupuesto-enlace/hallazgos.md) | 25 | 23 | 2 (G1 e I8 → Persona B) | 0 |
+| [spec-005](../specs/005-imputar-tiempo-piezas/hallazgos.md) | 6 | 6 | 0 | 0 |
+| [spec-006](../specs/006-pedido-pieza-proveedor/hallazgos.md) | 4 | 4 | 0 | 0 |
+| [spec-007](../specs/007-facturar-avisar-cliente/hallazgos.md) | 4 | 4 | 0 | 0 |
+| [spec-008](../specs/008-tablero-ordenes-abiertas/hallazgos.md) | 17 | 17 | 0 | 0 |
+| **Total** | **135** | **128** | **7** | **0** |
 
-I7 (el ejemplo «Ana» de la US2 de 008) se cerró el 12/11/2026: se corrigió en el clarify de spec-008
-(«Luis 3 · Marta 1», commit `200b4db`). G6 (`EstadoOrden.svelte`) se cerró el 12/11/2026: se usa
-`NOMBRE_ESTADO` de `formato.ts` y el plan maestro ya no menciona el componente; ese cambio del plan
-maestro lo revisa la Persona B.
+- **V2** (los `confirm()` del navegador) está cerrado en spec-004 y en spec-008: la Persona B los cambió
+  por una confirmación dentro de la página (C1 de 003, 005 y 007).
+- **I7** y **G6** de la base común se cerraron el 12/11/2026: I7 en el clarify de spec-008 («Luis 3 ·
+  Marta 1», `200b4db`), y G6 porque se usa `NOMBRE_ESTADO` de `formato.ts` y el plan maestro ya no
+  menciona `EstadoOrden.svelte` (cambio que revisa la Persona B).
+- **N1 de 005** (pasos del quickstart sin la confirmación dentro de la página) lo cerró la Persona A el
+  14/11/2026: el quickstart común dice «confirmar con «Sí, terminar»» en el §8.6, el §8.9 y el §9.6, y «confirmar
+  con «Sí, facturar»» en el §8.8 y el §9.7. Es un documento compartido; el cambio lo revisa la Persona B.
+- **Los 7 asignados a la Persona B**, comprobados en el repositorio el 14/11/2026:
 
-**Brechas de implementación pendientes**: 2 tareas de 326 (T031 de 004 y T032 de 008, las revisiones
-finales de la Persona B, que se ha comprometido a marcarlas). El último converge de cada spec de la
-Persona A no dejó tareas de código sin hacer (spec-008:
-[converge-2](../specs/008-tablero-ordenes-abiertas/converge-2.md); T039 y T040 hechas).
+  | Hallazgo | Qué pedía | Estado |
+  |---|---|---|
+  | D2 (base común → 006) | Que las pruebas de 006 usen `tests/comun` | Resuelto; falta actualizarlo en su registro (`spec006_pedidos.rs` usa `comun::crear_usuario` y `comun::entrar`) |
+  | I8 (004 → Persona B) | Quitar `confirm()` de 003 y 005 | Resuelto; falta actualizarlo en su registro (no queda ningún `confirm()`) |
+  | N3 (002 → T031 de 004) | Que la Persona B revise el §4.5 en T031 | Resuelto; falta actualizarlo en su registro (T031 de 004, marcada, incluye el §4.5) |
+  | I4 (001 → 007) | El 422 de la matrícula del historial, en el contrato y en la spec de 007 | Abierto, trabajo futuro de la Persona B (el contrato lo tiene; la spec de 007 no tiene el caso límite y el texto no coincide con el de spec-001) |
+  | I5(b) (002 → 003) y G1 (004 → Persona B) | Un paso de diagnóstico antes de emitir el presupuesto del §4.5 | Abierto, trabajo futuro de la Persona B |
+  | I9 (base común → 007) | Añadir `/` y `/facturas/[id]` a «Rutas de pantalla» del contrato | Abierto, trabajo futuro de la Persona B |
+
+**Brechas de implementación pendientes**: 0 tareas de 336. Las dos que quedaban, las revisiones finales
+de la Persona B (T031 de 004 y T032 de 008), están hechas. El último converge de cada spec no dejó
+tareas sin hacer (por ejemplo, [converge-2 de 008](../specs/008-tablero-ordenes-abiertas/converge-2.md)
+y [converge-2 de 003](../specs/003-diagnostico-presupuesto/converge-2.md)). Lo único que queda son
+documentos: los asignados abiertos de la Persona B (I4, I5(b)/G1 e I9).
 
 **Criterios verificados**, de la [matriz](../specs/matriz-trazabilidad.md):
 
 | | Criterios | Verificados | Con desviación | Pendientes |
 |---|---|---|---|---|
 | Persona A (HU-01, 02, 04 y 08) | 68 | 66 | 2 | 0 |
-| Persona B (HU-03, 05, 06 y 07) | 58 | 52 | 6 | 0 |
-| **Grupo** | **126** | **118 (93,7 %)** | **8 (6,3 %)** | **0** |
+| Persona B (HU-03, 05, 06 y 07) | 58 | 53 | 5 | 0 |
+| **Grupo** | **126** | **119 (94,4 %)** | **7 (5,6 %)** | **0** |
 
-Las desviaciones son, sobre todo, criterios de tiempo medidos con el navegador automático en lugar de
-con una persona. La Persona B ha aceptado pasar HU-05 US3-1 a verificado con la evidencia de la
-regresión T030 ([revisión cruzada](../specs/revision-cruzada.md), O3); cuando lo haga, serán 119 y 7.
+Las desviaciones son criterios de tiempo: dos de la Persona A (HU-04 SC-001, con otra orden, y HU-08
+SC-002, sin cronometrar abrir y facturar) y cinco de la Persona B, medidos con el navegador automático en
+lugar de con una persona. La Persona B pasó HU-05 US3-1 a verificado con la evidencia de la regresión
+T030 ([revisión cruzada](../specs/revision-cruzada.md), O3).
+
+**Revisión de las filas de la matriz** (apartado 5.2): el enunciado pide revisar al menos un criterio
+por historia de la otra persona. Es un muestreo: cada persona revisó 4 filas de la otra, una por
+historia, y las 8 son correctas ([revisión cruzada](../specs/revision-cruzada.md)). Las demás filas
+llevan «pendiente» en la columna de revisión porque no entran en el muestreo, no porque falte
+revisarlas.
 
 ### Registro mínimo
 
@@ -438,12 +478,14 @@ Las filas más relevantes, al menos una por historia. El resto está en la
 | HU-01 · US1-5 (matrícula válida) | Clarify Q1: de 2 a 10 letras o cifras (cierra I11 de la base común) | `/speckit-clarify` | spec y research D1 de 001; `backend/src/matricula.rs` (compartido) | T001, T010 · `22f08be`, `224daaf` | `prueba_3_matricula_invalida` y unitarias de `matricula.rs`: pasan; T032 filas 1–4 | Persona A | Persona B (pendiente) | Verificado |
 | HU-01 · US3-1 (día completo) | H1: con cupo 0 se ofrecían días que el servidor rechazaba | `/speckit-implement` (verificación T032) | `backend/src/rutas/citas.rs`, `cita/+page.svelte` | T041 · `00e6436` | `con_cupo_0_no_se_ofrece_ningun_dia`: pasa; T032 repetido 31/31 | Persona A | Persona B (pendiente) | Verificado |
 | HU-02 · US1-9 y SC-002 (números consecutivos) | Clarify Q6: los rechazos no gastan número (C1 de analyze-1) | `/speckit-analyze`, `/speckit-clarify` | spec y research D2 de 002; `ordenes.rs` | T008 · `2516faf`, `d5106aa` | `prueba_2_correlativo_sin_huecos`, `prueba_3_concurrencia_del_numero`: pasan; T029 fila 12 | Persona A | Persona B (pendiente) | Verificado |
-| HU-03 · US2-5 (quitar una línea recalcula) | Clarify Q2 de 003 | *No consta; lo completa la Persona B* | `presupuestos.rs`, `Presupuesto.svelte` | `dd77530` | `quitar_una_linea_recalcula_los_totales`: pasa | Persona B | Persona A, revisado el 12/11/2026 | Verificado |
+| HU-03 · US2-5 (quitar una línea recalcula) | Clarify Q2 de 003 (sesión del 22/10/2026 en su spec) | `/speckit-clarify` | `presupuestos.rs`, `Presupuesto.svelte` | `dd77530` | `quitar_una_linea_recalcula_los_totales`: pasa | Persona B | Persona A, revisado el 12/11/2026 | Verificado |
 | HU-04 · US1-4 (solo cuenta la primera respuesta) | Clarify Q4 y D1 de la base común: un solo `UPDATE` (R9) | `/speckit-clarify` | research R9; `publico_presupuesto.rs` | T010, T013 · `76dcdda`, `49c3188`, `7e66bad` | `dos_respuestas_a_la_vez_solo_cuenta_una` con mutación: pasa; T027 filas 15–16 | Persona A | Persona B (pendiente) | Verificado |
-| HU-05 · US2-1 (el 110 % justo no bloquea) | Research D4 de 005 | *No consta; lo completa la Persona B* | `imputaciones.rs` | `09c887f` | `el_limite_del_10_por_ciento_es_exacto_al_centimo`: pasa | Persona B | Persona A, revisado el 12/11/2026 | Verificado |
-| HU-06 · US3-2 (la orden espera al último pedido) | Research D4 de 006 | *No consta; lo completa la Persona B* | `almacen.rs` | `52448f3` | `con_dos_pedidos_la_orden_espera_al_ultimo`: pasa | Persona B | Persona A, revisado el 12/11/2026 | Verificado |
-| HU-07 · US1-1 (factura de 157,30 €) | Research D1 y D6 de 007 | *No consta; lo completa la Persona B* | `facturas.rs`, `Factura.svelte` | `e2a2060` | `facturar_copia_las_imputaciones_y_cierra_la_orden`: pasa | Persona B | Persona A, revisado el 12/11/2026 | Verificado |
-| HU-08 · SC-003 (la carga cuadra con las tarjetas) | V3: transacción cancelada a mitad | `/speckit-converge` (converge-1) | research D1 y D2 de 008; `tablero.rs`; R14 común | T033, T034 · `c4588e9` | `prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion`: rojo 3/3 antes y verde después; `estres.sh`: 0 errores | Persona A | Persona B (pendiente, T032) | Verificado |
+| HU-05 · US2-1 (el 110 % justo no bloquea) | Research D4 de 005 | `/speckit-plan` (deducido: la decisión está en su `research.md`; sus documentos no lo registran) | `imputaciones.rs` | `09c887f` | `el_limite_del_10_por_ciento_es_exacto_al_centimo`: pasa | Persona B | Persona A, revisado el 12/11/2026 | Verificado |
+| HU-06 · US3-2 (la orden espera al último pedido) | Research D4 de 006 | `/speckit-plan` (deducido, como la fila anterior) | `almacen.rs` | `52448f3` | `con_dos_pedidos_la_orden_espera_al_ultimo`: pasa | Persona B | Persona A, revisado el 12/11/2026 | Verificado |
+| HU-07 · US1-1 (factura de 157,30 €) | Research D1 y D6 de 007 | `/speckit-plan` (deducido, como la fila anterior) | `facturas.rs`, `Factura.svelte` | `e2a2060` | `facturar_copia_las_imputaciones_y_cierra_la_orden`: pasa | Persona B | Persona A, revisado el 12/11/2026 | Verificado |
+| HU-08 · SC-003 (la carga cuadra con las tarjetas) | V3: transacción cancelada a mitad | `/speckit-converge` (converge-1) | research D1 y D2 de 008; `tablero.rs`; R14 común | T033, T034 · `c4588e9` | `prueba9_peticiones_cortadas_no_dejan_conexiones_en_transaccion`: rojo 3/3 antes y verde después; `estres.sh`: 0 errores | Persona A | Persona B (T032 hecha) | Verificado |
+| HU-03 · US3 (emitir) · HU-05 · US4 (terminar) · HU-07 · US1 (facturar) | C1 de [003](../specs/003-diagnostico-presupuesto/hallazgos.md), [005](../specs/005-imputar-tiempo-piezas/hallazgos.md) y [007](../specs/007-facturar-avisar-cliente/hallazgos.md) (CRITICAL, principio II): `confirm()` del navegador; cierra V2 de 008 | `/speckit-analyze` (analyze-1), `/speckit-converge` y `/speckit-implement` | `Presupuesto.svelte`, `Imputaciones.svelte`, `Factura.svelte`; quickstart común §3.6 | T036 de 003, T035 de 005, T033 de 007 · `2c207bd`, `7bf2648`, `037f0da` | En el navegador (sus registros): 003 rojo 0 de 3 y verde 4 de 4; 005 rojo 0 de 3 y verde 3 de 3; 007 rojo 1 de 4 y verde 4 de 4. Verificación final §3, §5 y §7 con «Sí, emitir», «Sí, terminar» y «Sí, facturar»: 7/7, 6/6 y 5/5 | Persona B | Persona A (verificación final) | Verificado |
+| HU-06 · US1 y US2 (alta y pedidos) | C1 de [006](../specs/006-pedido-pieza-proveedor/hallazgos.md) (CRITICAL, principio II): avisos de validación del navegador | `/speckit-analyze` (analyze-1), `/speckit-converge` y `/speckit-implement` | `/almacen`, `/pedidos` | T033 de 006 · `076f626` | Rojo 3 de 7 y verde 7 de 7 (su registro); verificación final §6: 9/9 | Persona B | Persona A (verificación final) | Verificado |
 | HU-08 · US2-2 (mecánico de baja con órdenes) | Clarify Q1: los inactivos solo salen si tienen órdenes, marcados «(de baja)» | `/speckit-clarify` | spec, research D2 y contrato de 008 | T014, T015 · `200b4db`, `67f75d1` | `prueba6_inactivos_solo_con_ordenes_abiertas` con mutación: pasa; en la app, «Pedro (de baja) 1» | Persona A | Persona B (pendiente) | Verificado |
 
 ## 8. Despliegue y uso
@@ -518,7 +560,7 @@ historial de git:
 |---|---|---|---|
 | 0 · Base común | Las dos | Constitución, specs y plan (B, 15/10); tareas, análisis e implementación (A, 15–22/10) | 15/10 – 22/10/2026 |
 | 1 · En paralelo | A: 001 → 002 → 004 → 008 · B: 006 → 003 → 005 → 007 | Una rama por spec | 22/10 – 12/11/2026 |
-| 2 · Integración | Las dos | Quickstart §9 (R1), R2, matriz y revisión cruzada | 12/11/2026 |
+| 2 · Integración | Las dos | Quickstart §9 (R1), R2, matriz, revisión cruzada, analyze y converge de las specs de B y verificación final | 12/11 – 14/11/2026 |
 
 **Ramas y entrada en `main`**:
 
@@ -531,13 +573,17 @@ historial de git:
 | 05/11/2026 | spec-001 y spec-002 (A) | PR #3 (`spec-001`); `main` avanzó hasta la rama de spec-002, que llevaba spec-001 dentro |
 | 05/11/2026 | Integración en la ficha de 003, 005, 006 y 007 (B) | Commits directos |
 | 12/11/2026 | spec-004 y spec-008 (A) | PR #5 (`spec-008`, que lleva spec-004 dentro) y PR #4, fusionados por B |
+| 12/11/2026 | Analyze, hallazgos y converge de 003, 005, 006 y 007, con sus correcciones (B) | PR #8 (`spec-007`) y PR #7 (`spec-003`), abiertos por B y fusionados por A |
+| 12/11/2026 | Documentación final: matriz, recorridos, agrupamiento, revisión cruzada y memoria (las dos) | PR #6 (`entrega`), abierto por B y fusionado por A |
+| 14/11/2026 | Verificación final sobre `main` (A) | Rama `cierre` (`52c7024`), pendiente de fusionar |
 
-**Commits**, por autor y por las rutas de sus specs (detalle en [agrupamiento.md](agrupamiento.md)):
+**Commits**, por autor y por las rutas de sus specs, recontados el 14/11/2026 con el criterio de
+[agrupamiento.md](agrupamiento.md), que tiene los recuentos del 12/11:
 
 | Persona | En sus specs | En las de la otra | Total en el repositorio |
 |---|---|---|---|
-| A (@evm60-ua) | 81 | 11 | 124 |
-| B (@senabre, firma «Andres») | 13 | 2 | 16 |
+| A (@evm60-ua) | 82 | 12 | 130 |
+| B (@senabre, firma «Andres») | 17 | 6 | 23 (22 como «Andres» y una fusión en GitHub) |
 
 Los recuentos no miden el trabajo de la misma forma: B subió cada spec en pocos commits grandes, y A,
 en muchos commits pequeños por tarea.
@@ -550,12 +596,13 @@ imputaciones».
 ## 10. Conclusiones
 
 **Qué se consiguió.**
-- Las 8 historias están implementadas, con todas sus tareas de código hechas (324 de 326; faltan dos
-  revisiones).
-- Hay 177 pruebas automáticas y todas pasan: 156 de backend, contando la que se lanza aparte, y 21 de
-  frontend.
-- El quickstart común se recorre entero sin fallos de la aplicación.
-- De los 126 criterios, 118 están verificados y 8 verificados con desviación.
+- Las 8 historias están implementadas, con las 336 tareas hechas.
+- Hay 177 pruebas automáticas y todas pasan según la verificación final: 156 de backend, contando la
+  que se lanza aparte, y 21 de frontend.
+- El quickstart común se recorre entero sin fallos de la aplicación, también después de los últimos
+  cambios de la Persona B (verificación final).
+- De los 126 criterios, 119 están verificados y 7 verificados con desviación.
+- De los 135 hallazgos, 128 están cerrados y ninguno abierto.
 - El flujo completo de la cita a la factura funciona con las dos personas y con el tablero
   actualizándose solo.
 
@@ -569,27 +616,27 @@ imputaciones».
   por 004 (de A). Se resolvieron con aviso previo y revisión en commits propios.
 - **Criterios de tiempo**: para medirlos hacía falta una persona con un reloj. Varios se midieron
   solo con el navegador automático y quedan como desviación.
+- **Diálogos del navegador en inglés**: tres confirmaciones con `confirm()` y los avisos de validación de
+  los formularios salían en el idioma del navegador (principio II). Se detectó tarde, en la verificación
+  de spec-008 (V2) y en los analyze de la Persona B, y se corrigió el 12/11/2026, lo que obligó a repetir
+  la regresión (verificación final).
 - **El quickstart dependía del día**: los datos demo traen citas de «hoy», y el §9 necesita dos días.
   El día B se hizo adelantando el reloj.
 
-**Trabajo futuro**, de los hallazgos abiertos de cada persona:
+**Trabajo futuro**, de los hallazgos que siguen asignados:
 - **Persona B**:
-  - sustituir los `confirm()` del navegador en «Emitir presupuesto», «Terminar reparación» y
-    «Facturar» por una confirmación dentro de la página (V2, O1);
-  - citar las capturas de la regresión T030 en sus filas de la matriz (O2) y pasar HU-05 US3-1 a
-    verificado (O3);
-  - marcar T031 de 004 y T032 de 008 (O5);
-  - los hallazgos asignados a sus specs en los registros de la Persona A: G1 e I8 de 004, I5(b) de
-    002, I4 de 001, e I9 y D2 de la base común. *Pendiente de que la Persona B confirme su estado.*
-- **Persona A**:
-  - la limitación aceptada de V1(b): una caída silenciosa de la red no se detecta hasta el siguiente
-    evento o la medianoche.
-- **Las dos**: completar la revisión cruzada de las filas de la matriz (64 de la Persona A y 54 de la
-  Persona B, pendientes).
+  - abiertos: I5(b) de 002 y G1 de 004 (un paso de diagnóstico antes de emitir en el §4.5 del
+    quickstart común); I9 de la base común (`/` y `/facturas/[id]` en «Rutas de pantalla» del
+    contrato); I4 de 001 (el caso límite de la matrícula no válida en la spec de 007, con el mismo
+    texto que spec-001);
+  - D2, I8 y N3 están resueltos; falta actualizarlos en su registro;
+  - revisar el cambio del quickstart común con el que se cerró N1 de 005 (§8.6, §8.8, §8.9, §9.6 y §9.7).
+- **Persona A**: la limitación aceptada de V1(b): una caída silenciosa de la red no se detecta hasta el
+  siguiente evento o la medianoche.
 
 ## 11. Demo
 
-Pendiente: se completa cuando esté DemoSSD_GXX.zip.
+Pendiente: se completa cuando esté DemoSSD_GXX.zip, que entrega la Persona B.
 
 Estructura prevista:
 - Nombre y contenido del fichero `DemoSSD_GXX.zip` (vídeo y guion).
@@ -604,6 +651,7 @@ Estructura prevista:
 - **Revisión cruzada**: [specs/revision-cruzada.md](../specs/revision-cruzada.md)
 - **Recorridos integrados**: [specs/recorridos/recorridos-integrados.md](../specs/recorridos/recorridos-integrados.md)
 - **Agrupamiento**: [docs/agrupamiento.md](agrupamiento.md)
+- **Verificación final**: [specs/verificacion-final/verificacion.md](../specs/verificacion-final/verificacion.md)
 
 ### Specs
 
@@ -612,11 +660,11 @@ Estructura prevista:
 | 000 · Base común | [specs/000-base-comun/](../specs/000-base-comun/plan.md) | spec, plan (maestro), research, data-model, contracts/api, quickstart, tasks, analyze-1 a 3, hallazgos |
 | 001 · Pedir cita | [specs/001-pedir-cita-en-linea/](../specs/001-pedir-cita-en-linea/spec.md) | spec, decisiones-clarify, plan, research, data-model, contracts, quickstart, tasks, analyze-1 y 2, converge-1 a 3, hallazgos, checklists, evidencias |
 | 002 · Abrir orden | [specs/002-abrir-orden-reparacion/](../specs/002-abrir-orden-reparacion/spec.md) | spec, decisiones-clarify, plan, research, data-model, contracts, quickstart, tasks, analyze-1 y 2, converge-1 y 2, hallazgos, checklists, evidencias |
-| 003 · Diagnóstico y presupuesto | [specs/003-diagnostico-presupuesto/](../specs/003-diagnostico-presupuesto/spec.md) | spec, plan, research, tasks, checklists, evidencias |
+| 003 · Diagnóstico y presupuesto | [specs/003-diagnostico-presupuesto/](../specs/003-diagnostico-presupuesto/spec.md) | spec, plan, research, tasks, analyze-1 y 2, converge-1 y 2, hallazgos, checklists, evidencias |
 | 004 · Aceptar presupuesto | [specs/004-aceptar-presupuesto-enlace/](../specs/004-aceptar-presupuesto-enlace/spec.md) | spec, decisiones-clarify, plan, research, data-model, contracts, quickstart, tasks, analyze-1 y 2, converge-1 a 3, hallazgos, checklists, evidencias |
-| 005 · Imputar | [specs/005-imputar-tiempo-piezas/](../specs/005-imputar-tiempo-piezas/spec.md) | spec, plan, research, tasks, checklists, evidencias |
-| 006 · Pedido al proveedor | [specs/006-pedido-pieza-proveedor/](../specs/006-pedido-pieza-proveedor/spec.md) | spec, plan, research, tasks, checklists, evidencias |
-| 007 · Facturar | [specs/007-facturar-avisar-cliente/](../specs/007-facturar-avisar-cliente/spec.md) | spec, plan, research, tasks, checklists, evidencias |
+| 005 · Imputar | [specs/005-imputar-tiempo-piezas/](../specs/005-imputar-tiempo-piezas/spec.md) | spec, plan, research, tasks, analyze-1 y 2, converge-1, hallazgos, checklists, evidencias |
+| 006 · Pedido al proveedor | [specs/006-pedido-pieza-proveedor/](../specs/006-pedido-pieza-proveedor/spec.md) | spec, plan, research, tasks, analyze-1 y 2, converge-1, hallazgos, checklists, evidencias |
+| 007 · Facturar | [specs/007-facturar-avisar-cliente/](../specs/007-facturar-avisar-cliente/spec.md) | spec, plan, research, tasks, analyze-1 y 2, converge-1, hallazgos, checklists, evidencias |
 | 008 · Tablero | [specs/008-tablero-ordenes-abiertas/](../specs/008-tablero-ordenes-abiertas/spec.md) | spec, decisiones-clarify, plan, research, data-model, contracts, quickstart, tasks, analyze-1 a 3, converge-1 y 2, hallazgos, checklists, evidencias |
 
 ### Glosario
