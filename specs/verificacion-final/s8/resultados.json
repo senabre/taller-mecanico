@@ -1,0 +1,100 @@
+[
+  {
+    "paso": "§8.1 ana y el tablero",
+    "esperado": "Sin «Tablero» en el menú; /tablero dice «No tienes permiso para hacer esto», sin columnas; la API da 403",
+    "observado": "menú=0; mensaje=true; columnas=0; API=403",
+    "ok": true,
+    "img": "01-p1-ana-sin-permiso.png"
+  },
+  {
+    "paso": "§8.1 luis y el tablero",
+    "esperado": "Sin «Tablero» en el menú; /tablero dice «No tienes permiso para hacer esto», sin columnas; la API da 403",
+    "observado": "menú=0; mensaje=true; columnas=0; API=403",
+    "ok": true,
+    "img": "02-p1-luis-sin-permiso.png"
+  },
+  {
+    "paso": "§8.1 pepe y el tablero",
+    "esperado": "Sin «Tablero» en el menú; /tablero dice «No tienes permiso para hacer esto», sin columnas; la API da 403",
+    "observado": "menú=0; mensaje=true; columnas=0; API=403",
+    "ok": true,
+    "img": "03-p1-pepe-sin-permiso.png"
+  },
+  {
+    "paso": "§8.2 Columnas (paco)",
+    "esperado": "«Tablero» en el menú; 6 columnas en orden; sin 9999LLL ni 1313MMM; todas las abiertas, cada una en su columna",
+    "observado": "menú=1; columnas=[Recibida, En diagnóstico, En reparación, En espera de piezas, Pendiente de conformidad, Terminada]; tarjetas=9 de 9 abiertas; 9999LLL=false; 1313MMM=false; fuera de su columna=[]; vacías=0",
+    "ok": true,
+    "img": "04-p2-tablero-1920.png"
+  },
+  {
+    "paso": "§8.3 Carga por mecánico",
+    "esperado": "«Luis 6 · Marta 3»; coincide con las tarjetas; Pedro no sale",
+    "observado": "carga=«Luis 6 · Marta 3»; tarjetas por mecánico={\"Luis\":6,\"Marta\":3}",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "§8.4 Retrasadas (lo que hay que encontrar en SC-001)",
+    "esperado": "Solo 8888KKK, en «Terminada», con borde destacado y «Retrasada»; 3333DDD (entrega hoy) sin «Retrasada»",
+    "observado": "retrasadas=[8888KKK (Terminada, borde 2px)]; 3333DDD retrasada=false",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "§8.5 Orden por fecha de entrega",
+    "esperado": "«En reparación»: 3333DDD (hoy) encima de 2222CCC (pasado mañana)",
+    "observado": "orden=[3333DDD,2222CCC]",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "§8.6 luis termina 2222CCC",
+    "esperado": "En menos de 5 s pasa a «Terminada»; la carga de Luis no cambia",
+    "observado": "confirm()=«null»; tiempo=106 ms; columna=Terminada; carga=«Luis 6 · Marta 3»",
+    "ok": true,
+    "img": "05-p6-2222CCC-terminada.png"
+  },
+  {
+    "paso": "§8.7 ana abre una orden de 8888KKK para Marta",
+    "esperado": "En menos de 5 s su tarjeta sale en «Recibida» y la carga pasa a «Marta 4»",
+    "observado": "tiempo=105 ms; carga=«Luis 6 · Marta 4»",
+    "ok": true,
+    "img": "06-p7-8888KKK-recibida.png"
+  },
+  {
+    "paso": "§8.8 ana factura 2222CCC",
+    "esperado": "En menos de 5 s la tarjeta desaparece y la carga pasa a «Luis 4»",
+    "observado": "confirm()=«null»; tiempo=104 ms; carga=«Luis 5 · Marta 4»",
+    "ok": true,
+    "img": "07-p8-2222CCC-facturada.png"
+  },
+  {
+    "paso": "§8.9 Parar y volver a arrancar el servidor",
+    "esperado": "«Sin conexión, reintentando…» y, al volver, el aviso desaparece solo, sin recargar",
+    "observado": "aviso tras 6 ms; vuelta tras 2999 ms de arrancar",
+    "ok": true,
+    "img": "08-p9-sin-conexion.png"
+  },
+  {
+    "paso": "§8.9 Red cortada en el navegador de paco (opcional)",
+    "esperado": "Con la red cortada, luis termina 3333DDD; al volver la red, el aviso se va y 3333DDD ya está en «Terminada», sin recargar",
+    "observado": "aviso=false; terminar=200; columna sin red=En reparación; al volver: null ms",
+    "ok": false,
+    "img": "10-p9-tras-red-cortada.png"
+  },
+  {
+    "paso": "§8.10 Móvil a 390 px",
+    "esperado": "Una columna entera y el borde de la siguiente; las columnas se desplazan dentro del tablero; la página no se mueve de lado; la carga cabe",
+    "observado": "{\"pagina\":390,\"tira\":true,\"primera\":true,\"siguiente\":true,\"cargaAncho\":true}",
+    "ok": true,
+    "img": "11-p10-movil-390.png"
+  },
+  {
+    "paso": "§8.10 Pantalla grande (1920 px)",
+    "esperado": "Las 6 columnas una al lado de otra, ocupando todo el ancho, sin desplazamiento lateral",
+    "observado": "{\"fila\":true,\"dentro\":true,\"ancho\":1888,\"pagina\":1920}",
+    "ok": true,
+    "img": "13-p10-pantalla-grande.png"
+  }
+]

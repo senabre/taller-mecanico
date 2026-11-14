@@ -1,0 +1,25 @@
+OK   §2.1 Citas de hoy: con botón=true,true,true
+OK   §2.1 Cita de otro día (1234BCD): sin botón
+OK   §2.1 Ayer (Q2, Q5): 1515PPP botón=false; 1111BBB=Orden Nº 1
+OK   §2.1 Abrir por URL una cita de ayer (US1-5): mensaje visible
+OK   §2.2 Formulario de 1313MMM (US1-1, US1-7): 1313MMM=true; mecánicos=Luis, Marta
+OK   §2.3 Error de danos (US1-8, FR-003, FR-006): mensaje=«Describe los daños visibles o escribe “Sin daños visibles”»; página=/ordenes/nueva
+OK   §2.3 Error de km (US1-8, FR-003, FR-006): mensaje=«El kilometraje debe ser un número entero igual o mayor que 0»; página=/ordenes/nueva
+OK   §2.3 Error de entrega (US1-8, FR-003, FR-006): mensaje=«La fecha de entrega prometida no puede ser anterior a hoy»; página=/ordenes/nueva
+OK   §2.4 Ficha de la orden (US1-2, US1-3, SC-002): Orden Nº 10; Recibida=true; 85.000 km=true; url=/ordenes/10
+OK   §2.4 SC-001 (tiempo de máquina): 4.9 s de máquina con 3 errores intermedios; el cronometraje humano queda pendiente
+OK   §2.4 Enlace en Citas (US1-4, Q5): Orden Nº 10; tras pulsar=/ordenes/10
+OK   §2.5 Primera pestaña (SC-002, US1-9): Orden Nº 11
+OK   §2.5 Segunda pestaña (US1-4, FR-008): mensaje=true; enlace=/ordenes/11
+OK   §2.5 «Órdenes» (FR-008): órdenes de 1414NNN=1; números=11,10,1,4,5,2,3,6,8,7,9
+OK   Lista: orden 8 retrasada: 8 · 8888KKK · Terminada · Marta · 13/11/2026 Retrasada
+OK   §2.7 «Mis órdenes» de luis: título=Mis órdenes; números=11,10,1,4,2,3,7,9; mecánicos=Luis
+OK   Ficha como luis (T026): secciones=Datos, Diagnóstico, Presupuesto, Imputaciones, Pedidos; textarea de diagnóstico=1
+OK   Ficha: guardar diagnóstico: En diagnóstico=true
+OK   Ficha como ana: secciones=5; textarea de diagnóstico=0
+OK   Ficha inexistente: No existe la orden
+OK   Ficha de la orden demo 2: sí
+OK   Ficha de la orden demo 6: sí
+OK   Ficha de la orden demo 8: sí
+
+23/23 comprobaciones superadas
