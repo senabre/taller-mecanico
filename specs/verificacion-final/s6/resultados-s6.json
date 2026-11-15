@@ -1,0 +1,65 @@
+[
+  {
+    "paso": "§6.1 Alta de FA-9 sin stock y repetida",
+    "esperado": "Stock 0; «Ya existe la referencia FA-9»",
+    "observado": "fila=«FA-9 Filtro aceite 12,00 € 0»; repetida=true",
+    "ok": true,
+    "img": "s6-01-alta-fa9.png"
+  },
+  {
+    "paso": "§6.2 Proveedores",
+    "esperado": "«Recambios Sur» precargado, sin opción de crear",
+    "observado": "opciones=[Elige un proveedor,Autopartes Norte,Recambios Sur]",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "§6.3 Pedido FA-9 para la orden 3",
+    "esperado": "«Pendiente» con fecha 14/11/2026; la orden pasa a «En espera de piezas»",
+    "observado": "fila=«3 Recambios Sur FA-9 · Filtro aceite 1 14/11/2026 Marcar recibido»; orden=en_espera_piezas",
+    "ok": true,
+    "img": "s6-02-pedido-fa9.png"
+  },
+  {
+    "paso": "§6.4 FA-9 otra vez",
+    "esperado": "«Ya hay un pedido pendiente de FA-9 para la orden 3»",
+    "observado": "Ya hay un pedido pendiente de FA-9 para la orden 3",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "§6.5 PF-123 para la misma orden",
+    "esperado": "Se admite y la orden sigue en espera",
+    "observado": "pendientes de 3=2; orden=en_espera_piezas",
+    "ok": true,
+    "img": null
+  },
+  {
+    "paso": "§6.6 Pedido para una orden en diagnóstico",
+    "esperado": "Se rechaza explicando el motivo",
+    "observado": "La orden 4 está en diagnóstico; solo se puede pedir para órdenes en reparación o en espera de piezas",
+    "ok": true,
+    "img": "s6-03-pedido-orden-diagnostico.png"
+  },
+  {
+    "paso": "§6.7 Orden 3 como luis",
+    "esperado": "Ve los dos pedidos pendientes; no puede imputar ni terminar",
+    "observado": "FA-9=true; PF-123=true; imputar=0; terminar=0",
+    "ok": true,
+    "img": "s6-04-orden-en-espera.png"
+  },
+  {
+    "paso": "§6.8 Recibir FA-9",
+    "esperado": "Stock de FA-9 = 1; la orden sigue en espera; sin «Marcar recibido» en ese pedido",
+    "observado": "stock=1; orden=en_espera_piezas; botón=0",
+    "ok": true,
+    "img": "s6-05-recibido-fa9.png"
+  },
+  {
+    "paso": "§6.9 Recibir PF-123",
+    "esperado": "La orden vuelve sola a «En reparación» (el tablero queda para spec-008)",
+    "observado": "orden=en_reparacion; ficha=true",
+    "ok": true,
+    "img": "s6-06-vuelve-en-reparacion.png"
+  }
+]

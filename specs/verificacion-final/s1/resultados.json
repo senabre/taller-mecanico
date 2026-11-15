@@ -1,0 +1,219 @@
+[
+  {
+    "paso": "§1.1 Matrícula «12#4»",
+    "esperado": "«La matrícula no es válida» y no deja confirmar",
+    "observado": "error=true, confirmar activo=false",
+    "ok": true,
+    "img": "01-p1-matricula-124.png"
+  },
+  {
+    "paso": "§1.1 Matrícula «A»",
+    "esperado": "«La matrícula no es válida» y no deja confirmar",
+    "observado": "error=true, confirmar activo=false",
+    "ok": true,
+    "img": "02-p1-matricula-A.png"
+  },
+  {
+    "paso": "§1.1 Matrícula «ABCDE123456»",
+    "esperado": "«La matrícula no es válida» y no deja confirmar",
+    "observado": "error=true, confirmar activo=false",
+    "ok": true,
+    "img": "03-p1-matricula-ABCDE123456.png"
+  },
+  {
+    "paso": "§1.1 Matrícula «AB»",
+    "esperado": "Se acepta y pide los datos del vehículo nuevo",
+    "observado": "sin error=true, pide datos=true",
+    "ok": true,
+    "img": "04-p1-matricula-AB.png"
+  },
+  {
+    "paso": "§1.2 «1234-bcd» (US2-1)",
+    "esperado": "Pide marca, modelo, nombre, teléfono y correo",
+    "observado": "campos=1,1,1,1,1",
+    "ok": true,
+    "img": "05-p2-vehiculo-nuevo.png"
+  },
+  {
+    "paso": "§1.3 Teléfono «12345» (US2-3)",
+    "esperado": "«El teléfono no es válido» y no se confirma",
+    "observado": "error=true",
+    "ok": true,
+    "img": "06-p3-telefono-no-valido.png"
+  },
+  {
+    "paso": "§1.3 Correo «ana@correo» (US2-3)",
+    "esperado": "«El correo no es válido» y no se confirma",
+    "observado": "error=true",
+    "ok": true,
+    "img": "07-p3-correo-no-valido.png"
+  },
+  {
+    "paso": "§1.3 Alta y confirmación (US2-2, US1-2)",
+    "esperado": "Confirmación con 16/11/2026 y el motivo",
+    "observado": "confirmada con fecha dd/mm/aaaa y motivo",
+    "ok": true,
+    "img": "08-p3-cita-confirmada.png"
+  },
+  {
+    "paso": "§1.4 «1234BCD» con cita pendiente (US1-1, US1-4)",
+    "esperado": "Marca y modelo, aviso sin fecha, sin datos del cliente, no deja confirmar",
+    "observado": "marca/modelo=true, aviso=true, confirmar activo=false",
+    "ok": true,
+    "img": "09-p4-cita-pendiente.png"
+  },
+  {
+    "paso": "§1.5 «+34 612 345 678» (US2-4)",
+    "esperado": "Se confirma",
+    "observado": "confirmada",
+    "ok": true,
+    "img": "10-p5-telefono-internacional.png"
+  },
+  {
+    "paso": "§1.5 / (a) Día lleno (US3-1, SC-003)",
+    "esperado": "16/11/2026 ya no aparece y 17/11/2026 sí",
+    "observado": "primer día ofrecido=17/11/2026",
+    "ok": true,
+    "img": "11-p5-a-dia-lleno-no-aparece.png"
+  },
+  {
+    "paso": "§1.6 «1111BBB» (US1-1, US1-7)",
+    "esperado": "«Seat Ibiza», solo día y motivo, sin avisos",
+    "observado": "Seat Ibiza=true, campos de contacto=0, aviso=false",
+    "ok": true,
+    "img": "12-p6-vehiculo-conocido.png"
+  },
+  {
+    "paso": "§1.6 Cita de 1111BBB (US1-2, US1-6)",
+    "esperado": "Se confirma",
+    "observado": "confirmada para 17/11/2026",
+    "ok": true,
+    "img": "13-p6-confirmada.png"
+  },
+  {
+    "paso": "/cita en móvil (390 px)",
+    "esperado": "Usable, sin desplazamiento horizontal",
+    "observado": "ancho del documento=390px",
+    "ok": true,
+    "img": "14-movil-cita.png"
+  },
+  {
+    "paso": "§1.7 «Citas» abre con hoy (US1-8)",
+    "esperado": "Título «Citas de hoy» y selector con la fecha de hoy",
+    "observado": "título=Citas de hoy, selector=2026-11-14",
+    "ok": true,
+    "img": "15-p7-ana-hoy.png"
+  },
+  {
+    "paso": "§1.7 Lista del día (US1-3, US1-8, FR-009)",
+    "esperado": "1234BCD y después 5678CDF, con nombre y teléfono, sin correo",
+    "observado": "filas=1234BCD, 5678CDF; columnas=Matrícula | Marca | Modelo | Motivo | Nombre | Teléfono | Orden",
+    "ok": true,
+    "img": "16-p7-ana-dia-1.png"
+  },
+  {
+    "paso": "§1.7 1111BBB con sus datos sin cambiar (US1-7, FR-003)",
+    "esperado": "«María López» y 600111222",
+    "observado": "1111BBB · Seat · Ibiza · Cambio de aceite · María López · 600111222 · ",
+    "ok": true,
+    "img": "17-p7-ana-dia-2.png"
+  },
+  {
+    "paso": "§1.8 Día sin citas (US1-9)",
+    "esperado": "«No hay citas para este día»",
+    "observado": "mensaje visible",
+    "ok": true,
+    "img": "18-p8-dia-sin-citas.png"
+  },
+  {
+    "paso": "§1.9 luis (US1-10)",
+    "esperado": "Sin «Citas» en el menú; en /citas solo «No tienes permiso para hacer esto»",
+    "observado": "menú con Citas=false, mensaje=true, tabla=0",
+    "ok": true,
+    "img": "19-p9-luis.png"
+  },
+  {
+    "paso": "§1.9 pepe (US1-10)",
+    "esperado": "Sin «Citas» en el menú; en /citas solo «No tienes permiso para hacer esto»",
+    "observado": "menú con Citas=false, mensaje=true, tabla=0",
+    "ok": true,
+    "img": "20-p9-pepe.png"
+  },
+  {
+    "paso": "§1.9 Sin sesión (US1-10)",
+    "esperado": "Lleva a /entrar",
+    "observado": "url=/entrar",
+    "ok": true,
+    "img": "21-p9-sin-sesion.png"
+  },
+  {
+    "paso": "§1.9 paco (jefe)",
+    "esperado": "Ve la misma lista que ana",
+    "observado": "filas=1234BCD, 5678CDF",
+    "ok": true,
+    "img": "22-p9-paco.png"
+  },
+  {
+    "paso": "§1.10 SC-001 vehículo conocido",
+    "esperado": "Recorrido con solo matrícula, día y motivo (3 datos)",
+    "observado": "confirmada; 3 datos escritos; 1.1 s de máquina",
+    "ok": true,
+    "img": "23-p10-sc001-conocido.png"
+  },
+  {
+    "paso": "§1.10 SC-002 vehículo nuevo",
+    "esperado": "Recorrido con 8 datos",
+    "observado": "confirmada; 8 datos escritos; 1.1 s de máquina",
+    "ok": true,
+    "img": "24-p10-sc002-nuevo.png"
+  },
+  {
+    "paso": "(b) US3-2 última plaza en dos pestañas",
+    "esperado": "A se confirma; B ve «Ese día se acaba de completar; elige otro», selector vacío, día retirado y Confirmar desactivado",
+    "observado": "A=true, aviso B=true, selector=Elige un día, día sigue=false, confirmar activo=false",
+    "ok": true,
+    "img": "25-b-pestana-A-confirmada.png, 26-b-pestana-B-dia-completado.png"
+  },
+  {
+    "paso": "(b) US3-2 B elige otro día",
+    "esperado": "Se confirma",
+    "observado": "confirmada para 19/11/2026",
+    "ok": true,
+    "img": "27-b-pestana-B-otro-dia.png"
+  },
+  {
+    "paso": "(d) T035 misma matrícula nueva en dos pestañas (FR-010)",
+    "esperado": "En A: marca y modelo de B, aviso, campos ocultos y Confirmar desactivado",
+    "observado": "Skoda Octavia=true, aviso=true, campos nuevos=0, confirmar activo=false",
+    "ok": true,
+    "img": "28-d-t035-pestana-A.png"
+  },
+  {
+    "paso": "(d) T035 en /citas",
+    "esperado": "Una sola cita de 7777XYZ, con el nombre de B",
+    "observado": "7777XYZ · Skoda · Octavia · Prueba T035 · Pestaña B · 611000222 · ",
+    "ok": true,
+    "img": "29-d-t035-lista.png"
+  },
+  {
+    "paso": "(e) T037 respuesta tardía en /citas (FR-009)",
+    "esperado": "Con la respuesta de 17/11/2026 retrasada 1,5 s, la tabla sigue siendo la de 16/11/2026",
+    "observado": "título=Citas del 16/11/2026; filas=1234BCD, 5678CDF",
+    "ok": true,
+    "img": "30-e-t037-respuesta-tardia.png"
+  },
+  {
+    "paso": "(e) T037 cambios rápidos y «Hoy»",
+    "esperado": "La tabla corresponde al día del título (hoy: 1313MMM, 1414NNN y 8888KKK)",
+    "observado": "título=Citas de hoy; citas de hoy=true; 1234BCD=false",
+    "ok": true,
+    "img": "31-e-t037-cambios-rapidos-y-hoy.png"
+  },
+  {
+    "paso": "T034 «9999LLL» (§2.3, parte de spec-001)",
+    "esperado": "«Opel Corsa», sin aviso, se confirma y aparece en /citas",
+    "observado": "Opel Corsa=true, aviso=false, confirmada=true, en /citas=true",
+    "ok": true,
+    "img": "32-t034-9999LLL.png, 33-t034-9999LLL-confirmada.png, 34-t034-9999LLL-en-citas.png"
+  }
+]

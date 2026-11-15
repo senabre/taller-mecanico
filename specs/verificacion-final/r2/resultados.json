@@ -1,0 +1,65 @@
+[
+  {
+    "paso": "R2.1 ana abre la orden de 1414NNN (002 · A)",
+    "esperado": "Orden Nº 10; su tarjeta sale en «Recibida»",
+    "observado": "Orden Nº 10; tablero en 106 ms",
+    "ok": true,
+    "img": "r01-orden-abierta.png"
+  },
+  {
+    "paso": "R2.2 luis diagnostica y emite un presupuesto de 48,40 € (003 · B)",
+    "esperado": "La tarjeta pasa a «En diagnóstico»; emitir no la mueve; hay enlace para el cliente",
+    "observado": "tablero en 103 ms; columna tras emitir=En diagnóstico; enlace=true; 48,40 €=true",
+    "ok": true,
+    "img": "r02-presupuesto-emitido.png"
+  },
+  {
+    "paso": "R2.3 El cliente rechaza desde el móvil (004 · A)",
+    "esperado": "Confirmación dentro de la página; «Rechazado el 14/11/2026 a las 15:09»; la orden sigue «En diagnóstico» y la tarjeta no se mueve",
+    "observado": "confirmación=true; página=true; orden=en_diagnostico; tablero=En diagnóstico",
+    "ok": true,
+    "img": "r04-rechazado-movil.png"
+  },
+  {
+    "paso": "R2.4 luis no puede imputar ni terminar (005 · B)",
+    "esperado": "«Inicial · Rechazado el …»; sin botón «Imputar» y con el aviso; por la API, 409 y nada se guarda",
+    "observado": "ficha=true; aviso=true; botón=0; imputar API=409 «La orden está en diagnóstico; solo se puede imputar en órdenes en reparación»; terminar API=409 «La orden está en diagnóstico; solo se puede terminar una orden en reparación»; imputaciones en la base=0",
+    "ok": true,
+    "img": "r06-sin-imputar.png"
+  },
+  {
+    "paso": "R2.5 ana no puede facturar (007 · B)",
+    "esperado": "Sin botón «Facturar»; por la API, rechazo y ninguna factura",
+    "observado": "botón=0; API=409 «La orden está en diagnóstico; solo se puede facturar una orden terminada»; facturas=0",
+    "ok": true,
+    "img": "r07-sin-facturar.png"
+  },
+  {
+    "paso": "R2.6 El cliente vuelve a abrir el enlace e intenta aceptar (004 · A)",
+    "esperado": "Se ve su rechazo, sin botones; aceptar por la API da 409 «Este presupuesto ya fue respondido» y la orden no cambia",
+    "observado": "botones=0; API=409 «Este presupuesto ya fue respondido»; presupuesto=rechazado; orden=en_diagnostico",
+    "ok": true,
+    "img": "r08-enlace-ya-respondido.png"
+  },
+  {
+    "paso": "R2.7 pepe intenta ver el tablero (008 · A)",
+    "esperado": "Sin «Tablero» en el menú; «No tienes permiso para hacer esto», sin tarjetas; la API da 403",
+    "observado": "menú=0; mensaje=true; tarjetas=0; API=403",
+    "ok": true,
+    "img": "r09-pepe-sin-tablero.png"
+  },
+  {
+    "paso": "R2.7 luis intenta ver el tablero (008 · A)",
+    "esperado": "Sin «Tablero» en el menú; «No tienes permiso para hacer esto», sin tarjetas; la API da 403",
+    "observado": "menú=0; mensaje=true; tarjetas=0; API=403",
+    "ok": true,
+    "img": "r10-luis-sin-tablero.png"
+  },
+  {
+    "paso": "R2.8 Presupuesto nuevo aceptado: la orden sale del bloqueo",
+    "esperado": "Distinto enlace; al aceptar, la tarjeta pasa a «En reparación»; la ficha conserva las dos respuestas",
+    "observado": "enlace nuevo=true; tablero en 104 ms; respuestas en la ficha=[Inicial · Rechazado el 14/11/2026 a las 15:09 | Inicial · Aceptado el 14/11/2026 a las 15:09]; imputar ya visible=1",
+    "ok": true,
+    "img": "r11-dos-respuestas.png"
+  }
+]

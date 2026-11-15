@@ -197,17 +197,20 @@ con un reloj para los pasos 4 y 6 (SC-001 y SC-002). La correspondencia con la s
 5. En «En reparación», `3333DDD` (entrega hoy) está **encima** de `2222CCC` (entrega pasado mañana):
    las tarjetas van por fecha de entrega, no por fecha de apertura.
 6. **Cronometrar** (SC-002), sin tocar el navegador de `paco`. En el otro, como `luis`, abrir la orden
-   de `2222CCC` y pulsar «Terminar reparación» → en **menos de 5 s** la tarjeta pasa a «Terminada»,
+   de `2222CCC`, pulsar «Terminar reparación» y confirmar con «Sí, terminar» → en **menos de 5 s**
+   la tarjeta pasa a «Terminada»,
    y la carga de Luis no cambia.
 7. En el otro navegador, como `ana`, «Abrir orden» en `8888KKK` (cita de hoy) con 40.000 km,
    «Sin daños visibles», mecánica Marta y entrega mañana → en menos de 5 s aparece su tarjeta en
    «Recibida» y la carga pasa a «Marta 4».
-8. Como `ana`, en la orden de `2222CCC` («Terminada»), pulsar «Facturar» → en menos de 5 s su
+8. Como `ana`, en la orden de `2222CCC` («Terminada»), pulsar «Facturar» y confirmar con «Sí,
+   facturar» → en menos de 5 s su
    tarjeta desaparece y la carga pasa a «Luis 5».
 9. Parar el servidor (Ctrl+C en la terminal de `cargo run`) → en el navegador de `paco` aparece
    «Sin conexión, reintentando…». Volver a arrancarlo (`cargo run`) → en unos segundos el aviso
    desaparece solo, sin recargar, y el tablero sigue al día. Después, como `luis`, terminar la
-   orden de `3333DDD` → con el tablero ya conectado, la tarjeta pasa sola a «Terminada». (Que lo que
+   orden de `3333DDD` (confirmando con «Sí, terminar») → con el tablero ya conectado, la tarjeta
+   pasa sola a «Terminada». (Que lo que
    cambie mientras el tablero está sin conexión aparezca al volver lo comprueban las pruebas
    automáticas; cortar la red desde las herramientas de desarrollo no sirve, porque no corta una
    conexión de eventos ya abierta: V1 de spec-008.)
@@ -249,8 +252,8 @@ es la orden nueva.
 5. Abrir el enlace del correo, aceptar y confirmar → «Aceptado el … a las …», y la tarjeta pasa a
    «En reparación».
 6. Como `luis`, imputar 1 h de «Cambio de pastillas» (lo presupuestado, sin pasar del 110 %) y pulsar
-   «Terminar reparación» → la tarjeta pasa a «Terminada».
-7. Como `ana`, pulsar «Facturar» → «Factura nº N» con su total, y en Mailpit «Su vehículo 3579KLM
+   «Terminar reparación» y confirmar con «Sí, terminar» → la tarjeta pasa a «Terminada».
+7. Como `ana`, pulsar «Facturar» y confirmar con «Sí, facturar» → «Factura nº N» con su total, y en Mailpit «Su vehículo 3579KLM
    está listo para recoger». La tarjeta desaparece del tablero y Luis resta 1.
 8. En `/historial`, buscar `3579KLM` → aparece la reparación con su diagnóstico y sus líneas.
 

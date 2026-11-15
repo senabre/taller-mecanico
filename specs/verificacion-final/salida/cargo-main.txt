@@ -1,0 +1,31 @@
+     Running unittests src/lib.rs (target/debug/deps/taller-220a015fd19f17be)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running unittests src/bin/crear-usuario.rs (target/debug/deps/crear_usuario-9200c2d21ac8b322)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running unittests src/main.rs (target/debug/deps/taller-190bf75a23bd4600)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+     Running tests/spec000_contador.rs (target/debug/deps/spec000_contador-2d451454e1ee63c2)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s
+     Running tests/spec000_estados.rs (target/debug/deps/spec000_estados-1416e7a208557692)
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+     Running tests/spec000_sesion.rs (target/debug/deps/spec000_sesion-166cba5b13268ab9)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.74s
+     Running tests/spec001_citas.rs (target/debug/deps/spec001_citas-e9328663fde39642)
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.70s
+     Running tests/spec002_ordenes.rs (target/debug/deps/spec002_ordenes-de38a5879beb4bb2)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.17s
+     Running tests/spec003_presupuestos.rs (target/debug/deps/spec003_presupuestos-f043d6afe5c70755)
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.00s
+     Running tests/spec004_respuesta.rs (target/debug/deps/spec004_respuesta-0c9f66fee46cd4a9)
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.16s
+     Running tests/spec005_imputaciones.rs (target/debug/deps/spec005_imputaciones-989dafa3b5b0d15b)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.55s
+     Running tests/spec006_pedidos.rs (target/debug/deps/spec006_pedidos-74ffcd87d5e2ba90)
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.76s
+     Running tests/spec007_facturas.rs (target/debug/deps/spec007_facturas-61d0e49748d5e7c5)
+test el_aviso_se_anota_si_sale_el_correo ... FAILED
+thread 'el_aviso_se_anota_si_sale_el_correo' (3353) panicked at tests/spec007_facturas.rs:350:5:
+test result: FAILED. 10 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.55s
+     Running tests/spec008_tablero.rs (target/debug/deps/spec008_tablero-abef27c0d32a17a5)
+test result: ok. 8 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 5.85s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

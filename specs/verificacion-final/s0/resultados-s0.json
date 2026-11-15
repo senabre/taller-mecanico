@@ -1,0 +1,37 @@
+[
+  {
+    "paso": "§0.1 Menú de luis",
+    "esperado": "Mis órdenes e Historial; sin Citas, Almacén, Pedidos ni Tablero",
+    "observado": "ve=[Mis órdenes,Historial]; no debería ver=[]",
+    "ok": true,
+    "img": "s0-01-menu-luis.png"
+  },
+  {
+    "paso": "§0.2 Contraseña errónea",
+    "esperado": "«Usuario o contraseña incorrectos»",
+    "observado": "mensaje visible",
+    "ok": true,
+    "img": "s0-02-contrasena-erronea.png"
+  },
+  {
+    "paso": "§0.3 Menú de paco",
+    "esperado": "Todo el menú, incluido el Tablero",
+    "observado": "ve=[Citas,Órdenes,Historial,Almacén,Pedidos,Tablero]",
+    "ok": true,
+    "img": "s0-03-menu-paco.png"
+  },
+  {
+    "paso": "§0.4 Menú de ana",
+    "esperado": "Citas, Órdenes, Historial; sin Tablero",
+    "observado": "ve=[Citas,Órdenes,Historial]; Tablero=false",
+    "ok": true,
+    "img": "s0-04-menu-ana.png"
+  },
+  {
+    "paso": "§0.4 Menú de pepe",
+    "esperado": "Almacén, Pedidos, Historial; sin Tablero",
+    "observado": "ve=[Almacén,Pedidos,Historial]; Tablero=false",
+    "ok": true,
+    "img": "s0-05-menu-pepe.png"
+  }
+]

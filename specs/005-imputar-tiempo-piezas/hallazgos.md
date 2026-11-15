@@ -24,7 +24,7 @@ cambia, con un motivo explícito.
 
 | ID | Historia o criterio | Gravedad | Evidencia | Decisión | Responsable | Estado |
 |----|---------------------|----------|-----------|----------|-------------|--------|
-| N1 | Quickstart común §8.6 (spec-008) y §9.6 (común) | LOW | Los pasos dicen «pulsar «Terminar reparación» →» sin la confirmación, que ahora es «Sí, terminar» en la página (antes, el `confirm()`). El tiempo de SC-002 de spec-008 no cambia. | Registrado (2026-11-12): el §8 es de la Persona A; se le avisa para que añada «y «Sí, terminar»» en el §8.6 y en el §9.6. | Persona A | Registrado |
+| N1 | Quickstart común §8.6 (spec-008) y §9.6 (común) | LOW | Los pasos dicen «pulsar «Terminar reparación» →» sin la confirmación, que ahora es «Sí, terminar» en la página (antes, el `confirm()`). El tiempo de SC-002 de spec-008 no cambia. | Registrado (2026-11-12): el §8 es de la Persona A; se le avisa para que añada «y «Sí, terminar»» en el §8.6 y en el §9.6. **Resuelto por la Persona A (2026-11-14)**: el quickstart común dice «confirmar con «Sí, terminar»» en el §8.6, el §8.9 y el §9.6, y también «confirmar con «Sí, facturar»» en el §8.8 y el §9.7. Es un documento compartido: el cambio lo revisa la Persona B. | Persona A | Cerrado (resuelto por la Persona A; lo revisa la Persona B) |
 
 ## Resumen
 

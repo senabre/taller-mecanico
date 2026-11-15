@@ -1,0 +1,44 @@
+[
+  {
+    "paso": "§5.1 Terminar sin imputar",
+    "esperado": "«Primero hay que imputar el trabajo realizado»",
+    "observado": "botón en pantalla=0; API=422 «Primero hay que imputar el trabajo realizado»",
+    "ok": true,
+    "img": "s5-01-terminar-sin-imputar.png"
+  },
+  {
+    "paso": "§5.2 Imputar PF-123 × 2 y luego × 3",
+    "esperado": "«PF-123 Pastillas freno»; stock 4 → 2; «Solo hay 2 unidades en stock de PF-123…»",
+    "observado": "concepto=true; stock=2; error=«Solo hay 2 unidades en stock de PF-123; el almacén puede pedirla al proveedor»",
+    "ok": true,
+    "img": "s5-02-imputar-pieza.png"
+  },
+  {
+    "paso": "§5.3 Imputar 1 h",
+    "esperado": "«Acumulado 90,00 € de 110,00 €»",
+    "observado": "Acumulado 90,00 € de 110,00 € presupuestados",
+    "ok": true,
+    "img": "s5-04-acumulado-90.png"
+  },
+  {
+    "paso": "§5.4 Imputar 1 h más",
+    "esperado": "130,00 € > 121,00 € → «Pendiente de conformidad»; no deja imputar ni terminar",
+    "observado": "Acumulado 130,00 € de 110,00 € presupuestados; pendiente=true; imputar=0; terminar=0",
+    "ok": true,
+    "img": "s5-05-pendiente-conformidad.png"
+  },
+  {
+    "paso": "§5.5 Ampliación de 1 h aceptada desde el correo",
+    "esperado": "«En reparación» con 150,00 € presupuestados",
+    "observado": "correo=true; aceptada=true; en reparación=true; Acumulado 130,00 € de 150,00 € presupuestados",
+    "ok": true,
+    "img": "s5-07-en-reparacion-150.png"
+  },
+  {
+    "paso": "§5.6 Terminar",
+    "esperado": "«Terminada» y ya no deja imputar",
+    "observado": "terminada=true; imputar=0",
+    "ok": true,
+    "img": "s5-08-terminada.png"
+  }
+]
